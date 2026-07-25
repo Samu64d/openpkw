@@ -11,13 +11,6 @@ namespace Color {
 
 	export type Immutable = readonly [number, number, number, number];
 
-	export const TRANSPARENT: Color.Immutable = Color.immutableOf(0, 0, 0, 0);
-	export const BLACK: Color.Immutable = Color.immutableOf(0, 0, 0, 255);
-	export const WHITE: Color.Immutable = Color.immutableOf(255, 255, 255, 255);
-	export const RED: Color.Immutable = Color.immutableOf(255, 0, 0, 255);
-	export const GREEN: Color.Immutable = Color.immutableOf(0, 255, 0, 255);
-	export const BLUE: Color.Immutable = Color.immutableOf(0, 0, 255, 255);
-
 	export function of(r: number, g: number, b: number, a: number = 255): Color {
 		return [r, g, b, a];
 	}
