@@ -2,18 +2,20 @@
 // GLRenderer.ts
 //
 
-import Nullable from "../core/foundation/Nullable.ts";
-import { multiply, rot, translate } from "../core/math/Matrix4d.ts";
-import Projection from "../core/rendering/Projection.ts";
-import TextFileResource from "../core/resource/TextFileResource.ts";
-import GLVertexBuffer from "../core/gl/GLVertexBuffer.ts";
-import GLVertexArray from "../core/gl/GLVertexArray.ts";
-import GLTexture from "../core/gl/GLTexture.ts";
-import GLShader from "../core/gl/GLShader.ts";
-import GLVertexShader from "../core/gl/GLVertexShader.ts";
-import GLFragmentShader from "../core/gl/GLFragmentShader.ts";
-import GLProgram from "../core/gl/GLProgram.ts";
-import GLContextManager from "../core/gl/GLContextManager.ts";
+import Nullable from "../engine/core/common/Nullable.ts";
+import { multiply, rot, translate } from "../engine/core/math/Matrix4d.ts";
+import Resource from "../engine/core/resource/resource/Resource.ts";
+import Text from "../engine/core/resource/resource/Text.ts";
+import TextFileLoader from "../engine/core/resource/loader/TextFileLoader.ts";
+import GLVertexBuffer from "../engine/drivers/graphics/gl/GLVertexBuffer.ts";
+import GLVertexArray from "../engine/drivers/graphics/gl/GLVertexArray.ts";
+import GLTexture from "../engine/drivers/graphics/gl/GLTexture.ts";
+import GLShader from "../engine/drivers/graphics/gl/GLShader.ts";
+import GLVertexShader from "../engine/drivers/graphics/gl/GLVertexShader.ts";
+import GLFragmentShader from "../engine/drivers/graphics/gl/GLFragmentShader.ts";
+import GLProgram from "../engine/drivers/graphics/gl/GLProgram.ts";
+import GLContextManager from "../engine/drivers/graphics/gl/GLContextManager.ts";
+import Projection from "../engine/core/rendering/Projection.ts";
 
 /** @tutorial */
 export default class GLRenderer {
@@ -75,44 +77,23 @@ export default class GLRenderer {
 	}
 
 	public init(): void {
-
-		const vertexShaderResource: TextFileResource = new TextFileResource("./resources/shader/dummy.vert");
-		vertexShaderResource.load();
-		const vertexShader: GLVertexShader = new GLVertexShader(this.contextManager, vertexShaderResource.getContent());
-		vertexShader.compile();
-		const vertexShaderCompilationStatus: GLShader.CompilationStatus = vertexShader.getCompilationStatus();
-		if (vertexShaderCompilationStatus == GLShader.CompilationStatus.FAILED) {
-			const error = vertexShader.getCompilationError();
-			throw new Error(error ?? "Shader compilation failed");
-		}
-
-		const fragmentShaderResource: TextFileResource = new TextFileResource("./resources/shader/dummy.frag");
-		fragmentShaderResource.load();
-		const fragmentShader: GLFragmentShader = new GLFragmentShader(this.contextManager, fragmentShaderResource.getContent());
-		fragmentShader.compile();
-		const fragmentShaderCompilationStatus: GLShader.CompilationStatus = fragmentShader.getCompilationStatus();
-		if (fragmentShaderCompilationStatus == GLShader.CompilationStatus.FAILED) {
-			const error = fragmentShader.getCompilationError();
-			throw new Error(error ?? "Shader compilation failed");
-		}
-
-		const program: GLProgram = new GLProgram(this.contextManager);
-		program.attachShaders([vertexShader, fragmentShader]);
-		program.link();
+		const vertexShader: GLShader = this.createShader("./resources/shader/dummy.vert", 0);
+		const fragmentShader: GLShader = this.createShader("./resources/shader/dummy.frag", 1);
+		const program: GLProgram = this.createProgram([vertexShader, fragmentShader]);
 		vertexShader.dispose();
 		fragmentShader.dispose();
-
-		const vbo = new GLVertexBuffer(this.contextManager);
 
 		const vao = new GLVertexArray(this.contextManager);
 		vao.bind();
 
+		const vbo = new GLVertexBuffer(this.contextManager);
 		vbo.bind();
 		vbo.loadData(GLRenderer.VERTEX_DATA);
 		this.context.vertexAttribPointer(0, 3, this.context.FLOAT, false, 5 * 4, 0);
 		this.context.enableVertexAttribArray(0);
 		this.context.vertexAttribPointer(1, 2, this.context.FLOAT, false, 5 * 4, 3 * 4);
 		this.context.enableVertexAttribArray(1);
+
 		vao.unbind();
 		vbo.unbind();
 
@@ -183,6 +164,32 @@ export default class GLRenderer {
 		this.texture2.bind();
 		this.context.drawArrays(this.context.LINE_STRIP, 0, GLRenderer.VERTEX_DATA.length / 5);
 		this.vao.unbind();
+	}
+
+	private createShader(path: string, type: number): GLShader {
+		const textResource: Resource<string, Text> = new Resource<string, Text>(path, new TextFileLoader());
+		textResource.load();
+		const text: Text = textResource.get();
+		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text.getText()) : new GLVertexShader(this.contextManager, text.getText());
+		shader.compile();
+		const compilationStatus: GLShader.CompilationStatus = shader.getCompilationStatus();
+		if (compilationStatus == GLShader.CompilationStatus.FAILED) {
+			const error = shader.getCompilationError();
+			throw new Error(error ?? "Shader compilation failed");
+		}
+		return shader;
+	}
+
+	private createProgram(shaderList: GLShader[]): GLProgram {
+		const program: GLProgram = new GLProgram(this.contextManager);
+		program.attachShaders(shaderList);
+		program.link();
+		const linkingStatus: GLProgram.LinkingStatus = program.getLinkingStatus();
+		if (linkingStatus == GLProgram.LinkingStatus.FAILED) {
+			const error = program.getLinkingError();
+			throw new Error(error ?? "Program linking failed");
+		}
+		return program;
 	}
 
 }

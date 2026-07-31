@@ -2,11 +2,8 @@
 // MainTest.ts
 //
 
-import Nullable from "../core/foundation/Nullable.ts";
-import Logger from "../core/foundation/Logger.ts";
-import FileSystem from "../core/platform/FileSystem.ts";
-import ByteBuffer from "../core/memory/ByteBuffer.ts";
-import PNGDecoder from "../core/media/codecs/png/PNGDecoder.ts";
+import Nullable from "../engine/core/common/Nullable.ts";
+import Logger from "../engine/core/io/log/Logger.ts";
 import GLRenderer from "./GLRenderer.ts";
 
 /** @tutorial test class */
@@ -70,11 +67,10 @@ export default class MainTest {
 
 	public initOther(): void {
 		this.logger.log("Run init other");
-
-		const buffer: Buffer = FileSystem.readFile("./resources/model/cliff_straight/cliff_straight.png");
-		const byteBuffer: ByteBuffer = ByteBuffer.FROM_SOURCE(buffer);
-		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
-		//pngDecoder.decode();
 	}
 
 }
+
+import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
+import FileSystemDriver from "../engine/core/io/file/FileSystemDriver.ts";
+FileSystemDriver.registerDriver(new NodeFileSystemDriver());
