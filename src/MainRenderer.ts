@@ -2,10 +2,13 @@
 // MainRenderer.ts
 //
 
-import Nullable from "./core/foundation/Nullable.ts";
-import Process from "./core/platform/Process.ts";
-import MainTest from "./test/MainTest.ts";
+import Nullable from "./engine/core/common/Nullable.ts";
+import EventListener from "./engine/core/common/EventListener.ts";
+import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
+import ElectronIPC from "./engine/platform/electron/ElectronIPC.ts";
 import Main from "./Main.ts";
+
+import MainTest from "./test/MainTest.ts";
 
 export default class MainRenderer {
 
@@ -19,18 +22,14 @@ export default class MainRenderer {
 
 	private static instance: Nullable<MainRenderer> = null;
 
-	private static main(): void {
-		MainRenderer.instance = new MainRenderer();
-	}
-
-	private document: Document;
+	private readonly document: Document;
 
 	private constructor() {
 		this.document = window.document;
 		this.registerWindowEventListeners();
 	}
 
-	private registerWindowEventListener(eventName: any, listener: (...args: any) => void): void {
+	private registerWindowEventListener<T>(eventName: any, listener: EventListener<T>): void {
 		window.addEventListener(eventName, listener);
 	}
 
@@ -43,8 +42,9 @@ export default class MainRenderer {
 	}
 
 	private onLoadListener(): void {
+		this.updateCanvasSize();
 		MainTest.instance.initRenderer();
-		MainTest.instance.initOther();
+		//MainTest.instance.initOther();
 	}
 
 	private onResizeListener(): void {
@@ -54,7 +54,7 @@ export default class MainRenderer {
 
 	private onErrorListener(event: ErrorEvent): void {
 		const message = event.message;
-		void Process.Communication.sendRequest(Main.IPC_ERROR_CHANNEL, message);
+		void ElectronIPC.sendRequest(Main.IPC_ERROR_CHANNEL, message);
 	}
 
 	private registerWindowEventListeners(): void {
@@ -64,8 +64,8 @@ export default class MainRenderer {
 	}
 
 	static {
-		if (Process.getType() == Process.Type.RENDERER) {
-			MainRenderer.main();
+		if (ElectronProcess.getType() == ElectronProcess.Type.RENDERER) {
+			MainRenderer.instance = new MainRenderer();
 		}
 	}
 
