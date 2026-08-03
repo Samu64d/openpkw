@@ -3,76 +3,72 @@
 //
 
 import Nullable from "../common/Nullable.ts";
-import Seekable from "../io/stream/Seekable.ts";
+import SeekableRandomAccess from "../io/common/SeekableRandomAccess.ts";
 import Endian from "./Endian.ts";
 import ByteBuffer from "./ByteBuffer.ts";
 
-export default class ByteBufferReader extends Seekable {
+export default class ByteBufferReader extends SeekableRandomAccess {
 
-	private readonly buffer: ByteBuffer;
-	private readonly bufferSource: Buffer;
-	private endianness: Endian;
+	private readonly byteBuffer: ByteBuffer;
+	private readonly dataView: DataView;
+	private readonly defaultEndianness: Endian;
 
-	public constructor(buffer: ByteBuffer, defaultEndianness: Endian = Endian.LITTLE) {
-		super(buffer.getSize());
-		this.buffer = buffer;
-		this.bufferSource = buffer.unsafeGetBuffer();
-		this.endianness = defaultEndianness;
+	public constructor(byteBuffer: ByteBuffer, defaultEndianness: Endian = Endian.LITTLE) {
+		super(byteBuffer.getSize(), false);
+		this.byteBuffer = byteBuffer;
+		this.dataView = new DataView(byteBuffer.unsafeGetData().buffer, 0, byteBuffer.getSize());
+		this.defaultEndianness = defaultEndianness;
 	}
 
-	public getBuffer(): ByteBuffer {
-		return this.buffer;
+	public getByteBuffer(): ByteBuffer {
+		return this.byteBuffer;
 	}
 
 	public getDefaultEndianness(): Endian {
-		return this.endianness;
+		return this.defaultEndianness;
 	}
 
 	public readUint8(position: Nullable<number> = null): number {
 		const resolvedPosition: number = this.resolvePosition(position, 1);
-		return this.bufferSource.readUint8(resolvedPosition);
+		const value: number = this.dataView.getUint8(resolvedPosition);
+		this.skip(1);
+		return value;
 	}
 
 	public readUint16(position: Nullable<number> = null, endianness: Nullable<Endian> = null): number {
 		const resolvedPosition: number = this.resolvePosition(position, 2);
-		if (this.isLittleEndian(endianness)) {
-			return this.bufferSource.readUint16LE(resolvedPosition);
-		} else {
-			return this.bufferSource.readUint16BE(resolvedPosition);
-		}
+		const value: number = this.dataView.getUint16(resolvedPosition, this.isLittleEndian(endianness));
+		this.skip(2);
+		return value;
 	}
 
 	public readUint24(position: Nullable<number> = null, endianness: Nullable<Endian> = null): number {
 		const resolvedPosition: number = this.resolvePosition(position, 3);
+		let value: number;
 		if (this.isLittleEndian(endianness)) {
-			return (this.bufferSource.readUint8(resolvedPosition + 2) << 16) | this.bufferSource.readUint16LE(resolvedPosition);
+			const b0: number = this.dataView.getUint8(resolvedPosition);
+			const b1: number = this.dataView.getUint8(resolvedPosition + 1) << 8;
+			const b2: number = this.dataView.getUint8(resolvedPosition + 2) << 16;
+			value = b0 | b1 | b2;
 		} else {
-			return (this.bufferSource.readUint16BE(resolvedPosition) << 8) | this.bufferSource.readUint8(resolvedPosition + 2);
+			const b0: number = this.dataView.getUint8(resolvedPosition) << 16;
+			const b1: number = this.dataView.getUint8(resolvedPosition + 1) << 8;
+			const b2: number = this.dataView.getUint8(resolvedPosition + 2);
+			value = b0 | b1 | b2;
 		}
+		this.skip(3);
+		return value;
 	}
 
 	public readUint32(position: Nullable<number> = null, endianness: Nullable<Endian> = null): number {
 		const resolvedPosition: number = this.resolvePosition(position, 4);
-		if (this.isLittleEndian(endianness)) {
-			return this.bufferSource.readUint32LE(resolvedPosition);
-		} else {
-			return this.bufferSource.readUint32BE(resolvedPosition);
-		}
-	}
-
-	private resolvePosition(position: Nullable<number>, length: number): number {
-		if (position == null) {
-			const currentCursor: number = this.cursor;
-			this.advance(length);
-			return currentCursor;
-		} else if (!this.isInBounds(position, length)) {
-			throw new Error("Out of bounds access.");
-		}
-		return position;
+		const value = this.dataView.getUint32(resolvedPosition, this.isLittleEndian(endianness));
+		this.skip(4);
+		return value;
 	}
 
 	private isLittleEndian(endianness: Nullable<Endian>): boolean {
-		return (endianness ?? this.endianness) == Endian.LITTLE;
+		return (endianness ?? this.defaultEndianness) == Endian.LITTLE;
 	}
 
 }

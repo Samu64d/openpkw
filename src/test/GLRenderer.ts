@@ -7,14 +7,14 @@ import { multiply, rot, translate } from "../engine/core/math/Matrix4d.ts";
 import Resource from "../engine/core/resource/resource/Resource.ts";
 import Text from "../engine/core/resource/resource/Text.ts";
 import TextFileLoader from "../engine/core/resource/loader/TextFileLoader.ts";
-import GLVertexBuffer from "../engine/drivers/graphics/gl/GLVertexBuffer.ts";
-import GLVertexArray from "../engine/drivers/graphics/gl/GLVertexArray.ts";
-import GLTexture from "../engine/drivers/graphics/gl/GLTexture.ts";
-import GLShader from "../engine/drivers/graphics/gl/GLShader.ts";
-import GLVertexShader from "../engine/drivers/graphics/gl/GLVertexShader.ts";
-import GLFragmentShader from "../engine/drivers/graphics/gl/GLFragmentShader.ts";
-import GLProgram from "../engine/drivers/graphics/gl/GLProgram.ts";
-import GLContextManager from "../engine/drivers/graphics/gl/GLContextManager.ts";
+import GLVertexBuffer from "../engine/drivers/graphic/gl/GLVertexBuffer.ts";
+import GLVertexArray from "../engine/drivers/graphic/gl/GLVertexArray.ts";
+import GLTexture from "../engine/drivers/graphic/gl/GLTexture.ts";
+import GLShader from "../engine/drivers/graphic/gl/GLShader.ts";
+import GLVertexShader from "../engine/drivers/graphic/gl/GLVertexShader.ts";
+import GLFragmentShader from "../engine/drivers/graphic/gl/GLFragmentShader.ts";
+import GLProgram from "../engine/drivers/graphic/gl/GLProgram.ts";
+import GLContextManager from "../engine/drivers/graphic/gl/GLContextManager.ts";
 import Projection from "../engine/core/rendering/Projection.ts";
 
 /** @tutorial */

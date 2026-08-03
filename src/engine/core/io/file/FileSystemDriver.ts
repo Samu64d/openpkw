@@ -2,29 +2,16 @@
 // FileSystemDriver.ts
 //
 
-import Nullable from "../../common/Nullable.ts";
+import TextEncoding from "../../memory/TextEncoding.ts";
 import ByteBuffer from "../../memory/ByteBuffer.ts";
-import TextEncoding from "./TextEncoding.ts";
-import OpenMode from "./OpenMode.ts";
+import ResourceHandle from "../../interop/ResourceHandle.ts";
+import Driver from "../../interop/Driver.ts";
 import AccessRight from "./AccessRight.ts";
-import FileDescriptor from "./FileDescriptor.ts";
+import OpenMode from "./OpenMode.ts";
 
-export default abstract class FileSystemDriver {
+export default abstract class FileSystemDriver implements Driver {
 
-	public static registerDriver(driver: FileSystemDriver): void {
-		this.activeDriver = driver;
-	}
-
-	public static getActiveDriver(): FileSystemDriver {
-		if (!this.activeDriver) {
-			throw new Error("No driver registered.");
-		}
-		return this.activeDriver;
-	}
-
-	private static activeDriver: Nullable<FileSystemDriver> = null;
-
-	public constructor() { }
+	public abstract init(): void;
 
 	public abstract getAccessRight(path: string): AccessRight;
 
@@ -42,12 +29,18 @@ export default abstract class FileSystemDriver {
 
 	public abstract writeTextFile(path: string, text: string, create: boolean, textEncoding: TextEncoding): void;
 
-	public abstract openFile(path: string, mode: OpenMode, textEncoding: TextEncoding): FileDescriptor;
+	public abstract isValidFD(fileHandle: ResourceHandle): boolean;
 
-	public abstract read(fileDescriptor: FileDescriptor, byteBuffer: ByteBuffer, offset: number, length: number, position: number): void;
+	public abstract openFD(path: string, mode: OpenMode): ResourceHandle;
 
-	public abstract closeFile(fileDescriptor: FileDescriptor): void;
+	public abstract readFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void;
+
+	public abstract writeFD(ResourceHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void;
+
+	public abstract closeFD(ResourceHandle: ResourceHandle): void;
 
 	public abstract moveFile(sourcePath: string, destinationPath: string): void;
+
+	public abstract dispose(): void;
 
 }

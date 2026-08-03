@@ -34,17 +34,17 @@ export default class PNGDecoder implements Decoder<Image> {
 	}
 
 	private validateHeader(): void {
-		const headerValue: ByteBuffer = this.source.subBuffer(0, PNGDecoder.HEADER_SIZE);
+		const headerValue: ByteBuffer.View = this.source.view(0, PNGDecoder.HEADER_SIZE);
 		if (!headerValue.equals(PNGDecoder.HEADER_VALUE)) {
 			throw new Error("Invalid header");
 		}
 	}
 
 	private collectChunks(): void {
-		while (!this.reader.isEof()) {
+		while (this.reader.isEof() == false) {
 			const size: number = this.reader.readUint32();
 			const name: number = this.reader.readUint32();
-			const data: ByteBuffer = this.source.subBuffer(this.reader.getCursor(), size);
+			const data: ByteBuffer.View = this.source.view(this.reader.getCursor(), size);
 			this.reader.skip(size);
 			const crc: number = this.reader.readUint32();
 

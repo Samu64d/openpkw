@@ -2,8 +2,8 @@
 // Color.ts
 //
 
+import ImmutableArray from "../common/ImmutableArray.ts";
 import MathHelper from "../math/MathHelper.ts";
-import ImmutableArray from "../reflection/array/ImmutableArray.ts";
 
 type Color = [number, number, number, number];
 
