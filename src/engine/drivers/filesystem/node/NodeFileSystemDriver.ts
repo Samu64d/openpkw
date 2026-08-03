@@ -24,8 +24,9 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 
 	private static readonly OPEN_MODE_MAP: Readonly<Record<OpenMode, string>> = {
 		[OpenMode.READ]: "r",
-		[OpenMode.WRITE]: "w",
-		[OpenMode.READ_WRITE]: "r+"
+		[OpenMode.WRITE_CREATE]: "w",
+		[OpenMode.READ_WRITE]: "r+",
+		[OpenMode.READ_WRITE_CREATE]: "w+"
 	};
 
 	private fileHandleNextId: number;
