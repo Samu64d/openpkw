@@ -4,8 +4,9 @@
 
 export enum OpenMode {
 	READ,
-	WRITE,
-	READ_WRITE
+	WRITE_CREATE,
+	READ_WRITE,
+	READ_WRITE_CREATE
 }
 
 export default OpenMode;

@@ -42,11 +42,14 @@ class ByteBuffer implements Disposable.Target {
 		return this.data.length;
 	}
 
-	public isInBounds(position: number, length: number): boolean {
+	public isWithinBounds(position: number, length: number): boolean {
 		return position >= 0 && length >= 0 && position <= this.getSize() - length;
 	}
 
 	public get(index: number): number {
+		if (index >= this.data.length) {
+			throw new Error("Out of bounds access.");
+		}
 		return this.data[index];
 	}
 
@@ -59,7 +62,7 @@ class ByteBuffer implements Disposable.Target {
 	}
 
 	public view(start: number, end: number): ByteBuffer.View {
-		if (this.isInBounds(start, end - start) == false) {
+		if (this.isWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
