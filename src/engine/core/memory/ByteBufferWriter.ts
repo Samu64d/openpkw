@@ -3,7 +3,7 @@
 //
 
 import Nullable from "../common/Nullable.ts";
-import SeekableRandomAccess from "../io/common/SeekableRandomAccess.ts";
+import SeekableRandomAccess from "../io/SeekableRandomAccess.ts";
 import Endian from "./Endian.ts";
 import ByteBuffer from "./ByteBuffer.ts";
 
@@ -29,19 +29,20 @@ export default class ByteBufferWriter extends SeekableRandomAccess {
 	}
 
 	public writeUint8(value: number, position: Nullable<number> = null): void {
-		const resolvedPosition: number = this.resolvePosition(position, 1);
+		const resolvedPosition: number = this.resolvePositionForCapacity(position, 1);
 		this.dataView.setUint8(resolvedPosition, value);
-		this.skip(1);
+		this.advanceIfUnspecified(1, position);
 	}
 
 	public writeUint16(value: number, position: Nullable<number> = null, endianness: Nullable<Endian> = null): void {
-		const resolvedPosition: number = this.resolvePosition(position, 2);
+		const resolvedPosition: number = this.resolvePositionForCapacity(position, 2);
 		this.dataView.setUint16(resolvedPosition, value, this.isLittleEndian(endianness));
-		this.skip(2);
+		this.advanceIfUnspecified(2, position);
 	}
 
 	public writeUint24(value: number, position: Nullable<number> = null, endianness: Nullable<Endian> = null): void {
-		const resolvedPosition: number = this.resolvePosition(position, 3);
+		const resolvedPosition: number = this.resolvePositionForCapacity(position, 3);
+
 		if (this.isLittleEndian(endianness)) {
 			this.dataView.setUint8(resolvedPosition, value & 0xFF);
 			this.dataView.setUint8(resolvedPosition + 1, (value >>> 8) & 0xFF);
@@ -51,13 +52,14 @@ export default class ByteBufferWriter extends SeekableRandomAccess {
 			this.dataView.setUint8(resolvedPosition + 1, (value >>> 8) & 0xFF);
 			this.dataView.setUint8(resolvedPosition + 2, value & 0xFF);
 		}
-		this.skip(3);
+
+		this.advanceIfUnspecified(3, position);
 	}
 
 	public writeUint32(value: number, position: Nullable<number> = null, endianness: Nullable<Endian> = null): void {
-		const resolvedPosition: number = this.resolvePosition(position, 4);
+		const resolvedPosition: number = this.resolvePositionForCapacity(position, 4);
 		this.dataView.setUint32(resolvedPosition, value, this.isLittleEndian(endianness));
-		this.skip(4);
+		this.advanceIfUnspecified(4, position);
 	}
 
 	private isLittleEndian(endianness: Nullable<Endian>): boolean {

@@ -26,7 +26,7 @@ class ByteBuffer implements Disposable.Target {
 		return new StringByteEncoder(string).encode(textEncoding);
 	};
 
-	public readonly data: Uint8Array;
+	private readonly data: Uint8Array;
 	private readonly viewSet: Set<ByteBuffer.View>;
 
 	public constructor(data: Uint8Array) {

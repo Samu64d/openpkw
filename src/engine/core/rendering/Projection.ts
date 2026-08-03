@@ -21,6 +21,7 @@ export default class Projection {
 		if (nearDistance <= 0 || farDistance <= 0 || farDistance <= nearDistance) {
 			throw new Error("Invalid distance values.");
 		}
+
 		this.aspectRatio = aspectRatio;
 		this.fieldOfView = fieldOfView;
 		this.nearDistance = nearDistance;
