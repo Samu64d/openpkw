@@ -2,21 +2,21 @@
 // TextFileResource.ts
 //
 
-import Encoding from "../../io/file/TextEncoding.ts";
+import TextEncoding from "../../memory/TextEncoding.ts";
 import File from "../../io/file/File.ts";
 import Text from "../resource/Text.ts";
 import Loader from "./Loader.ts";
 
 export default class TextFileLoader implements Loader<string, Text> {
 
-	private readonly encoding: Encoding;
+	private readonly textEncoding: TextEncoding;
 
-	public constructor(encoding: Encoding = Encoding.UTF_8) {
-		this.encoding = encoding;
+	public constructor(encoding: TextEncoding = TextEncoding.UTF_8) {
+		this.textEncoding = encoding;
 	}
 
 	public load(path: string): Text {
-		const fileContent: string = File.readText(path, this.encoding);
+		const fileContent: string = File.readText(path, this.textEncoding);
 		return new Text(fileContent);
 	}
 

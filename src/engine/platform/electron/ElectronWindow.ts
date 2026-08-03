@@ -166,7 +166,7 @@ class ElectronWindow implements Disposable.Target {
 	}
 
 	public minimizeOrRestore(): boolean {
-		if (!this.windowObject.isMinimized()) {
+		if (this.windowObject.isMinimized() == false) {
 			this.minimize();
 			return true;
 		} else {
@@ -176,7 +176,7 @@ class ElectronWindow implements Disposable.Target {
 	}
 
 	public maximizeOrRestore(): boolean {
-		if (!this.windowObject.isMaximized()) {
+		if (this.windowObject.isMaximized() == false) {
 			this.maximize();
 			return true;
 		} else {
@@ -221,7 +221,7 @@ class ElectronWindow implements Disposable.Target {
 	}
 
 	public dispose(): void {
-		if (!this.windowObject.isDestroyed()) {
+		if (this.windowObject.isDestroyed() == false) {
 			this.windowObject.destroy();
 		}
 	}

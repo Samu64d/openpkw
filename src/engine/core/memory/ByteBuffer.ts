@@ -3,6 +3,8 @@
 //
 
 import Disposable from "../reflection/decorators/Disposable.ts";
+import TextEncoding from "./TextEncoding.ts";
+import StringByteEncoder from "./StringByteEncoder.ts";
 
 @Disposable()
 class ByteBuffer implements Disposable.Target {
@@ -11,108 +13,75 @@ class ByteBuffer implements Disposable.Target {
 		if (size < 1) {
 			throw new Error("Size value must be at least 1.");
 		}
-		const buffer = Buffer.alloc(size, fillValue);
-		return new ByteBuffer(buffer);
-	};
-
-	public static readonly ALLOCATE_UNSAFE: (size: number) => ByteBuffer = (size: number): ByteBuffer => {
-		if (size < 1) {
-			throw new Error("Size value must be at least 1.");
-		}
-		const buffer = Buffer.allocUnsafe(size);
-		return new ByteBuffer(buffer);
-	};
-
-	public static readonly FROM_SOURCE: (source: Buffer) => ByteBuffer = (source: Buffer): ByteBuffer => {
-		const buffer: Buffer = Buffer.from(source);
-		return new ByteBuffer(buffer);
+		const data: Uint8Array = new Uint8Array(size);
+		data.fill(fillValue);
+		return new ByteBuffer(data);
 	};
 
 	public static readonly FROM_ARRAY: (array: number[]) => ByteBuffer = (array: number[]): ByteBuffer => {
-		const buffer: Buffer = Buffer.from(array);
-		return new ByteBuffer(buffer);
+		return new ByteBuffer(new Uint8Array(array));
 	};
 
-	private readonly buffer: Buffer;
+	public static readonly FROM_STRING: (string: string, textEncoding: TextEncoding) => ByteBuffer = (string: string, textEncoding: TextEncoding): ByteBuffer => {
+		return new StringByteEncoder(string).encode(textEncoding);
+	};
+
+	public readonly data: Uint8Array;
 	private readonly viewSet: Set<ByteBuffer.View>;
 
-	protected constructor(buffer: Buffer) {
-		this.buffer = buffer;
+	public constructor(data: Uint8Array) {
+		this.data = data;
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
 
+	public unsafeGetData(): Uint8Array {
+		return this.data;
+	}
+
 	public getSize(): number {
-		return this.buffer.length;
+		return this.data.length;
 	}
 
-	public unsafeGetBuffer(): Buffer {
-		return this.buffer;
+	public isInBounds(position: number, length: number): boolean {
+		return position >= 0 && length >= 0 && position <= this.getSize() - length;
 	}
 
-	public get(offset: number): number {
-		if (!this.isInBounds(offset, 1)) {
-			throw new Error("Out of bounds access.");
-		}
-
-		return this.buffer[offset];
+	public get(index: number): number {
+		return this.data[index];
 	}
 
-	public set(offset: number, value: number): void {
-		if (!this.isInBounds(offset, 1)) {
-			throw new Error("Out of bounds access.");
-		}
-
-		this.buffer[offset] = value;
+	public set(index: number, value: number): number {
+		return this.data[index] = value;
 	}
 
-	public isInBounds(offset: number, length: number): boolean {
-		return offset >= 0 && length >= 0 && offset <= this.getSize() - length;
-	}
-
-	public fill(value: number): void {
-		this.buffer.fill(value);
+	public fill(fillValue: number): void {
+		this.data.fill(fillValue);
 	}
 
 	public view(start: number, end: number): ByteBuffer.View {
-		if (!this.isInBounds(start, end - start)) {
+		if (this.isInBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
-		const view: ByteBuffer.View = new ByteBuffer.View(this.buffer.subarray(start, end), this);
+		const subBuffer: Uint8Array = this.data.subarray(start, end);
+		const view: ByteBuffer.View = new ByteBuffer.View(subBuffer, this);
 		this.viewSet.add(view);
 		return view;
 	}
 
-	public subBuffer(start: number, end: number): ByteBuffer {
-		if (!this.isInBounds(start, end - start)) {
-			throw new Error("Out of bounds access.");
-		}
-
-		return ByteBuffer.FROM_SOURCE(this.buffer.subarray(start, end));
-	}
-
-	public subHead(end: number): ByteBuffer {
-		return this.subBuffer(0, end);
-	}
-
-	public subTail(start: number): ByteBuffer {
-		return this.subBuffer(start, this.buffer.length);
-	}
-
 	public copyTo(byteBuffer: ByteBuffer): void {
-		if (byteBuffer.buffer.length < this.buffer.length) {
+		if (byteBuffer.getSize() < this.getSize()) {
 			throw new Error("Destination buffer size is too small.");
 		}
 
-		this.buffer.copy(byteBuffer.buffer);
+		for (let i = 0; i < this.data.length; i++) {
+			byteBuffer.data[i] = this.data[i];
+		}
 	}
 
 	public clone(): ByteBuffer {
-		return ByteBuffer.FROM_SOURCE(this.buffer);
-	}
-
-	public equals(other: ByteBuffer): boolean {
-		return this.buffer.equals(other.buffer);
+		const buffer: Uint8Array = new Uint8Array(this.data);
+		return new ByteBuffer(buffer);
 	}
 
 	public dispose(): void {
@@ -133,7 +102,7 @@ namespace ByteBuffer {
 
 		private readonly parent: ByteBuffer;
 
-		public constructor(buffer: Buffer, parent: ByteBuffer) {
+		public constructor(buffer: Uint8Array, parent: ByteBuffer) {
 			super(buffer);
 			this.parent = parent;
 		}

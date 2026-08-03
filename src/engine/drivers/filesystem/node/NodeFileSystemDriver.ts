@@ -4,31 +4,40 @@
 
 import * as FS from "node:fs";
 
+import TextEncoding from "../../../core/memory/TextEncoding.ts";
 import ByteBuffer from "../../../core/memory/ByteBuffer.ts";
-import ErrorInspect from "../../../core/reflection/error/ErrorInspect.ts";
-import TextEncoding from "../../../core/io/file/TextEncoding.ts";
-import OpenMode from "../../../core/io/file/OpenMode.ts";
 import AccessRight from "../../../core/io/file/AccessRight.ts";
-import FileDescriptor from "../../../core/io/file/FileDescriptor.ts";
+import OpenMode from "../../../core/io/file/OpenMode.ts";
 import FileSystemDriver from "../../../core/io/file/FileSystemDriver.ts";
+import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
+import ErrorInspect from "../../../core/reflection/error/ErrorInspect.ts";
+import Disposable from "../../../core/reflection/decorators/Disposable.ts";
 
+@Disposable()
 export default class NodeFileSystemDriver extends FileSystemDriver {
 
-	private static readonly TEXT_ENCODING_MAP: Record<TextEncoding, BufferEncoding> = {
+	private static readonly TEXT_ENCODING_MAP: Readonly<Record<TextEncoding, BufferEncoding>> = {
 		[TextEncoding.ASCII]: "ascii",
 		[TextEncoding.UTF_8]: "utf8",
 		[TextEncoding.UTF_16]: "utf16le"
 	};
 
-	private static readonly OPEN_MODE_MAP: Record<OpenMode, string> = {
+	private static readonly OPEN_MODE_MAP: Readonly<Record<OpenMode, string>> = {
 		[OpenMode.READ]: "r",
 		[OpenMode.WRITE]: "w",
 		[OpenMode.READ_WRITE]: "r+"
 	};
 
+	private fileHandleNextId: number;
+	private fileHandleMap: Map<ResourceHandle, number>;
+
 	public constructor() {
 		super();
+		this.fileHandleNextId = 0;
+		this.fileHandleMap = new Map<ResourceHandle, number>();
 	}
+
+	public override init(): void { }
 
 	public override getAccessRight(path: string): AccessRight {
 		let accessRight: AccessRight = AccessRight.NONE;
@@ -56,52 +65,77 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 
 	public override getFileSize(path: string): number {
 		const stats: FS.Stats = this.getStat(path);
-		if (stats.isFIFO()) {
-			throw new Error("Element is not a file.");
+		if (stats.isFile() == false) {
+			throw new Error("Element at path is not a file.");
 		}
 		return stats.size;
 	}
 
 	public override readFile(path: string): ByteBuffer {
-		return ByteBuffer.FROM_SOURCE(this.readBinaryFile(path));
+		return new ByteBuffer(this.readBinaryFile(path));
 	}
 
 	public override readTextFile(path: string, textEncoding: TextEncoding = TextEncoding.UTF_8): string {
-		return this.readBinaryFile(path).toString(this.mapTextEncoding(textEncoding));
+		return this.readDecodeTextFile(path, this.mapTextEncoding(textEncoding));
 	}
 
 	public override writeFile(path: string, byteBuffer: ByteBuffer, create: boolean = true): void {
-		this.writeBinaryFile(path, byteBuffer.unsafeGetBuffer(), create);
+		this.writeBinaryFile(path, byteBuffer.unsafeGetData(), create);
 	}
 
 	public override writeTextFile(path: string, text: string, create: boolean = true, encoding: TextEncoding = TextEncoding.UTF_8): void {
 		this.writeBinaryFile(path, Buffer.from(text, this.mapTextEncoding(encoding)), create);
 	}
 
-	public override openFile(path: string, mode: OpenMode, textEncoding: TextEncoding): FileDescriptor {
+	public override isValidFD(fileHandle: ResourceHandle): boolean {
+		const fd: number = this.accessFileHandle(fileHandle);
+		if (fd == -1) {
+			return false;
+		}
+
 		try {
-			const fd: number = FS.openSync(path, this.mapOpenMode(mode), this.mapTextEncoding(textEncoding));
-			return new FileDescriptor(fd);
+			FS.fstatSync(fd);
+			return true;
 		} catch (e: unknown) {
-			throw new Error("Cannot open file");
+			return false;
 		}
 	}
 
-	public override read(fileDescriptor: FileDescriptor, byteBuffer: ByteBuffer, offset: number, length: number, position: number): void {
+	public override openFD(path: string, mode: OpenMode): ResourceHandle {
 		try {
-			const fd: number = fileDescriptor.getId();
-			FS.readSync(fd, byteBuffer.unsafeGetBuffer(), offset, length, position);
+			const fd: number = FS.openSync(path, this.mapOpenMode(mode));
+			return this.registerFileHandle(fd);
 		} catch (e: unknown) {
-			throw new Error("Cannot read file.");
+			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));
 		}
 	}
 
-	public override closeFile(fileDescriptor: FileDescriptor): void {
+	public override readFD(fileHandle: ResourceHandle, position: number, length: number, buffer: ByteBuffer, bufferPosition: number): void {
 		try {
-			const fd: number = fileDescriptor.getId();
+			const fd: number = this.accessFileHandle(fileHandle);
+			FS.readSync(fd, buffer.unsafeGetData(), bufferPosition, length, position);
+		} catch (e: unknown) {
+			throw new Error("Cannot read from file.");
+		}
+	}
+
+	public override writeFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void {
+		try {
+			const fd: number = this.accessFileHandle(fileHandle);
+			FS.writeSync(fd, byteBuffer.unsafeGetData(), bufferPosition, length, position);
+		} catch (e: unknown) {
+			throw new Error("Cannot write to file.");
+		}
+	}
+
+	public override closeFD(fileHandle: ResourceHandle): void {
+		try {
+			const fd: number = this.accessFileHandle(fileHandle);
 			FS.closeSync(fd);
 		} catch (e: unknown) {
-			throw new Error("Cannot open file");
+			throw new Error("Cannot close file.");
+		} finally {
+			this.unregisterFileHandle(fileHandle);
 		}
 	}
 
@@ -118,6 +152,8 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 		}
 	}
 
+	public override dispose(): void { }
+
 	private mapTextEncoding(textEncoding: TextEncoding): BufferEncoding {
 		return NodeFileSystemDriver.TEXT_ENCODING_MAP[textEncoding];
 	}
@@ -128,14 +164,13 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 
 	private getStat(path: string): FS.Stats {
 		try {
-			const stats: FS.Stats = FS.statSync(path);
-			return stats;
+			return FS.statSync(path);
 		} catch (e: unknown) {
-			throw new Error("Cannot access element stats.");
+			throw new Error("Cannot access stats.");
 		}
 	}
 
-	private readBinaryFile(path: string): Buffer {
+	private readBinaryFile(path: string): Uint8Array {
 		try {
 			return FS.readFileSync(path, {
 				encoding: null
@@ -145,27 +180,51 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 		}
 	}
 
-	private writeBinaryFile(path: string, data: Buffer, create: boolean): void {
+	private readDecodeTextFile(path: string, encoding: BufferEncoding): string {
+		try {
+			return FS.readFileSync(path, {
+				encoding: encoding
+			});
+		} catch (e: unknown) {
+			throw new Error("Cannot read from file.");
+		}
+	}
+
+	private writeBinaryFile(path: string, target: Uint8Array, create: boolean): void {
 		try {
 			if (create) {
-				FS.writeFileSync(path, data, {
+				FS.writeFileSync(path, target, {
 					flag: "w",
 					encoding: null
 				});
 			} else {
-				const fileDescriptor: number = FS.openSync(path, "r+");
+				const fd: number = FS.openSync(path, "r+");
 				try {
-					FS.ftruncateSync(fileDescriptor, 0);
-					FS.writeFileSync(fileDescriptor, data, {
+					FS.ftruncateSync(fd, 0);
+					FS.writeFileSync(fd, target, {
 						encoding: null
 					});
 				} finally {
-					FS.closeSync(fileDescriptor);
+					FS.closeSync(fd);
 				}
 			}
 		} catch (e: unknown) {
 			throw new Error("Cannot write to file.");
 		}
+	}
+
+	private registerFileHandle(fd: number): ResourceHandle {
+		const fileHandle: number = this.fileHandleNextId++;
+		this.fileHandleMap.set(fileHandle, fd);
+		return fileHandle;
+	}
+
+	private accessFileHandle(fileHandle: ResourceHandle): number {
+		return this.fileHandleMap.get(fileHandle) ?? -1;
+	}
+
+	private unregisterFileHandle(fileHandle: ResourceHandle): void {
+		this.fileHandleMap.delete(fileHandle);
 	}
 
 }

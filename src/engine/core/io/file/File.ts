@@ -2,56 +2,57 @@
 // File.ts
 //
 
+import TextEncoding from "../../memory/TextEncoding.ts";
 import ByteBuffer from "../../memory/ByteBuffer.ts";
-import TextEncoding from "./TextEncoding.ts";
-import OpenMode from "./OpenMode.ts";
+import ResourceHandle from "../../interop/ResourceHandle.ts";
+import DriverRegistry from "../../interop/DriverRegistry.ts";
 import AccessRight from "./AccessRight.ts";
-import FileDescriptor from "./FileDescriptor.ts";
+import OpenMode from "./OpenMode.ts";
 import FileHandler from "./FileHandler.ts";
 import FileSystemDriver from "./FileSystemDriver.ts";
 
 export default class File {
 
-	public static exists(path: string): boolean {
-		return FileSystemDriver.getActiveDriver().existsFile(path);
+	public static getAccessRight(path: string): AccessRight {
+		return DriverRegistry.get(FileSystemDriver).getAccessRight(path);
 	}
 
-	public static getAccessRight(path: string): AccessRight {
-		return FileSystemDriver.getActiveDriver().getAccessRight(path);
+	public static exists(path: string): boolean {
+		return DriverRegistry.get(FileSystemDriver).existsFile(path);
 	}
 
 	public static getSize(path: string): number {
-		return FileSystemDriver.getActiveDriver().getFileSize(path);
+		return DriverRegistry.get(FileSystemDriver).getFileSize(path);
 	}
 
 	public static read(path: string): ByteBuffer {
-		return FileSystemDriver.getActiveDriver().readFile(path);
+		return DriverRegistry.get(FileSystemDriver).readFile(path);
 	}
 
 	public static readText(path: string, textEncoding: TextEncoding): string {
-		return FileSystemDriver.getActiveDriver().readTextFile(path, textEncoding);
+		return DriverRegistry.get(FileSystemDriver).readTextFile(path, textEncoding);
 	}
 
 	public static write(path: string, byteBuffer: ByteBuffer, create: boolean): void {
-		FileSystemDriver.getActiveDriver().writeFile(path, byteBuffer, create);
+		DriverRegistry.get(FileSystemDriver).writeFile(path, byteBuffer, create);
 	}
 
 	public static writeText(path: string, text: string, create: boolean, textEncoding: TextEncoding): void {
-		FileSystemDriver.getActiveDriver().writeTextFile(path, text, create, textEncoding);
+		DriverRegistry.get(FileSystemDriver).writeTextFile(path, text, create, textEncoding);
 	}
 
-	public static open(path: string, mode: OpenMode, textEncoding: TextEncoding): FileHandler {
+	public static open(path: string, mode: OpenMode): FileHandler {
 		try {
-			const fileDescriptor: FileDescriptor = FileSystemDriver.getActiveDriver().openFile(path, mode, textEncoding);
-			const size: number = FileSystemDriver.getActiveDriver().getFileSize(path);
-			return new FileHandler(path, fileDescriptor, size, mode);
+			const fileHandle: ResourceHandle = DriverRegistry.get(FileSystemDriver).openFD(path, mode);
+			const size: number = DriverRegistry.get(FileSystemDriver).getFileSize(path);
+			return new FileHandler(fileHandle, size, mode);
 		} catch (e: unknown) {
-			throw new Error("Cannot open file.");
+			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));
 		}
 	}
 
 	public static move(sourcePath: string, destinationPath: string): void {
-		FileSystemDriver.getActiveDriver().moveFile(sourcePath, destinationPath);
+		DriverRegistry.get(FileSystemDriver).moveFile(sourcePath, destinationPath);
 	}
 
 }

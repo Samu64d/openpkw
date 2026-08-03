@@ -45,7 +45,7 @@ export default class DataGrid<T> extends DiscreteField implements DataAccessor<D
 	}
 
 	public copyFrom(dataGrid: DataGrid<T>): void {
-		if (!this.equals(dataGrid)) {
+		if (this.equals(dataGrid) == false) {
 			throw new Error("Cannot copy source into destination: grid sizes do not match.");
 		}
 

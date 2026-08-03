@@ -2,27 +2,36 @@
 // Logger.ts
 //
 
-import * as Fs from "fs";
+import TextEncoding from "../../memory/TextEncoding.ts";
+import ByteBuffer from "../../memory/ByteBuffer.ts";
+import OpenMode from "../file/OpenMode.ts";
+import File from "../file/File.ts";
+import FileHandler from "../file/FileHandler.ts";
+import LogLevel from "./LogLevel.ts";
+import StringByteEncoder from "../../memory/StringByteEncoder.ts";
 
-//TODO: Stub
 export default class Logger {
 
 	private readonly filePath: string;
-	private readonly handler: number;
+	private readonly handler: FileHandler;
 
 	public constructor(filePath: string) {
 		this.filePath = filePath;
-		this.handler = Fs.openSync(this.filePath, Fs.constants.O_RDWR | Fs.constants.O_CREAT | Fs.constants.O_TRUNC);
-		this.log("Starting logger at " + new Date().toISOString());
+		this.handler = File.open(filePath, OpenMode.WRITE);
+		this.log(LogLevel.INFO, "Starting logger at " + new Date().toISOString());
 	}
 
-	public log(text: string): void {
-		if (this.handler != -1) {
-			Fs.writeFileSync(this.handler, text + "\n", {
-				mode: Fs.constants.O_APPEND
-			});
-		}
+	public getFilePath(): string {
+		return this.filePath;
+	}
 
+	public log(logLevel: LogLevel, text: string): void {
+		if (this.handler.isValid() == true) {
+			const logText: string = "[" + logLevel.toString() + "] " + text + "\n";
+			const encoder: StringByteEncoder = new StringByteEncoder(logText);
+			const byteBuffer: ByteBuffer = encoder.encode();
+			this.handler.write(byteBuffer.getSize(), byteBuffer);
+		}
 	}
 
 }

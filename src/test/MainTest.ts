@@ -3,10 +3,18 @@
 //
 
 import Nullable from "../engine/core/common/Nullable.ts";
+import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
+import ByteBufferReader from "../engine/core/memory/ByteBufferReader.ts";
+import FileSystemDriver from "../engine/core/io/file/FileSystemDriver.ts";
+import LogLevel from "../engine/core/io/log/LogLevel.ts";
 import Logger from "../engine/core/io/log/Logger.ts";
+import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
+import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import GLRenderer from "./GLRenderer.ts";
 
-/** @tutorial test class */
+// Temp
+DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
+
 export default class MainTest {
 
 	public static readonly instance: MainTest = new MainTest();
@@ -47,7 +55,7 @@ export default class MainTest {
 	}
 
 	public initRenderer(): void {
-		this.logger.log("Run init renderer");
+		//this.logger.log(LogLevel.INFO, "Run init renderer");
 
 		const canvasElement: Nullable<HTMLCanvasElement> = document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
 		if (canvasElement == null) {
@@ -66,11 +74,25 @@ export default class MainTest {
 	}
 
 	public initOther(): void {
-		this.logger.log("Run init other");
+		this.logger.log(LogLevel.INFO, "Run init other");
+
+		const t0 = performance.now();
+		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(10000000, 22);
+		const byteBufferReader: ByteBufferReader = new ByteBufferReader(byteBuffer);
+		for (let i = 0; i < byteBuffer.getSize(); i++) {
+			byteBufferReader.readUint8();
+		}
+		const t1 = performance.now();
+
+		const t2 = performance.now();
+		const buffer: Buffer = Buffer.alloc(10000000, 22);
+		for (let i = 0; i < byteBuffer.getSize(); i++) {
+			buffer.readInt8(i);
+		}
+		const t3 = performance.now();
+
+		alert((t1 - t0) + " " + (t3 - t2));
 	}
 
 }
 
-import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
-import FileSystemDriver from "../engine/core/io/file/FileSystemDriver.ts";
-FileSystemDriver.registerDriver(new NodeFileSystemDriver());

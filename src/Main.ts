@@ -84,6 +84,7 @@ export default class Main {
 		this.mainWindow.setIcon(Main.MAIN_WINDOW_ICON_PATH);
 		this.mainWindow.center();
 		this.mainWindow.loadWebContents(Main.MAIN_WINDOW_CONTENTS_PATH);
+		this.mainWindow.openDevTools(true)
 	}
 
 	private registerAppEventListeners(): void {
