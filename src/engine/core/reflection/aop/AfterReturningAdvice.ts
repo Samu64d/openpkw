@@ -14,7 +14,7 @@ class AfterReturningAdvice<T extends Aspect, M extends AfterReturningAdvice.Acce
 	public override wrap(method: M): M {
 		const aspect: T = this.aspect;
 		return function (this: ThisParameterType<M>, ...args: Parameters<T>): ReturnType<M> {
-			const returnValue = method.apply(this, args);
+			const returnValue: ReturnType<M> = method.apply(this, args);
 			aspect.apply(this, args);
 			return returnValue;
 		} as unknown as M;

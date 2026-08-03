@@ -12,6 +12,10 @@ export default class Area {
 	private readonly value: number;
 
 	public constructor(width: number, height: number) {
+		if (width < 0 || height < 0) {
+			throw new Error("Width and height must be non negative values.");
+		}
+
 		this.width = width;
 		this.height = height;
 		this.value = width * height;

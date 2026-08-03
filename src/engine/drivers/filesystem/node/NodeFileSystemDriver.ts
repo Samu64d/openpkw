@@ -19,7 +19,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 	private static readonly TEXT_ENCODING_MAP: Readonly<Record<TextEncoding, BufferEncoding>> = {
 		[TextEncoding.ASCII]: "ascii",
 		[TextEncoding.UTF_8]: "utf8",
-		[TextEncoding.UTF_16]: "utf16le"
+		[TextEncoding.UTF_16LE]: "utf16le"
 	};
 
 	private static readonly OPEN_MODE_MAP: Readonly<Record<OpenMode, string>> = {
@@ -101,9 +101,9 @@ export default class NodeFileSystemDriver extends FileSystemDriver {
 		}
 	}
 
-	public override openFD(path: string, mode: OpenMode): ResourceHandle {
+	public override openFD(path: string, openMode: OpenMode): ResourceHandle {
 		try {
-			const fd: number = FS.openSync(path, this.mapOpenMode(mode));
+			const fd: number = FS.openSync(path, this.mapOpenMode(openMode));
 			return this.registerFileHandle(fd);
 		} catch (e: unknown) {
 			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));

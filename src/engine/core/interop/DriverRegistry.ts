@@ -9,17 +9,18 @@ export default class DriverRegistry {
 
 	private static readonly driverMap: Map<ClassType<Driver>, Driver> = new Map<ClassType<Driver>, Driver>();
 
-	public static has<T extends Driver>(type: ClassType<T>): boolean {
+	public static isRegistered<T extends Driver>(type: ClassType<T>): boolean {
 		return this.driverMap.has(type);
 	}
 
 	public static register<T extends Driver>(type: ClassType<T>, driver: T): void {
+		driver.init();
 		this.driverMap.set(type, driver);
 	}
 
 	public static get<T extends Driver>(type: ClassType<T>): T {
-		if (this.has(type) == false) {
-			throw new Error("Trying get invalid registered driver.");
+		if (this.isRegistered(type) == false) {
+			throw new Error("Trying get a driver that is not registered.");
 		}
 		return this.driverMap.get(type) as T;
 	}

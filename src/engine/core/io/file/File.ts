@@ -41,11 +41,11 @@ export default class File {
 		DriverRegistry.get(FileSystemDriver).writeTextFile(path, text, create, textEncoding);
 	}
 
-	public static open(path: string, mode: OpenMode): FileHandler {
+	public static open(path: string, openMode: OpenMode): FileHandler {
 		try {
-			const fileHandle: ResourceHandle = DriverRegistry.get(FileSystemDriver).openFD(path, mode);
+			const fileHandle: ResourceHandle = DriverRegistry.get(FileSystemDriver).openFD(path, openMode);
 			const size: number = DriverRegistry.get(FileSystemDriver).getFileSize(path);
-			return new FileHandler(fileHandle, size, mode);
+			return new FileHandler(fileHandle, size, openMode);
 		} catch (e: unknown) {
 			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));
 		}

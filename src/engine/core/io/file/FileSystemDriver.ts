@@ -31,7 +31,7 @@ export default abstract class FileSystemDriver implements Driver {
 
 	public abstract isValidFD(fileHandle: ResourceHandle): boolean;
 
-	public abstract openFD(path: string, mode: OpenMode): ResourceHandle;
+	public abstract openFD(path: string, openMode: OpenMode): ResourceHandle;
 
 	public abstract readFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void;
 

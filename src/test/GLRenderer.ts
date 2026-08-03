@@ -146,7 +146,7 @@ export default class GLRenderer {
 
 		// Model view
 		const modelViewLocation = this.context.getUniformLocation(this.program.getProgramObject(), "modelView");
-		const data = multiply(translate(0.0, Math.sin(time / 40) * 0.1, -6.0), rot(0.3, time / 100, 0.0));
+		const data = multiply(translate(Math.cos(time / 40), Math.sin(time / 40), -6.0), rot(0.3, time / 100, 0.0));
 		this.context.uniformMatrix4fv(modelViewLocation, false, data);
 
 		// Projection
