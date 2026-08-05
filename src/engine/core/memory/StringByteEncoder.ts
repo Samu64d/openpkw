@@ -34,7 +34,7 @@ export default class StringByteEncoder {
 
 	private encodeAscii(): ByteBuffer {
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(this.string.length);
-		for (let i = 0; i < this.string.length; i++) {
+		for (let i: number = 0; i < this.string.length; i++) {
 			const charCode: number = this.string.charCodeAt(i);
 			byteBuffer.set(i, charCode & 0x7F);
 		}
@@ -44,7 +44,7 @@ export default class StringByteEncoder {
 	private encodeUTF8(): ByteBuffer {
 		const array: Uint8Array = this.textEncoder.encode(this.string);
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(array.length);
-		for (let i = 0; i < array.length; i++) {
+		for (let i: number = 0; i < array.length; i++) {
 			byteBuffer.set(i, array[i]);
 		}
 		return byteBuffer;
@@ -52,7 +52,7 @@ export default class StringByteEncoder {
 
 	private encodeUTF16LE(): ByteBuffer {
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(this.string.length * 2);
-		for (let i = 0; i < this.string.length; i++) {
+		for (let i: number = 0; i < this.string.length; i++) {
 			const position: number = i * 2;
 			const charCode: number = this.string.charCodeAt(i);
 			const low: number = charCode & 0xFF;

@@ -7,13 +7,14 @@ import PNGChunkDecoder from "../PNGChunkDecoder.ts";
 
 export default class IHDRChunkDecoder extends PNGChunkDecoder {
 
-	public static readonly NAME_SIGNATURE: number = 0x49484452;
+	public static override readonly SIGNATURE: number = 0x49484452;
 
 	public constructor(chunk: PNGChunk) {
 		super(chunk);
 	}
 
 	public override decode(): void {
+		alert("start decode")
 
 		const size: number = this.read(position, 4);
 		const name: number = this.read(position + 4, 4);

@@ -7,7 +7,7 @@ import PNGChunk from "./PNGChunk.ts";
 
 export default abstract class PNGChunkDecoder {
 
-	public static readonly SIGNATURE_NAME: number;
+	public static readonly SIGNATURE: number;
 
 	private readonly chunk: PNGChunk;
 	private readonly reader: ByteBufferReader;

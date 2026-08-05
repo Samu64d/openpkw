@@ -13,13 +13,13 @@ export default class PNGChunk {
 	};
 
 	private readonly size: number;
-	private readonly name: number;
+	private readonly signature: number;
 	private readonly data: ByteBuffer;
 	private readonly crc: number;
 
-	public constructor(size: number, name: number, data: ByteBuffer, crc: number) {
+	public constructor(size: number, signature: number, data: ByteBuffer, crc: number) {
 		this.size = size;
-		this.name = name;
+		this.signature = signature;
 		this.data = data;
 		this.crc = crc;
 	}
@@ -28,12 +28,12 @@ export default class PNGChunk {
 		return this.size;
 	}
 
-	public getName(): number {
-		return this.name;
+	public getSignature(): number {
+		return this.signature;
 	}
 
-	public getNameAsString(): string {
-		return PNGChunk.SIGNATURE_NAME_TO_STRING(this.name);
+	public getSignatureAsString(): string {
+		return PNGChunk.SIGNATURE_NAME_TO_STRING(this.signature);
 	}
 
 	public getData(): ByteBuffer {
@@ -45,7 +45,7 @@ export default class PNGChunk {
 	}
 
 	public equals(other: PNGChunk): boolean {
-		return this.size == other.size && this.name == other.name && this.crc == other.crc && this.data.equals(other.data);
+		return this.size == other.size && this.signature == other.signature && this.crc == other.crc && this.data.equals(other.data);
 	}
 
 }

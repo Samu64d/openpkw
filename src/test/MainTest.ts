@@ -4,16 +4,16 @@
 
 import Nullable from "../engine/core/common/Nullable.ts";
 import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
-import ByteBufferReader from "../engine/core/memory/ByteBufferReader.ts";
+import OpenMode from "../engine/core/io/file/OpenMode.ts";
+import File from "../engine/core/io/file/File.ts";
+import FileHandler from "../engine/core/io/file/FileHandler.ts";
 import FileSystemDriver from "../engine/core/io/file/FileSystemDriver.ts";
+import PNGDecoder from "../engine/core/media/codecs/png/PNGDecoder.ts";
+import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
 import LogLevel from "../engine/core/util/logger/LogLevel.ts";
 import Logger from "../engine/core/util/logger/Logger.ts";
-import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
 import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import GLRenderer from "./GLRenderer.ts";
-import FileHandler from "../engine/core/io/file/FileHandler.ts";
-import File from "../engine/core/io/file/File.ts";
-import OpenMode from "../engine/core/io/file/OpenMode.ts";
 
 // Temp
 DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
@@ -58,7 +58,7 @@ export default class MainTest {
 	}
 
 	public initRenderer(): void {
-		//this.logger.log(LogLevel.INFO, "Run init renderer");
+		this.logger.log(LogLevel.INFO, "Run init renderer");
 
 		const canvasElement: Nullable<HTMLCanvasElement> = document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
 		if (canvasElement == null) {
@@ -79,9 +79,11 @@ export default class MainTest {
 	public initOther(): void {
 		this.logger.log(LogLevel.INFO, "Run init other");
 
-		const fileHandler: FileHandler = File.open("./test.txt", OpenMode.READ_WRITE);
+		const fileHandler: FileHandler = File.open("./resources/model/sign_0/sign_0.png", OpenMode.READ);
+		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
+		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
+		pngDecoder.decode();
 
 	}
 
 }
-

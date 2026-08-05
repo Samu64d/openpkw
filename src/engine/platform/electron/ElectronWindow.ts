@@ -202,8 +202,8 @@ class ElectronWindow implements Disposable.Target {
 		this.windowObject.loadFile(filePath);
 	}
 
-	public closeWebContents(): void {
-		this.windowObject.webContents.close();
+	public unloadWebContents(): void {
+		this.windowObject.webContents.loadURL("about:blank");
 	}
 
 	public openDevTools(detach: boolean = false): void {

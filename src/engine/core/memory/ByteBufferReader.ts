@@ -9,7 +9,7 @@ import Endian from "./Endian.ts";
 import ByteBuffer from "./ByteBuffer.ts";
 
 @Disposable()
-export default class ByteBufferReader extends SeekableRandomAccess {
+export default class ByteBufferReader extends SeekableRandomAccess implements Disposable.Target {
 
 	private readonly byteBuffer: ByteBuffer;
 	private readonly defaultEndianness: Endian;

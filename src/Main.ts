@@ -84,6 +84,7 @@ export default class Main {
 		this.mainWindow.setIcon(Main.MAIN_WINDOW_ICON_PATH);
 		this.mainWindow.center();
 		this.mainWindow.loadWebContents(Main.MAIN_WINDOW_CONTENTS_PATH);
+		this.mainWindow.openDevTools(true);
 	}
 
 	private registerAppEventListeners(): void {
@@ -98,7 +99,7 @@ export default class Main {
 		}
 
 		this.mainWindowError = true;
-		this.mainWindow.closeWebContents();
+		this.mainWindow.unloadWebContents();
 
 		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + errorMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
 		this.exit();

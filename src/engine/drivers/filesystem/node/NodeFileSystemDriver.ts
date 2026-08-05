@@ -14,7 +14,7 @@ import ErrorInspect from "../../../core/reflection/error/ErrorInspect.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
 
 @Disposable()
-export default class NodeFileSystemDriver extends FileSystemDriver {
+export default class NodeFileSystemDriver extends FileSystemDriver implements Disposable.Target {
 
 	private static readonly TEXT_ENCODING_MAP: Readonly<Record<TextEncoding, BufferEncoding>> = {
 		[TextEncoding.ASCII]: "ascii",
