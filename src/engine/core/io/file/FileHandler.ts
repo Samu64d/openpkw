@@ -106,6 +106,9 @@ export default class FileHandler extends SeekableRandomAccess implements Disposa
 	}
 
 	private readIntoBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
+		if (length > byteBuffer.getSize()) {
+			throw new Error("Cannot read into buffer: length must be at most size value.");
+		}
 		this.driver.readFD(this.handle, position, length, byteBuffer, 0);
 	}
 
@@ -116,6 +119,9 @@ export default class FileHandler extends SeekableRandomAccess implements Disposa
 	}
 
 	private writeFromBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
+		if (length > byteBuffer.getSize()) {
+			throw new Error("Cannot write from buffer: length must be at most size value.");
+		}
 		this.driver.writeFD(this.handle, position, length, byteBuffer, 0);
 	}
 

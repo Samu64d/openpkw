@@ -17,7 +17,7 @@ export default class Logger {
 	public constructor(filePath: string) {
 		this.filePath = filePath;
 		this.handler = File.open(filePath, OpenMode.WRITE_CREATE);
-		this.log(LogLevel.INFO, "Starting logger at " + new Date().toISOString());
+		this.log(LogLevel.INFO, "Starting log at " + new Date().toISOString());
 	}
 
 	public getFilePath(): string {

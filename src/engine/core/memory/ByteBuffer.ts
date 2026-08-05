@@ -87,6 +87,19 @@ class ByteBuffer implements Disposable.Target {
 		return new ByteBuffer(buffer);
 	}
 
+	public equals(byteBuffer: ByteBuffer): boolean {
+		if (this.data.length != byteBuffer.data.length) {
+			return false;
+		}
+
+		for (let i: number = 0; i < this.data.length; i++) {
+			if (this.data[i] != byteBuffer.data[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public dispose(): void {
 		for (const view of this.viewSet) {
 			view.dispose();
