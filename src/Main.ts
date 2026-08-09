@@ -24,9 +24,9 @@ export default class Main {
 	}
 
 	private static readonly MAIN_WINDOW_ICON_PATH: string = "../resources/icon/AppIcon.ico";
+
 	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
 
-	// Window default configuration
 	private static readonly MAIN_WINDOW_CONFIG: Partial<ElectronWindow.BuildConfig> = {
 		width: 800,
 		height: 600,
@@ -40,8 +40,7 @@ export default class Main {
 	private mainWindowError: boolean = false;
 
 	private constructor() {
-		ElectronProcess.disableSecurityWarnings();
-		this.setupElectronApp();
+		this.setupElectron();
 		this.registerAppEventListeners();
 		this.registerIpcEventListeners();
 	}
@@ -54,7 +53,9 @@ export default class Main {
 		ElectronApp.exit();
 	}
 
-	private setupElectronApp(): void {
+	private setupElectron(): void {
+		ElectronProcess.disableSecurityWarnings();
+
 		// Switches
 		ElectronApp.setSwitch("disable-http-cache");
 		ElectronApp.setSwitch("force-color-profile", "srgb");

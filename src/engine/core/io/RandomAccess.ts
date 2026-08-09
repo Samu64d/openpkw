@@ -9,7 +9,7 @@ export default abstract class RandomAccess {
 
 	public constructor(size: number, resizable: boolean = false) {
 		if (size < 0) {
-			throw new Error("Invalid size value.");
+			throw new Error("Size value must be greater than zero.");
 		}
 
 		this.size = size;

@@ -46,7 +46,6 @@ export default class PNGDecoder implements Decoder<Image> {
 	}
 
 	private collectChunks(): void {
-		alert(this.reader.getSize())
 		this.reader.seek(PNGDecoder.CHUNK_LIST_REGION_START);
 
 
@@ -59,6 +58,7 @@ export default class PNGDecoder implements Decoder<Image> {
 			const crc: number = this.reader.readUint32();
 			const chunk: PNGChunk = new PNGChunk(size, name, data, crc);
 			this.chunkList.push(chunk);
+			alert("Discovered chunk: " + chunk.getSignatureAsString())
 
 			if (name == PNGDecoder.IEND_CHUNK_NAME) {
 				break;

@@ -15,9 +15,9 @@ import Logger from "../engine/core/util/logger/Logger.ts";
 import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import GLRenderer from "./GLRenderer.ts";
 
-// Temp
 DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
 
+/** @test */
 export default class MainTest {
 
 	public static readonly instance: MainTest = new MainTest();
@@ -82,7 +82,7 @@ export default class MainTest {
 		const fileHandler: FileHandler = File.open("./resources/model/sign_0/sign_0.png", OpenMode.READ);
 		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
 		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
-		pngDecoder.decode();
+		//pngDecoder.decode();
 
 	}
 

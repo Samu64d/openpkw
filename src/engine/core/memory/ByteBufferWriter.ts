@@ -4,20 +4,22 @@
 
 import Nullable from "../common/Nullable.ts";
 import SeekableRandomAccess from "../io/SeekableRandomAccess.ts";
+import Disposable from "../reflection/decorators/Disposable.ts";
 import Endian from "./Endian.ts";
 import ByteBuffer from "./ByteBuffer.ts";
 
-export default class ByteBufferWriter extends SeekableRandomAccess {
+@Disposable()
+export default class ByteBufferWriter extends SeekableRandomAccess implements Disposable.Target {
 
 	private readonly byteBuffer: ByteBuffer;
-	private readonly dataView: DataView;
 	private readonly defaultEndianness: Endian;
+	private readonly dataView: DataView;
 
 	public constructor(byteBuffer: ByteBuffer, defaultEndianness: Endian = Endian.LITTLE) {
-		super(byteBuffer.getSize());
+		super(byteBuffer.getSize(), false);
 		this.byteBuffer = byteBuffer;
-		this.dataView = new DataView(byteBuffer.unsafeGetData().buffer, 0, byteBuffer.getSize());
 		this.defaultEndianness = defaultEndianness;
+		this.dataView = new DataView(byteBuffer.unsafeGetData().buffer, 0, byteBuffer.getSize());
 	}
 
 	public getByteBuffer(): ByteBuffer {
@@ -61,6 +63,8 @@ export default class ByteBufferWriter extends SeekableRandomAccess {
 		this.dataView.setUint32(resolvedPosition, value, this.isLittleEndian(endianness));
 		this.advanceIfUnspecified(4, position);
 	}
+
+	public dispose(): void { }
 
 	private isLittleEndian(endianness: Nullable<Endian>): boolean {
 		return (endianness ?? this.defaultEndianness) == Endian.LITTLE;

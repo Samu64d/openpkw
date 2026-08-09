@@ -67,7 +67,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override getFileSize(path: string): number {
 		const stats: FS.Stats = this.getStat(path);
 		if (stats.isFile() == false) {
-			throw new Error("Element at path is not a file.");
+			throw new Error("Element at path exists but is not a file.");
 		}
 		return stats.size;
 	}

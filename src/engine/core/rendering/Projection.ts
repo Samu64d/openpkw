@@ -13,10 +13,10 @@ export default class Projection {
 
 	public constructor(aspectRatio: number, fieldOfView: number, nearDistance: number, farDistance: number) {
 		if (aspectRatio <= 0) {
-			throw new Error("Aspect ratio must be greater than zero.");
+			throw new Error("Aspect ratio value must be greater than zero.");
 		}
 		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
-			throw new Error("Field of view must be between 0 and PI.");
+			throw new Error("Field of view value must be between greater than zero and PI.");
 		}
 		if (nearDistance <= 0 || farDistance <= 0 || farDistance <= nearDistance) {
 			throw new Error("Invalid distance values.");
@@ -37,7 +37,7 @@ export default class Projection {
 
 	public setAspectRatio(aspectRatio: number): void {
 		if (aspectRatio <= 0) {
-			throw new Error("Invalid aspect ratio value.");
+			throw new Error("Aspect ratio value must be greater than zero.");
 		}
 		this.aspectRatio = aspectRatio;
 		this.invalidate();
@@ -49,7 +49,7 @@ export default class Projection {
 
 	public setFieldOfView(fieldOfView: number): void {
 		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
-			throw new Error("Invalid field of view ratio value.");
+			throw new Error("Field of view value must be between greater than zero and PI.");
 		}
 		this.fieldOfView = fieldOfView;
 		this.invalidate();
@@ -86,10 +86,6 @@ export default class Projection {
 		return this.matrix;
 	}
 
-	private invalidate(): void {
-		this.updated = false;
-	}
-
 	private updateMatrix(): void {
 		const near: number = this.nearDistance;
 		const far: number = this.farDistance;
@@ -114,6 +110,10 @@ export default class Projection {
 		this.matrix[15] = 0.0;
 
 		this.updated = true;
+	}
+
+	private invalidate(): void {
+		this.updated = false;
 	}
 
 }

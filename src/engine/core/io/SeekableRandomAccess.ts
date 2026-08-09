@@ -34,14 +34,14 @@ export default abstract class SeekableRandomAccess extends RandomAccess {
 
 	public skip(length: number): void {
 		if (length < 0) {
-			throw new Error("Cannot skip with negative values.");
+			throw new Error("Cannot skip with a negative value.");
 		}
 		this.seek(this.cursor + length);
 	}
 
 	public rewind(length: number): void {
 		if (length < 0) {
-			throw new Error("Cannot rewind with negative values.");
+			throw new Error("Cannot rewind with a negative value.");
 		}
 		this.seek(this.cursor - length);
 	}
