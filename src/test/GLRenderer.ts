@@ -16,8 +16,11 @@ import GLFragmentShader from "../engine/drivers/graphic/gl/GLFragmentShader.ts";
 import GLProgram from "../engine/drivers/graphic/gl/GLProgram.ts";
 import GLContextManager from "../engine/drivers/graphic/gl/GLContextManager.ts";
 import Projection from "../engine/core/rendering/Projection.ts";
+import ObjFileLoader from "../engine/core/resource/loader/ObjLoader.ts";
+import Mesh from "../engine/core/resource/resource/Mesh.ts";
+import GLElementBuffer from "../engine/drivers/graphic/gl/GLElementBuffer.ts";
 
-/** @tutorial */
+/** @test */
 export default class GLRenderer {
 
 	private static readonly VERTEX_DATA: Float32Array = new Float32Array([
@@ -66,6 +69,7 @@ export default class GLRenderer {
 	private vao: Nullable<GLVertexArray>;
 	private texture: Nullable<GLTexture>;
 	private texture2: Nullable<GLTexture>;
+	private mesh: Mesh;
 
 	public constructor(context: WebGL2RenderingContext) {
 		this.context = context;
@@ -74,6 +78,8 @@ export default class GLRenderer {
 		this.vao = null;
 		this.texture = null;
 		this.texture2 = null;
+		const loader = new ObjFileLoader();
+		this.mesh = loader.load("./resources/model/sign_0/sign_0.obj");
 	}
 
 	public init(): void {
@@ -88,14 +94,19 @@ export default class GLRenderer {
 
 		const vbo = new GLVertexBuffer(this.contextManager);
 		vbo.bind();
-		vbo.loadData(GLRenderer.VERTEX_DATA);
+		vbo.loadData(this.mesh.getVertexList());
 		this.context.vertexAttribPointer(0, 3, this.context.FLOAT, false, 5 * 4, 0);
 		this.context.enableVertexAttribArray(0);
 		this.context.vertexAttribPointer(1, 2, this.context.FLOAT, false, 5 * 4, 3 * 4);
 		this.context.enableVertexAttribArray(1);
 
+		const ebo = new GLElementBuffer(this.contextManager);
+		ebo.bind();
+		ebo.loadData(this.mesh.getIndiciesList())
+
 		vao.unbind();
 		vbo.unbind();
+		ebo.unbind();
 
 		const texture = new GLTexture(this.contextManager, this.context.TEXTURE_2D);
 		texture.bind();
@@ -146,7 +157,7 @@ export default class GLRenderer {
 
 		// Model view
 		const modelViewLocation = this.context.getUniformLocation(this.program.getProgramObject(), "modelView");
-		const data = multiply(translate(Math.cos(time / 40), Math.sin(time / 40), -6.0), rot(0.3, time / 100, 0.0));
+		const data = multiply(translate(0.0, -1.0, -14.0), rot(0.3, time / 100, 0.0));
 		this.context.uniformMatrix4fv(modelViewLocation, false, data);
 
 		// Projection
@@ -160,9 +171,9 @@ export default class GLRenderer {
 
 		this.vao.bind();
 		this.texture.bind();
-		this.context.drawArrays(this.context.TRIANGLES, 0, GLRenderer.VERTEX_DATA.length / 5);
+		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
 		this.texture2.bind();
-		this.context.drawArrays(this.context.LINE_STRIP, 0, GLRenderer.VERTEX_DATA.length / 5);
+		this.context.drawElements(this.context.LINES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
 		this.vao.unbind();
 	}
 
