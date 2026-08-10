@@ -1,5 +1,5 @@
 //
-// TextFileResource.ts
+// TextFileLoader.ts
 //
 
 import TextEncoding from "../../memory/TextEncoding.ts";
