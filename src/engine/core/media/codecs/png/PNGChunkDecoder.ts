@@ -9,8 +9,8 @@ export default abstract class PNGChunkDecoder {
 
 	public static readonly SIGNATURE: number;
 
+	protected readonly reader: ByteBufferReader;
 	private readonly chunk: PNGChunk;
-	private readonly reader: ByteBufferReader;
 
 	public constructor(chunk: PNGChunk) {
 		this.chunk = chunk;
