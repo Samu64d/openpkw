@@ -14,6 +14,7 @@ import LogLevel from "../engine/core/util/logger/LogLevel.ts";
 import Logger from "../engine/core/util/logger/Logger.ts";
 import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import GLRenderer from "./GLRenderer.ts";
+import ByteBufferReader from "../engine/core/memory/ByteBufferReader.ts";
 
 DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
 
@@ -79,10 +80,30 @@ export default class MainTest {
 	public initOther(): void {
 		this.logger.log(LogLevel.INFO, "Run init other");
 
+		// Crappy test
+		const byteBuffer2 = ByteBuffer.ALLOCATE(1000010, 12);
+		const reader = new ByteBufferReader(byteBuffer2);
+		const view = new DataView(byteBuffer2.unsafeGetData().buffer);
+
+
+		const t2 = performance.now();
+		for (let i = 0; i < 500000; i++) {
+			view.getUint8(i * 2);
+		}
+		const t3 = performance.now();
+
+				const t0 = performance.now();
+	for (let i = 0; i < 500000; i++) {
+			reader.readUint8(i * 2);
+		}
+		const t1 = performance.now();
+
+		alert((t1 - t0) + " , " + (t3 - t2));
+
 		const fileHandler: FileHandler = File.open("./resources/model/sign_0/sign_0.png", OpenMode.READ);
 		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
 		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
-		//pngDecoder.decode();
+		pngDecoder.decode();
 
 	}
 

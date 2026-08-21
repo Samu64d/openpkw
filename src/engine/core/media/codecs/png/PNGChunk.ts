@@ -8,8 +8,8 @@ import Record from "../../../reflection/decorators/Record.ts";
 @Record()
 export default class PNGChunk {
 
-	private static readonly SIGNATURE_NAME_TO_STRING: (name: number) => string = (name: number): string => {
-		return String.fromCharCode((name >>> 24) & 0xFF, (name >>> 16) & 0xFF, (name >>> 8) & 0xFF, name & 0xFF);
+	private static readonly SIGNATURE_TO_STRING: (signature: number) => string = (signature: number): string => {
+		return String.fromCharCode((signature >>> 24) & 0xFF, (signature >>> 16) & 0xFF, (signature >>> 8) & 0xFF, signature & 0xFF);
 	};
 
 	private readonly size: number;
@@ -32,16 +32,16 @@ export default class PNGChunk {
 		return this.signature;
 	}
 
-	public getSignatureAsString(): string {
-		return PNGChunk.SIGNATURE_NAME_TO_STRING(this.signature);
-	}
-
 	public getData(): ByteBuffer {
 		return this.data;
 	}
 
 	public getCrc(): number {
 		return this.crc;
+	}
+
+	public getSignatureAsString(): string {
+		return PNGChunk.SIGNATURE_TO_STRING(this.signature);
 	}
 
 	public equals(other: PNGChunk): boolean {
