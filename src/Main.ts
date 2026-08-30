@@ -9,7 +9,6 @@ import ElectronApp from "./engine/platform/electron/ElectronApp.ts";
 import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
 import ElectronIPC from "./engine/platform/electron/ElectronIPC.ts";
 import ElectronWindow from "./engine/platform/electron/ElectronWindow.ts";
-import ApplicationConfig from "./config/ApplicationConfig.ts";
 
 export default class Main {
 
@@ -22,6 +21,8 @@ export default class Main {
 
 		return Main.instance;
 	}
+
+	public static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
 
 	private static readonly MAIN_WINDOW_ICON_PATH: string = "../resources/icon/AppIcon.ico";
 
@@ -61,7 +62,7 @@ export default class Main {
 		ElectronApp.setSwitch("force-color-profile", "srgb");
 
 		// Paths
-		ElectronApp.setWebCachePath(NodeOS.getHomeDir() + ApplicationConfig.APP_WEB_CACHE_FOLDER);
+		ElectronApp.setWebCachePath(NodeOS.getHomeDir() + Main.APP_WEB_CACHE_FOLDER);
 	}
 
 	private onWindowAllClosedListener(): void {
@@ -85,7 +86,6 @@ export default class Main {
 		this.mainWindow.setIcon(Main.MAIN_WINDOW_ICON_PATH);
 		this.mainWindow.center();
 		this.mainWindow.loadWebContents(Main.MAIN_WINDOW_CONTENTS_PATH);
-		this.mainWindow.openDevTools(true);
 	}
 
 	private registerAppEventListeners(): void {

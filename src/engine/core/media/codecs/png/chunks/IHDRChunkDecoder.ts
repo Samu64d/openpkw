@@ -15,9 +15,6 @@ export default class IHDRChunkDecoder extends PNGChunkDecoder {
 	}
 
 	public override decode(): void {
-		alert("start decode")
-		alert(this.getChunk().getData().unsafeGetData().toString())
-
 		const width: number = this.reader.readUint32(null, Endian.BIG);
 		const height: number = this.reader.readUint32(null, Endian.BIG);
 		const depth: number = this.reader.readUint8();
@@ -25,8 +22,7 @@ export default class IHDRChunkDecoder extends PNGChunkDecoder {
 		const compressionType: number = this.reader.readUint8();
 		const filterType: number = this.reader.readUint8();
 		const interlaceType: number = this.reader.readUint8();
-
-		alert("size: " + width + "x" + height + ", depth: " + depth + ", colorType: " + colorType + "compressionType: " + compressionType + ", filterType: " + filterType + ", interlaceType: " + interlaceType);
+		//alert("size: " + width + "x" + height + ", depth: " + depth + ", colorType: " + colorType + ", compressionType: " + compressionType + ", filterType: " + filterType + ", interlaceType: " + interlaceType);
 	}
 
 }

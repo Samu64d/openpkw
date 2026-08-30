@@ -7,10 +7,10 @@ import ByteBuffer from "../../../memory/ByteBuffer.ts";
 import ByteBufferReader from "../../../memory/ByteBufferReader.ts";
 import Image from "../../../resource/resource/Image.ts";
 import Decoder from "../../Decoder.ts";
-import IHDRChunkDecoder from "./chunks/IHDRChunkDecoder.ts";
 import IENDChunkDecoder from "./chunks/IENDChunkDecoder.ts";
-import PNGChunk from "./PNGChunk.ts";
+import IHDRChunkDecoder from "./chunks/IHDRChunkDecoder.ts";
 import IDATChunkDecoder from "./chunks/IDATChunkDecoder.ts";
+import PNGChunk from "./PNGChunk.ts";
 
 export default class PNGDecoder implements Decoder<Image> {
 
@@ -38,7 +38,7 @@ export default class PNGDecoder implements Decoder<Image> {
 	private validateHeader(): void {
 		const headerValue: ByteBuffer.View = this.source.view(0, PNGDecoder.HEADER_SIZE);
 		if (headerValue.equals(PNGDecoder.HEADER_SIGNATURE) == false) {
-			throw new Error("Invalid png header.");
+			throw new Error("Invalid PNG file header.");
 		}
 	}
 
@@ -55,8 +55,6 @@ export default class PNGDecoder implements Decoder<Image> {
 			const chunk: PNGChunk = new PNGChunk(size, name, data, crc);
 			this.chunkList.push(chunk);
 
-			alert("Discovered chunk: " + chunk.getSignatureAsString())
-
 			if (name == IENDChunkDecoder.SIGNATURE) {
 				break;
 			}
@@ -65,12 +63,14 @@ export default class PNGDecoder implements Decoder<Image> {
 
 	private parseChunk(chunk: PNGChunk): void {
 		switch (chunk.getSignature()) {
+
 			case IHDRChunkDecoder.SIGNATURE:
 				{
 					const chunkDecorder: IHDRChunkDecoder = new IHDRChunkDecoder(chunk);
 					chunkDecorder.decode();
 				}
 				break;
+
 			case IDATChunkDecoder.SIGNATURE:
 				{
 					const chunkDecorder: IDATChunkDecoder = new IDATChunkDecoder(chunk);
