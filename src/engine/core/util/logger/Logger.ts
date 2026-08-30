@@ -11,13 +11,19 @@ import LogLevel from "./LogLevel.ts";
 
 export default class Logger {
 
+	private readonly id: string;
 	private readonly filePath: string;
 	private readonly handler: FileHandler;
 
-	public constructor(filePath: string) {
+	public constructor(id: string, filePath: string) {
+		this.id = id;
 		this.filePath = filePath;
 		this.handler = File.open(filePath, OpenMode.WRITE_CREATE);
-		this.log(LogLevel.INFO, "Starting log at " + new Date().toISOString());
+		this.log(LogLevel.INFO, "Start logging at " + new Date().toISOString());
+	}
+
+	public getId(): string {
+		return this.id;
 	}
 
 	public getFilePath(): string {
@@ -26,7 +32,7 @@ export default class Logger {
 
 	public log(logLevel: LogLevel, text: string): void {
 		if (this.handler.isValid() == true) {
-			const logText: string = "[" + logLevel.toString() + "] " + text + "\n";
+			const logText: string = "[" + this.getId() + "] [" + logLevel.toString() + "] " + text + "\n";
 			const encoder: StringByteEncoder = new StringByteEncoder(logText);
 			const byteBuffer: ByteBuffer = encoder.encode();
 			this.handler.write(byteBuffer.getSize(), byteBuffer);

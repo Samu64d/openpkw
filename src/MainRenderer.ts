@@ -7,7 +7,7 @@ import EventListener from "./engine/core/common/EventListener.ts";
 import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
 import ElectronIPC from "./engine/platform/electron/ElectronIPC.ts";
 import Main from "./Main.ts";
-import MainTest from "./test/MainTest.ts";
+import Openpkw from "./app/Openpkw.ts";
 
 export default class MainRenderer {
 
@@ -42,13 +42,12 @@ export default class MainRenderer {
 
 	private onLoadListener(): void {
 		this.updateCanvasSize();
-		MainTest.instance.initRenderer();
-		MainTest.instance.initOther();
+		Openpkw.getInstance().init();
 	}
 
 	private onResizeListener(): void {
 		this.updateCanvasSize();
-		MainTest.instance.forceUpdateRenderer();
+		Openpkw.getInstance().forceUpdateRenderer();
 	}
 
 	private onErrorListener(event: ErrorEvent): void {

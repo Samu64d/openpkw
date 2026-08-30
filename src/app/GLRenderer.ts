@@ -4,10 +4,14 @@
 
 import Nullable from "../engine/core/common/Nullable.ts";
 import { multiply, rot, translate } from "../engine/core/math/Matrix4d.ts";
+import Projection from "../engine/core/rendering/Projection.ts";
+import TextFileLoader from "../engine/core/resource/loader/TextFileLoader.ts";
+import ObjFileLoader from "../engine/core/resource/loader/ObjLoader.ts";
 import Resource from "../engine/core/resource/resource/Resource.ts";
 import Text from "../engine/core/resource/resource/Text.ts";
-import TextFileLoader from "../engine/core/resource/loader/TextFileLoader.ts";
+import Mesh from "../engine/core/resource/resource/Mesh.ts";
 import GLVertexBuffer from "../engine/drivers/graphic/gl/GLVertexBuffer.ts";
+import GLElementBuffer from "../engine/drivers/graphic/gl/GLElementBuffer.ts";
 import GLVertexArray from "../engine/drivers/graphic/gl/GLVertexArray.ts";
 import GLTexture from "../engine/drivers/graphic/gl/GLTexture.ts";
 import GLShader from "../engine/drivers/graphic/gl/GLShader.ts";
@@ -15,52 +19,8 @@ import GLVertexShader from "../engine/drivers/graphic/gl/GLVertexShader.ts";
 import GLFragmentShader from "../engine/drivers/graphic/gl/GLFragmentShader.ts";
 import GLProgram from "../engine/drivers/graphic/gl/GLProgram.ts";
 import GLContextManager from "../engine/drivers/graphic/gl/GLContextManager.ts";
-import Projection from "../engine/core/rendering/Projection.ts";
-import ObjFileLoader from "../engine/core/resource/loader/ObjLoader.ts";
-import Mesh from "../engine/core/resource/resource/Mesh.ts";
-import GLElementBuffer from "../engine/drivers/graphic/gl/GLElementBuffer.ts";
 
-/** @test */
 export default class GLRenderer {
-
-	private static readonly VERTEX_DATA: Float32Array = new Float32Array([
-		-0.5, -0.5, -0.5, 0.0, 0.0,
-		0.5, -0.5, -0.5, 1.0, 0.0,
-		0.5, 0.5, -0.5, 1.0, 1.0,
-		0.5, 0.5, -0.5, 1.0, 1.0,
-		-0.5, 0.5, -0.5, 0.0, 1.0,
-		-0.5, -0.5, -0.5, 0.0, 0.0,
-		-0.5, -0.5, 0.5, 0.0, 0.0,
-		0.5, -0.5, 0.5, 1.0, 0.0,
-		0.5, 0.5, 0.5, 1.0, 1.0,
-		0.5, 0.5, 0.5, 1.0, 1.0,
-		-0.5, 0.5, 0.5, 0.0, 1.0,
-		-0.5, -0.5, 0.5, 0.0, 0.0,
-		-0.5, 0.5, 0.5, 1.0, 0.0,
-		-0.5, 0.5, -0.5, 1.0, 1.0,
-		-0.5, -0.5, -0.5, 0.0, 1.0,
-		-0.5, -0.5, -0.5, 0.0, 1.0,
-		-0.5, -0.5, 0.5, 0.0, 0.0,
-		-0.5, 0.5, 0.5, 1.0, 0.0,
-		0.5, 0.5, 0.5, 1.0, 0.0,
-		0.5, 0.5, -0.5, 1.0, 1.0,
-		0.5, -0.5, -0.5, 0.0, 1.0,
-		0.5, -0.5, -0.5, 0.0, 1.0,
-		0.5, -0.5, 0.5, 0.0, 0.0,
-		0.5, 0.5, 0.5, 1.0, 0.0,
-		-0.5, -0.5, -0.5, 0.0, 1.0,
-		0.5, -0.5, -0.5, 1.0, 1.0,
-		0.5, -0.5, 0.5, 1.0, 0.0,
-		0.5, -0.5, 0.5, 1.0, 0.0,
-		-0.5, -0.5, 0.5, 0.0, 0.0,
-		-0.5, -0.5, -0.5, 0.0, 1.0,
-		-0.5, 0.5, -0.5, 0.0, 1.0,
-		0.5, 0.5, -0.5, 1.0, 1.0,
-		0.5, 0.5, 0.5, 1.0, 0.0,
-		0.5, 0.5, 0.5, 1.0, 0.0,
-		-0.5, 0.5, 0.5, 0.0, 0.0,
-		-0.5, 0.5, -0.5, 0.0, 1.0
-	]);
 
 	private readonly context: WebGL2RenderingContext;
 	private readonly contextManager: GLContextManager;
@@ -69,7 +29,7 @@ export default class GLRenderer {
 	private vao: Nullable<GLVertexArray>;
 	private texture: Nullable<GLTexture>;
 	private texture2: Nullable<GLTexture>;
-	private mesh: Mesh;
+	private mesh: Nullable<Mesh>;
 
 	public constructor(context: WebGL2RenderingContext) {
 		this.context = context;
@@ -78,11 +38,13 @@ export default class GLRenderer {
 		this.vao = null;
 		this.texture = null;
 		this.texture2 = null;
-		const loader = new ObjFileLoader();
-		this.mesh = loader.load("./resources/model/sign_0/sign_0.obj");
+		this.mesh = null;
 	}
 
 	public init(): void {
+		const loader = new ObjFileLoader();
+		const mesh = loader.load("./resources/model/sign_0/sign_0.obj");
+
 		const vertexShader: GLShader = this.createShader("./resources/shader/dummy.vert", 0);
 		const fragmentShader: GLShader = this.createShader("./resources/shader/dummy.frag", 1);
 		const program: GLProgram = this.createProgram([vertexShader, fragmentShader]);
@@ -94,7 +56,7 @@ export default class GLRenderer {
 
 		const vbo = new GLVertexBuffer(this.contextManager);
 		vbo.bind();
-		vbo.loadData(this.mesh.getVertexList());
+		vbo.loadData(mesh.getVertexList());
 		this.context.vertexAttribPointer(0, 3, this.context.FLOAT, false, 5 * 4, 0);
 		this.context.enableVertexAttribArray(0);
 		this.context.vertexAttribPointer(1, 2, this.context.FLOAT, false, 5 * 4, 3 * 4);
@@ -102,7 +64,7 @@ export default class GLRenderer {
 
 		const ebo = new GLElementBuffer(this.contextManager);
 		ebo.bind();
-		ebo.loadData(this.mesh.getIndiciesList())
+		ebo.loadData(mesh.getIndiciesList())
 
 		vao.unbind();
 		vbo.unbind();
@@ -141,11 +103,11 @@ export default class GLRenderer {
 		this.program = program;
 		this.texture = texture;
 		this.texture2 = texture2;
+		this.mesh = mesh;
 	}
 
 	public update(time: number): void {
-
-		if (this.program == null || this.vao == null || this.texture == null || this.texture2 == null) {
+		if (this.program == null || this.vao == null || this.texture == null || this.texture2 == null || this.mesh == null) {
 			return;
 		}
 
@@ -180,14 +142,16 @@ export default class GLRenderer {
 	private createShader(path: string, type: number): GLShader {
 		const textResource: Resource<string, Text> = new Resource<string, Text>(path, new TextFileLoader());
 		textResource.load();
-		const text: Text = textResource.get();
-		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text.getText()) : new GLVertexShader(this.contextManager, text.getText());
+
+		const text: string = textResource.get().getText();
+		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text) : new GLVertexShader(this.contextManager, text);
 		shader.compile();
-		const compilationStatus: GLShader.CompilationStatus = shader.getCompilationStatus();
-		if (compilationStatus == GLShader.CompilationStatus.FAILED) {
-			const error = shader.getCompilationError();
-			throw new Error(error ?? "Shader compilation failed");
+
+		if (shader.getCompilationStatus() == GLShader.CompilationStatus.FAILED) {
+			const error: Nullable<string> = shader.getCompilationError();
+			throw new Error(error ?? "Failed to compile shader.");
 		}
+
 		return shader;
 	}
 
@@ -195,11 +159,12 @@ export default class GLRenderer {
 		const program: GLProgram = new GLProgram(this.contextManager);
 		program.attachShaders(shaderList);
 		program.link();
-		const linkingStatus: GLProgram.LinkingStatus = program.getLinkingStatus();
-		if (linkingStatus == GLProgram.LinkingStatus.FAILED) {
-			const error = program.getLinkingError();
-			throw new Error(error ?? "Program linking failed");
+
+		if (program.getLinkingStatus() == GLProgram.LinkingStatus.FAILED) {
+			const error: Nullable<string> = program.getLinkingError();
+			throw new Error(error ?? "Failed to compile program.");
 		}
+
 		return program;
 	}
 
