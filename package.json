@@ -16,14 +16,14 @@
 	"author": "Samu64d",
 	"license": "CC0-1.0",
 	"dependencies": {
-		"electron": "44.0.0",
+		"electron": "44.1.1",
 		"reflect-metadata": "0.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "26.4.0",
+		"@types/node": "26.4.1",
 		"typescript": "6.0.3",
 		"ts-loader": "9.6.2",
-		"webpack": "5.110.2",
+		"webpack": "5.110.3",
 		"webpack-cli": "7.2.3"
 	}
 }
