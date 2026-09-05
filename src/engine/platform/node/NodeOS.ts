@@ -10,6 +10,7 @@ export default class NodeOS {
 		return OS.homedir();
 	}
 
-	private constructor() { }
+	private constructor() {
+	}
 
 }

@@ -2,9 +2,9 @@
 // Resource.ts
 //
 
-import Nullable from "../../common/Nullable.ts";
-import Disposable from "../../reflection/decorators/Disposable.ts";
-import Loader from "../loader/Loader.ts";
+import Nullable from "../common/Nullable.ts";
+import Disposable from "../reflection/decorators/Disposable.ts";
+import Loader from "./Loader.ts";
 
 @Disposable()
 export default class Resource<L, R> implements Disposable.Target {
@@ -47,6 +47,7 @@ export default class Resource<L, R> implements Disposable.Target {
 		return this.resource as R;
 	}
 
-	public dispose(): void { }
+	public dispose(): void {
+	}
 
 }

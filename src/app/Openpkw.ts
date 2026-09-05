@@ -3,13 +3,8 @@
 //
 
 import Nullable from "../engine/core/common/Nullable.ts";
-import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
-import OpenMode from "../engine/core/io/file/OpenMode.ts";
-import File from "../engine/core/io/file/File.ts";
-import FileHandler from "../engine/core/io/file/FileHandler.ts";
 import FileSystemDriver from "../engine/core/io/file/FileSystemDriver.ts";
 import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
-import PNGDecoder from "../engine/core/media/codecs/png/PNGDecoder.ts";
 import LogLevel from "../engine/core/util/logger/LogLevel.ts";
 import Logger from "../engine/core/util/logger/Logger.ts";
 import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
@@ -93,12 +88,6 @@ export default class Openpkw {
 
 	private initTest(): void {
 		this.logger.log(LogLevel.INFO, "Run init test");
-
-		const fileHandler: FileHandler = File.open("./resources/model/sign_0/sign_0.png", OpenMode.READ);
-		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
-		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
-		pngDecoder.decode();
-
 	}
 
 }

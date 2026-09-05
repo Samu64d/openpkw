@@ -2,15 +2,15 @@
 // PNGChunkDecoder.ts
 //
 
-import ByteBufferReader from "../../../memory/ByteBufferReader.ts";
+import ByteBufferReader from "../../memory/ByteBufferReader.ts";
 import PNGChunk from "./PNGChunk.ts";
 
-export default abstract class PNGChunkDecoder {
+export default abstract class PNGChunkDecoder<T> {
 
-	public static readonly SIGNATURE: number;
+	public static readonly CHUNK_SIGNATURE: number;
 
 	protected readonly reader: ByteBufferReader;
-	private readonly chunk: PNGChunk;
+	protected readonly chunk: PNGChunk;
 
 	public constructor(chunk: PNGChunk) {
 		this.chunk = chunk;
@@ -21,6 +21,6 @@ export default abstract class PNGChunkDecoder {
 		return this.chunk;
 	}
 
-	public abstract decode(): void;
+	public abstract decode(): T;
 
 }

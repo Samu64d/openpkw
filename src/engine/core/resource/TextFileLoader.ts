@@ -2,10 +2,10 @@
 // TextFileLoader.ts
 //
 
-import TextEncoding from "../../memory/TextEncoding.ts";
-import File from "../../io/file/File.ts";
-import Text from "../resource/Text.ts";
+import TextEncoding from "../memory/TextEncoding.ts";
+import File from "../io/file/File.ts";
 import Loader from "./Loader.ts";
+import Text from "./Text.ts";
 
 export default class TextFileLoader implements Loader<string, Text> {
 

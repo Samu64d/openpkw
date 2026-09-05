@@ -2,19 +2,20 @@
 // IHDRChunkDecoder.ts
 //
 
-import Endian from "../../../../memory/Endian.ts";
+import Endian from "../../../memory/Endian.ts";
+import IHDRData from "../data/IHDRData.ts";
 import PNGChunk from "../PNGChunk.ts";
 import PNGChunkDecoder from "../PNGChunkDecoder.ts";
 
-export default class IHDRChunkDecoder extends PNGChunkDecoder {
+export default class IHDRChunkDecoder extends PNGChunkDecoder<IHDRData> {
 
-	public static override readonly SIGNATURE: number = 0x49484452;
+	public static override readonly CHUNK_SIGNATURE: number = 0x49484452;
 
 	public constructor(chunk: PNGChunk) {
 		super(chunk);
 	}
 
-	public override decode(): void {
+	public override decode(): IHDRData {
 		const width: number = this.reader.readUint32(null, Endian.BIG);
 		const height: number = this.reader.readUint32(null, Endian.BIG);
 		const depth: number = this.reader.readUint8();
@@ -22,7 +23,7 @@ export default class IHDRChunkDecoder extends PNGChunkDecoder {
 		const compressionType: number = this.reader.readUint8();
 		const filterType: number = this.reader.readUint8();
 		const interlaceType: number = this.reader.readUint8();
-		//alert("size: " + width + "x" + height + ", depth: " + depth + ", colorType: " + colorType + ", compressionType: " + compressionType + ", filterType: " + filterType + ", interlaceType: " + interlaceType);
+		return new IHDRData(width, height, depth, colorType, compressionType, filterType, interlaceType);
 	}
 
 }

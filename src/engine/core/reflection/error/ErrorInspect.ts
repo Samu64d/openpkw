@@ -8,6 +8,7 @@ export default class ErrorInspect {
 		return error instanceof Error;
 	}
 
-	private constructor() { }
+	private constructor() {
+	}
 
 }

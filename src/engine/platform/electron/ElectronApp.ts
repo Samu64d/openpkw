@@ -43,6 +43,7 @@ export default class ElectronApp {
 
 	private static readonly app: Electron.App = Electron.app;
 
-	private constructor() { }
+	private constructor() {
+	}
 
 }
