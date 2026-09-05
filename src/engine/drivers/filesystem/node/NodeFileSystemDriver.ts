@@ -38,7 +38,8 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		this.fileHandleMap = new Map<ResourceHandle, number>();
 	}
 
-	public override init(): void { }
+	public override init(): void {
+	}
 
 	public override getAccessRight(path: string): AccessRight {
 		let accessRight: AccessRight = AccessRight.NONE;
@@ -46,12 +47,14 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		try {
 			FS.accessSync(path, FS.constants.R_OK);
 			accessRight = AccessRight.READ;
-		} catch (e: unknown) { }
+		} catch (e: unknown) {
+		}
 
 		try {
 			FS.accessSync(path, FS.constants.W_OK);
 			accessRight = accessRight == AccessRight.NONE ? AccessRight.WRITE : AccessRight.READ_WRITE;
-		} catch (e: unknown) { }
+		} catch (e: unknown) {
+		}
 
 		return accessRight;
 	}
@@ -153,7 +156,8 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		}
 	}
 
-	public override dispose(): void { }
+	public override dispose(): void {
+	}
 
 	private mapTextEncoding(textEncoding: TextEncoding): BufferEncoding {
 		return NodeFileSystemDriver.TEXT_ENCODING_MAP[textEncoding];

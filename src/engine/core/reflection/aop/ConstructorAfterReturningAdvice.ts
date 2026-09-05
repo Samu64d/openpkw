@@ -15,10 +15,12 @@ class ConstructorAfterReturningAdvice<T extends Aspect, C extends ClassType<obje
 	public override wrap(classType: C): C {
 		const aspect: T = this.aspect;
 		return class extends (classType as any) {
-			constructor(...args: any[]) {
+
+			public constructor(...args: any[]) {
 				super(...args);
 				aspect(this);
 			}
+
 		} as unknown as C;
 	}
 

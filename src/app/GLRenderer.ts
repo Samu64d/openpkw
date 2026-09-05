@@ -4,12 +4,18 @@
 
 import Nullable from "../engine/core/common/Nullable.ts";
 import { multiply, rot, translate } from "../engine/core/math/Matrix4d.ts";
+import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
+import OpenMode from "../engine/core/io/file/OpenMode.ts";
+import File from "../engine/core/io/file/File.ts";
+import FileHandler from "../engine/core/io/file/FileHandler.ts";
+import PNGDecoder from "../engine/core/format/png/PNGDecoder.ts";
+import OBJDecoder from "../engine/core/format/obj/ObjDecoder.ts";
+import TextFileLoader from "../engine/core/resource/TextFileLoader.ts";
+import Resource from "../engine/core/resource/Resource.ts";
+import Text from "../engine/core/resource/Text.ts";
+import Image from "../engine/core/resource/Image.ts";
+import Mesh from "../engine/core/resource/Mesh.ts";
 import Projection from "../engine/core/rendering/Projection.ts";
-import TextFileLoader from "../engine/core/resource/loader/TextFileLoader.ts";
-import ObjFileLoader from "../engine/core/resource/loader/ObjLoader.ts";
-import Resource from "../engine/core/resource/resource/Resource.ts";
-import Text from "../engine/core/resource/resource/Text.ts";
-import Mesh from "../engine/core/resource/resource/Mesh.ts";
 import GLVertexBuffer from "../engine/drivers/graphic/gl/GLVertexBuffer.ts";
 import GLElementBuffer from "../engine/drivers/graphic/gl/GLElementBuffer.ts";
 import GLVertexArray from "../engine/drivers/graphic/gl/GLVertexArray.ts";
@@ -28,7 +34,6 @@ export default class GLRenderer {
 	private program: Nullable<GLProgram>;
 	private vao: Nullable<GLVertexArray>;
 	private texture: Nullable<GLTexture>;
-	private texture2: Nullable<GLTexture>;
 	private mesh: Nullable<Mesh>;
 
 	public constructor(context: WebGL2RenderingContext) {
@@ -37,17 +42,16 @@ export default class GLRenderer {
 		this.program = null;
 		this.vao = null;
 		this.texture = null;
-		this.texture2 = null;
 		this.mesh = null;
 	}
 
 	public init(): void {
-		const loader = new ObjFileLoader();
-		const mesh = loader.load("./resources/model/sign_0/sign_0.obj");
-
+		const image: Image = this.createTexture("./resources/model/sign_0/sign_0.png")
+		const mesh: Mesh = this.createMesh("./resources/model/sign_0/sign_0.obj");
 		const vertexShader: GLShader = this.createShader("./resources/shader/dummy.vert", 0);
 		const fragmentShader: GLShader = this.createShader("./resources/shader/dummy.frag", 1);
 		const program: GLProgram = this.createProgram([vertexShader, fragmentShader]);
+
 		vertexShader.dispose();
 		fragmentShader.dispose();
 
@@ -72,42 +76,22 @@ export default class GLRenderer {
 
 		const texture = new GLTexture(this.contextManager, this.context.TEXTURE_2D);
 		texture.bind();
-
-		const data = new Uint8Array([
-			203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 0, 0, 0, 203, 203, 203, 203, 203, 203,
-			203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203,
-			203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203,
-			203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203,
-			203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203,
-			0, 0, 0, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203,
-			203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203,
-			255, 0, 0, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203, 203
-		]);
-
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR_MIPMAP_LINEAR);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
-		texture.loadImageData(8, 8, data);
+		texture.loadImageData(40, 40, image.getData().unsafeGetData());
 		texture.generateMipmap();
-
 		texture.unbind();
-
-		const texture2 = new GLTexture(this.contextManager, this.context.TEXTURE_2D);
-		texture2.bind();
-		const data2 = new Uint8Array([250, 250, 250]);
-		texture2.loadImageData(1, 1, data2);
-		texture2.unbind();
 
 		this.vao = vao;
 		this.program = program;
 		this.texture = texture;
-		this.texture2 = texture2;
 		this.mesh = mesh;
 	}
 
 	public update(time: number): void {
-		if (this.program == null || this.vao == null || this.texture == null || this.texture2 == null || this.mesh == null) {
+		if (this.program == null || this.vao == null || this.texture == null || this.mesh == null) {
 			return;
 		}
 
@@ -119,7 +103,7 @@ export default class GLRenderer {
 
 		// Model view
 		const modelViewLocation = this.context.getUniformLocation(this.program.getProgramObject(), "modelView");
-		const data = multiply(translate(0.0, -1.0, -14.0), rot(0.3, time / 100, 0.0));
+		const data = multiply(translate(0.0, -2.0, -16.0), rot(0.3, time / 100, 0.0));
 		this.context.uniformMatrix4fv(modelViewLocation, false, data);
 
 		// Projection
@@ -133,10 +117,28 @@ export default class GLRenderer {
 
 		this.vao.bind();
 		this.texture.bind();
+
 		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
-		this.texture2.bind();
-		this.context.drawElements(this.context.LINES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
+
+		const data2 = translate(-7.0, -2.0, -28.0);
+		this.context.uniformMatrix4fv(modelViewLocation, false, data2);
+		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
+
 		this.vao.unbind();
+	}
+
+	private createMesh(path: string): Mesh {
+		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
+		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
+		const decoder: OBJDecoder = new OBJDecoder(byteBuffer);
+		return decoder.decode();
+	}
+
+	private createTexture(path: string): Image {
+		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
+		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
+		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
+		return pngDecoder.decode();
 	}
 
 	private createShader(path: string, type: number): GLShader {

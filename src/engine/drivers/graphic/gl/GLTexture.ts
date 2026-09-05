@@ -42,7 +42,7 @@ export default class GLTexture implements Disposable.Target {
 		if (this.isBound() == false) {
 			throw new Error("Try loading image data on a texture that was not bound.");
 		}
-		this.contextManager.getContext().texImage2D(this.type, 0, this.contextManager.enum("RGB"), width, height, 0, this.contextManager.enum("RGB"), this.contextManager.enum("UNSIGNED_BYTE"), data);
+		this.contextManager.getContext().texImage2D(this.type, 0, this.contextManager.enum("RGBA"), width, height, 0, this.contextManager.enum("RGBA"), this.contextManager.enum("UNSIGNED_BYTE"), data);
 	}
 
 	public generateMipmap(): void {

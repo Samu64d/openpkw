@@ -2,12 +2,12 @@
 // Text.ts
 //
 
-import Record from "../../reflection/decorators/Record.ts";
+import Record from "../reflection/decorators/Record.ts";
 
 @Record()
 export default class Text {
 
-	public readonly data: string;
+	private readonly data: string;
 
 	public constructor(data: string) {
 		this.data = data;

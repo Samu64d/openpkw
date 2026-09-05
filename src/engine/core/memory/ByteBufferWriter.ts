@@ -82,7 +82,8 @@ export default class ByteBufferWriter extends SeekableRandomAccess implements Di
 		this.advanceIfUnspecified(4, position);
 	}
 
-	public dispose(): void { }
+	public dispose(): void {
+	}
 
 	private isLittleEndian(endianness: Nullable<Endian>): boolean {
 		return (endianness ?? this.defaultEndianness) == Endian.LITTLE;

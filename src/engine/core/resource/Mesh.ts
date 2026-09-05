@@ -2,7 +2,7 @@
 // Mesh.ts
 //
 
-import Record from "../../reflection/decorators/Record.ts";
+import Record from "../reflection/decorators/Record.ts";
 
 @Record()
 export default class Mesh {

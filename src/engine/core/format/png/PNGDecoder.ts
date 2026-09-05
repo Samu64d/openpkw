@@ -2,11 +2,14 @@
 // PNGDecoder.ts
 //
 
-import Endian from "../../../memory/Endian.ts";
-import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import ByteBufferReader from "../../../memory/ByteBufferReader.ts";
-import Image from "../../../resource/resource/Image.ts";
-import Decoder from "../../Decoder.ts";
+import Nullable from "../../common/Nullable.ts";
+import Endian from "../../memory/Endian.ts";
+import ByteBuffer from "../../memory/ByteBuffer.ts";
+import ByteBufferReader from "../../memory/ByteBufferReader.ts";
+import Image from "../../resource/Image.ts";
+import Decoder from "../Decoder.ts";
+import IHDRData from "./data/IHDRData.ts";
+import IDATData from "./data/IDATData.ts";
 import IENDChunkDecoder from "./chunks/IENDChunkDecoder.ts";
 import IHDRChunkDecoder from "./chunks/IHDRChunkDecoder.ts";
 import IDATChunkDecoder from "./chunks/IDATChunkDecoder.ts";
@@ -18,21 +21,30 @@ export default class PNGDecoder implements Decoder<Image> {
 	private static readonly HEADER_SIGNATURE: ByteBuffer = ByteBuffer.FROM_ARRAY([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
 	private static readonly CHUNK_REGION_OFFSET: number = 8;
 
-	private source: ByteBuffer;
-	private reader: ByteBufferReader;
-	private chunkList: PNGChunk[];
+	private readonly source: ByteBuffer;
+	private readonly reader: ByteBufferReader;
+	private readonly chunkList: PNGChunk[];
+	private ihdrData: Nullable<IHDRData>;
+	private idatData: Nullable<IDATData>;
 
-	public constructor(byteBuffer: ByteBuffer) {
-		this.source = byteBuffer;
-		this.reader = new ByteBufferReader(byteBuffer);
+	public constructor(source: ByteBuffer) {
+		this.source = source;
+		this.reader = new ByteBufferReader(source);
 		this.chunkList = new Array<PNGChunk>();
+		this.ihdrData = null;
+		this.idatData = null;
 	}
 
 	public decode(): Image {
 		this.validateHeader();
 		this.collectChunkList();
 		this.parseChunkList();
-		return new Image(0, 0, 0, ByteBuffer.ALLOCATE(1024));
+
+		if (this.ihdrData != null && this.idatData != null) {
+			return new Image(this.ihdrData.getWidth(), this.ihdrData.getHeight(), this.idatData.getImageData());
+		} else {
+			throw new Error("Cannot retrive all critical chunks.");
+		}
 	}
 
 	private validateHeader(): void {
@@ -46,7 +58,6 @@ export default class PNGDecoder implements Decoder<Image> {
 		this.reader.seek(PNGDecoder.CHUNK_REGION_OFFSET);
 
 		while (this.reader.isEof() == false) {
-
 			const size: number = this.reader.readUint32(null, Endian.BIG);
 			const name: number = this.reader.readUint32(null, Endian.BIG);
 			const data: ByteBuffer.View = this.source.view(this.reader.getCursor(), this.reader.getCursor() + size);
@@ -55,7 +66,7 @@ export default class PNGDecoder implements Decoder<Image> {
 			const chunk: PNGChunk = new PNGChunk(size, name, data, crc);
 			this.chunkList.push(chunk);
 
-			if (name == IENDChunkDecoder.SIGNATURE) {
+			if (name == IENDChunkDecoder.CHUNK_SIGNATURE) {
 				break;
 			}
 		}
@@ -64,17 +75,19 @@ export default class PNGDecoder implements Decoder<Image> {
 	private parseChunk(chunk: PNGChunk): void {
 		switch (chunk.getSignature()) {
 
-			case IHDRChunkDecoder.SIGNATURE:
+			case IHDRChunkDecoder.CHUNK_SIGNATURE:
 				{
 					const chunkDecorder: IHDRChunkDecoder = new IHDRChunkDecoder(chunk);
-					chunkDecorder.decode();
+					this.ihdrData = chunkDecorder.decode();
 				}
 				break;
 
-			case IDATChunkDecoder.SIGNATURE:
+			case IDATChunkDecoder.CHUNK_SIGNATURE:
 				{
-					const chunkDecorder: IDATChunkDecoder = new IDATChunkDecoder(chunk);
-					chunkDecorder.decode();
+					if (this.ihdrData != null) {
+						const chunkDecorder: IDATChunkDecoder = new IDATChunkDecoder(chunk, this.ihdrData);
+						this.idatData = chunkDecorder.decode();
+					}
 				}
 				break;
 		}

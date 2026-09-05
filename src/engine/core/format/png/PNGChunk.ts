@@ -2,8 +2,8 @@
 // PNGChunk.ts
 //
 
-import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import Record from "../../../reflection/decorators/Record.ts";
+import ByteBuffer from "../../memory/ByteBuffer.ts";
+import Record from "../../reflection/decorators/Record.ts";
 
 @Record()
 export default class PNGChunk {

@@ -95,7 +95,8 @@ export default class ByteBufferReader extends SeekableRandomAccess implements Di
 		return value;
 	}
 
-	public dispose(): void { }
+	public dispose(): void {
+	}
 
 	private isLittleEndian(endianness: Nullable<Endian>): boolean {
 		return (endianness ?? this.defaultEndianness) == Endian.LITTLE;
