@@ -15,27 +15,26 @@ import IHDRChunkDecoder from "./chunks/IHDRChunkDecoder.ts";
 import IDATChunkDecoder from "./chunks/IDATChunkDecoder.ts";
 import PNGChunk from "./PNGChunk.ts";
 
-export default class PNGDecoder implements Decoder<Image> {
+export default class PNGDecoder extends Decoder<Image> {
 
 	private static readonly HEADER_SIZE: number = 8;
 	private static readonly HEADER_SIGNATURE: ByteBuffer = ByteBuffer.FROM_ARRAY([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
 	private static readonly CHUNK_REGION_OFFSET: number = 8;
 
-	private readonly source: ByteBuffer;
 	private readonly reader: ByteBufferReader;
 	private readonly chunkList: PNGChunk[];
 	private ihdrData: Nullable<IHDRData>;
 	private idatData: Nullable<IDATData>;
 
 	public constructor(source: ByteBuffer) {
-		this.source = source;
+		super(source);
 		this.reader = new ByteBufferReader(source);
 		this.chunkList = new Array<PNGChunk>();
 		this.ihdrData = null;
 		this.idatData = null;
 	}
 
-	public decode(): Image {
+	public override decode(): Image {
 		this.validateHeader();
 		this.collectChunkList();
 		this.parseChunkList();

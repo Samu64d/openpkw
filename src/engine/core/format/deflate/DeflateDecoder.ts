@@ -2,22 +2,19 @@
 // DeflateDecoder.ts
 //
 
-import Zlib from "node:zlib";
+import NodeZlib from "node:zlib";
 
 import ByteBuffer from "../../memory/ByteBuffer.ts";
 import Decoder from "../Decoder.ts";
 
-export default class DeflateDecoder implements Decoder<ByteBuffer> {
-
-	private source: ByteBuffer;
+export default class DeflateDecoder extends Decoder<ByteBuffer> {
 
 	public constructor(source: ByteBuffer) {
-		this.source = source;
+		super(source);
 	}
 
-	public decode(): ByteBuffer {
-		const data: Uint8Array = this.source.unsafeGetData();
-		return new ByteBuffer(Zlib.inflateSync(data));
+	public override decode(): ByteBuffer {
+		return new ByteBuffer(NodeZlib.inflateSync(this.source.unsafeGetData()));
 	}
 
 }

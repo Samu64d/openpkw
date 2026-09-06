@@ -3,13 +3,13 @@
 //
 
 import Nullable from "../engine/core/common/Nullable.ts";
-import { multiply, rot, translate } from "../engine/core/math/Matrix4d.ts";
+import { multiply, multiplyAll, rot, scale, translate } from "../engine/core/math/Matrix4d.ts";
 import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
 import OpenMode from "../engine/core/io/file/OpenMode.ts";
 import File from "../engine/core/io/file/File.ts";
 import FileHandler from "../engine/core/io/file/FileHandler.ts";
 import PNGDecoder from "../engine/core/format/png/PNGDecoder.ts";
-import OBJDecoder from "../engine/core/format/obj/ObjDecoder.ts";
+import OBJDecoder from "../engine/core/format/obj/OBJDecoder.ts";
 import TextFileLoader from "../engine/core/resource/TextFileLoader.ts";
 import Resource from "../engine/core/resource/Resource.ts";
 import Text from "../engine/core/resource/Text.ts";
@@ -46,8 +46,8 @@ export default class GLRenderer {
 	}
 
 	public init(): void {
-		const image: Image = this.createTexture("./resources/model/sign_0/sign_0.png")
-		const mesh: Mesh = this.createMesh("./resources/model/sign_0/sign_0.obj");
+		const image: Image = this.createTexture("./resources/model/cliff_corner_outer/cliff_corner_outer.png")
+		const mesh: Mesh = this.createMesh("./resources/model/cliff_corner_outer/cliff_corner_outer.obj");
 		const vertexShader: GLShader = this.createShader("./resources/shader/dummy.vert", 0);
 		const fragmentShader: GLShader = this.createShader("./resources/shader/dummy.frag", 1);
 		const program: GLProgram = this.createProgram([vertexShader, fragmentShader]);
@@ -80,7 +80,7 @@ export default class GLRenderer {
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR_MIPMAP_LINEAR);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
-		texture.loadImageData(40, 40, image.getData().unsafeGetData());
+		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetData());
 		texture.generateMipmap();
 		texture.unbind();
 
@@ -97,13 +97,15 @@ export default class GLRenderer {
 
 		this.contextManager.setViewport(this.context.canvas.width, this.context.canvas.height);
 		this.contextManager.enableDepthTest();
+		this.contextManager.enableBlend();
+		this.contextManager.setAlphaBlend();
 		this.contextManager.clear();
 
 		this.program.use();
 
 		// Model view
 		const modelViewLocation = this.context.getUniformLocation(this.program.getProgramObject(), "modelView");
-		const data = multiply(translate(0.0, -2.0, -16.0), rot(0.3, time / 100, 0.0));
+		const data = multiplyAll(translate(0.0, 0.0, -1.0), rot(0.3, time / 100, 0.0));
 		this.context.uniformMatrix4fv(modelViewLocation, false, data);
 
 		// Projection
