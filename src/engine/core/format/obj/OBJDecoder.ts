@@ -6,16 +6,14 @@ import ByteBuffer from "../../memory/ByteBuffer.ts";
 import Mesh from "../../resource/Mesh.ts";
 import Decoder from "../Decoder.ts";
 
-export default class OBJDecoder implements Decoder<Mesh> {
-
-	private readonly source: ByteBuffer;
+export default class OBJDecoder extends Decoder<Mesh> {
 
 	public constructor(source: ByteBuffer) {
-		this.source = source
+		super(source);
 	}
 
 	//TODO: Basic implementation
-	public decode(): Mesh {
+	public override decode(): Mesh {
 		const text: string = new TextDecoder().decode(this.source.unsafeGetData());
 		const lines: string[] = text.split("\n");
 

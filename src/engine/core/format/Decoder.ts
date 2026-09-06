@@ -2,8 +2,20 @@
 // Decoder.ts
 //
 
-export default interface Decoder<T> {
+import ByteBuffer from "../memory/ByteBuffer.ts";
 
-	decode(): T;
+export default abstract class Decoder<T> {
+
+	protected readonly source: ByteBuffer;
+
+	public constructor(source: ByteBuffer) {
+		this.source = source;
+	}
+
+	public getSource(): ByteBuffer {
+		return this.source;
+	}
+
+	public abstract decode(): T;
 
 }

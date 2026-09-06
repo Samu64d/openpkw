@@ -279,12 +279,29 @@ export function multiply(a: number[], b: number[]): number[] {
 	return out;
 }
 
+export function multiplyAll(...matrixList: number[][]): number[] {
+	let out: number[] = matrixList.at(0) as number[];
+	for (const matrix of matrixList) {
+		out = multiply(out, matrix);
+	}
+	return out;
+}
+
 export function translate(x: number, y: number, z: number): number[] {
 	return [
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
 		x, y, z, 1.0
+	];
+}
+
+export function scale(x: number, y: number, z: number): number[] {
+	return [
+		x, 0.0, 0.0, 0.0,
+		0.0, y, 0.0, 0.0,
+		0.0, 0.0, z, 0.0,
+		0.0, 0.0, 0.0, 1.0
 	];
 }
 

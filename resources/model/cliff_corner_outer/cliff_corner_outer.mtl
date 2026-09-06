@@ -1,9 +1,9 @@
-newmtl cliff_straight
+newmtl cliff_corner_outer
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 1
-map_Kd cliff_straight.png
-map_d cliff_straight.png
+map_Kd cliff_corner_outer.png
+map_d cliff_corner_outer.png

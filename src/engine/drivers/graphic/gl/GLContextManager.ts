@@ -50,6 +50,18 @@ export default class GLContextManager {
 		this.context.disable(this.context.DEPTH_TEST);
 	}
 
+	public enableBlend(): void {
+		this.context.enable(this.context.BLEND);
+	}
+
+	public disableBlend(): void {
+		this.context.disable(this.context.BLEND);
+	}
+
+	public setAlphaBlend(): void {
+		this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
+	}
+
 	public clear(clearColor: Color.Immutable = Colors.WHITE): void {
 		this.context.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 		this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
