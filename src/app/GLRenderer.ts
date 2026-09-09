@@ -3,7 +3,7 @@
 //
 
 import Nullable from "../engine/core/common/Nullable.ts";
-import { multiply, multiplyAll, rot, scale, translate } from "../engine/core/math/Matrix4d.ts";
+import { multiplyAll, rot, translate } from "../engine/core/math/Matrix4d.ts";
 import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
 import OpenMode from "../engine/core/io/file/OpenMode.ts";
 import File from "../engine/core/io/file/File.ts";
@@ -46,8 +46,8 @@ export default class GLRenderer {
 	}
 
 	public init(): void {
-		const image: Image = this.createTexture("./resources/model/cliff_corner_outer/cliff_corner_outer.png")
-		const mesh: Mesh = this.createMesh("./resources/model/cliff_corner_outer/cliff_corner_outer.obj");
+		const image: Image = this.createTexture("./resources/model/tree/tree.png")
+		const mesh: Mesh = this.createMesh("./resources/model/tree/tree.obj");
 		const vertexShader: GLShader = this.createShader("./resources/shader/dummy.vert", 0);
 		const fragmentShader: GLShader = this.createShader("./resources/shader/dummy.frag", 1);
 		const program: GLProgram = this.createProgram([vertexShader, fragmentShader]);
@@ -78,10 +78,10 @@ export default class GLRenderer {
 		texture.bind();
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
-		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR_MIPMAP_LINEAR);
+		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
 		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetData());
-		texture.generateMipmap();
+		//texture.generateMipmap();
 		texture.unbind();
 
 		this.vao = vao;
@@ -103,14 +103,19 @@ export default class GLRenderer {
 
 		this.program.use();
 
+		// Viewport size
+		const viewportSizeLocation = this.context.getUniformLocation(this.program.getProgramObject(), "viewportSize");
+		const viewportSize: number[] = [this.context.canvas.width, this.context.canvas.height];
+		this.context.uniform2iv(viewportSizeLocation, viewportSize);
+
 		// Model view
 		const modelViewLocation = this.context.getUniformLocation(this.program.getProgramObject(), "modelView");
-		const data = multiplyAll(translate(0.0, 0.0, -1.0), rot(0.3, time / 100, 0.0));
+		const data: number[] = multiplyAll(translate(0.0, 0, -4.0), rot(0.6, time / 100, 0.0));
 		this.context.uniformMatrix4fv(modelViewLocation, false, data);
 
 		// Projection
 		const projectionLocation = this.context.getUniformLocation(this.program.getProgramObject(), "projection");
-		const project = new Projection(this.context.canvas.width / this.context.canvas.height, 0.6, 0.1, 100);
+		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 0.6, 0.1, 1000.0);
 		this.context.uniformMatrix4fv(projectionLocation, false, project.getMatrix());
 
 		// Time
@@ -120,11 +125,15 @@ export default class GLRenderer {
 		this.vao.bind();
 		this.texture.bind();
 
-		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
+		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_INT, 0);
 
-		const data2 = translate(-7.0, -2.0, -28.0);
+		const data2 = multiplyAll(translate(-0.5, 0, -4.0), rot(0.6, time / 200, 0.0));
 		this.context.uniformMatrix4fv(modelViewLocation, false, data2);
-		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_SHORT, 0);
+		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_INT, 0);
+
+		const data3 = multiplyAll(translate(-0.5, 0.3, -4.3), rot(0.6, time / 200, 0.0));
+		this.context.uniformMatrix4fv(modelViewLocation, false, data3);
+		this.context.drawElements(this.context.TRIANGLES, this.mesh.getIndiciesList().length, this.context.UNSIGNED_INT, 0);
 
 		this.vao.unbind();
 	}

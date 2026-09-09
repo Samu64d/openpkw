@@ -73,14 +73,12 @@ export default class PNGDecoder extends Decoder<Image> {
 
 	private parseChunk(chunk: PNGChunk): void {
 		switch (chunk.getSignature()) {
-
 			case IHDRChunkDecoder.CHUNK_SIGNATURE:
 				{
 					const chunkDecorder: IHDRChunkDecoder = new IHDRChunkDecoder(chunk);
 					this.ihdrData = chunkDecorder.decode();
 				}
 				break;
-
 			case IDATChunkDecoder.CHUNK_SIGNATURE:
 				{
 					if (this.ihdrData != null) {

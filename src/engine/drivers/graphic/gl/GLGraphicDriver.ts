@@ -1,8 +1,21 @@
 //
-// GLGrapichDriver.ts
+// GLGraphicDriver.ts
 //
 
-export default class GLGrapichDriver {
+import GraphicDriver from "../../../core/io/graphic/GraphicDriver.ts";
+import Disposable from "../../../core/reflection/decorators/Disposable.ts";
 
+@Disposable()
+export default class GLGraphicDriver extends GraphicDriver implements Disposable.Target {
+
+	public constructor() {
+		super();
+	}
+
+	public override init(): void {
+	}
+
+	public override dispose(): void {
+	}
 
 }

@@ -7,7 +7,7 @@ import Disposable from "../../../core/reflection/decorators/Disposable.ts";
 import GLContextManager from "./GLContextManager.ts";
 
 @Disposable()
-abstract class GLShader  implements Disposable.Target {
+abstract class GLShader implements Disposable.Target {
 
 	private readonly contextManager: GLContextManager;
 	private readonly type: GLenum;

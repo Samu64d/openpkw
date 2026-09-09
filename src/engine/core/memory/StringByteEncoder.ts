@@ -22,13 +22,21 @@ export default class StringByteEncoder {
 	public encode(textEncoding: TextEncoding = TextEncoding.UTF_8): ByteBuffer {
 		switch (textEncoding) {
 			case TextEncoding.ASCII:
-				return this.encodeAscii();
+				{
+					return this.encodeAscii();
+				}
 			case TextEncoding.UTF_8:
-				return this.encodeUTF8();
+				{
+					return this.encodeUTF8();
+				}
 			case TextEncoding.UTF_16LE:
-				return this.encodeUTF16LE();
+				{
+					return this.encodeUTF16LE();
+				}
 			default:
-				throw new Error("Unsupported text encoding.");
+				{
+					throw new Error("Unknown text encoding.");
+				}
 		}
 	}
 
