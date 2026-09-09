@@ -65,6 +65,7 @@ export default class OBJDecoder extends Decoder<Mesh> {
 			}
 		}
 
-		return new Mesh(new Float32Array(webGLVertices), new Uint16Array(webGLIndices));
+		return new Mesh(new Float32Array(webGLVertices), new Uint32Array(webGLIndices));
 	}
+
 }

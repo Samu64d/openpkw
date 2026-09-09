@@ -8,9 +8,9 @@ import Record from "../reflection/decorators/Record.ts";
 export default class Mesh {
 
 	private readonly vertexList: Float32Array;
-	private readonly indicesList: Uint16Array;
+	private readonly indicesList: Uint32Array;
 
-	public constructor(vertexList: Float32Array, indicesList: Uint16Array) {
+	public constructor(vertexList: Float32Array, indicesList: Uint32Array) {
 		this.vertexList = vertexList;
 		this.indicesList = indicesList;
 	}
@@ -19,7 +19,7 @@ export default class Mesh {
 		return this.vertexList;
 	}
 
-	public getIndiciesList(): Uint16Array {
+	public getIndiciesList(): Uint32Array {
 		return this.indicesList;
 	}
 

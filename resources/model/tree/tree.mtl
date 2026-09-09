@@ -1,9 +1,9 @@
-newmtl sing_0
+newmtl tree
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 1
-map_Kd sign_0.png
-map_d sign_0.png
+map_Kd tree.png
+map_d tree.png

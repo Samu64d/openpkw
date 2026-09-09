@@ -40,11 +40,15 @@ class ElectronIPC {
 
 		switch (processType) {
 			case ElectronProcess.Type.MAIN:
-				ElectronIPC.register = Electron.ipcMain.handle.bind(Electron.ipcMain);
-				break;
+				{
+					ElectronIPC.register = Electron.ipcMain.handle.bind(Electron.ipcMain);
+					break;
+				}
 			case ElectronProcess.Type.RENDERER:
-				ElectronIPC.invoker = Electron.ipcRenderer.invoke.bind(Electron.ipcRenderer);
-				break;
+				{
+					ElectronIPC.invoker = Electron.ipcRenderer.invoke.bind(Electron.ipcRenderer);
+					break;
+				}
 		}
 	}
 

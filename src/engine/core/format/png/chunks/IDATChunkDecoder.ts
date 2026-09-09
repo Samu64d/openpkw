@@ -44,7 +44,7 @@ class IDATChunkDecoder extends PNGChunkDecoder<IDATData> {
 		const source: ByteBuffer = deflateDecoder.decode();
 
 		const filterDecoder: IDATChunkDecoder.FilterDecoder = new IDATChunkDecoder.FilterDecoder(source, this.scanlineSize, this.scanlineCount, this.bytePerPixel, this.data.getImageData());
-		void filterDecoder.decode();
+		filterDecoder.decode();
 
 		return this.data;
 	}
@@ -71,20 +71,19 @@ namespace IDATChunkDecoder {
 		PAETH = 4
 	}
 
-	export class FilterDecoder implements Decoder<ByteBuffer> {
+	export class FilterDecoder extends Decoder<ByteBuffer> {
 
-		private readonly source: ByteBuffer;
 		private readonly scanlineSize: number;
 		private readonly scanlineCount: number;
 		private readonly bytePerPixel: number;
 		private readonly destination: ByteBuffer;
 
 		public constructor(source: ByteBuffer, scanlineSize: number, scanlineCount: number, bytePerPixel: number, destination: ByteBuffer) {
+			super(source);
 			if (source.getSize() != scanlineSize * scanlineCount) {
 				throw new Error("Incorrect filter buffer size.");
 			}
 
-			this.source = source;
 			this.scanlineSize = scanlineSize;
 			this.scanlineCount = scanlineCount;
 			this.bytePerPixel = bytePerPixel;
@@ -99,12 +98,10 @@ namespace IDATChunkDecoder {
 					const destinationIndex: number = y * (this.scanlineSize - 1) + x;
 					let decodedValue: number = this.source.get(sourceIndex);
 					switch (filterType) {
-
 						case FilterType.NONE:
 							{
 								break;
 							}
-
 						case FilterType.SUB:
 							{
 								if (x >= this.bytePerPixel) {
@@ -112,7 +109,6 @@ namespace IDATChunkDecoder {
 								}
 								break;
 							}
-
 						case FilterType.UP:
 							{
 								if (y > 0) {
@@ -120,8 +116,6 @@ namespace IDATChunkDecoder {
 								}
 								break;
 							}
-
-
 						case FilterType.AVERAGE:
 							{
 								const subValue: number = x >= this.bytePerPixel ? this.getSubValue(destinationIndex) : 0;
@@ -129,8 +123,6 @@ namespace IDATChunkDecoder {
 								decodedValue += Math.floor((subValue + upValue) / 2);
 								break;
 							}
-
-
 						case FilterType.PAETH:
 							{
 								const subValue: number = x >= this.bytePerPixel ? this.getSubValue(destinationIndex) : 0;
@@ -139,7 +131,6 @@ namespace IDATChunkDecoder {
 								decodedValue += this.calculatePaethPredictor(subValue, upValue, upSubValue);
 								break;
 							}
-
 						default:
 							{
 								throw new Error("Unknown filter type value.");

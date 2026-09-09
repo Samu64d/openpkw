@@ -75,7 +75,13 @@ export default class Openpkw {
 			return;
 		}
 
-		const context: Nullable<WebGL2RenderingContext> = canvasElement.getContext("webgl2");
+		const context: Nullable<WebGL2RenderingContext> = canvasElement.getContext("webgl2", {
+			alpha: false,
+			antialias: false,
+			depth: true,
+			premultipliedAlpha: true
+		});
+
 		if (context == null) {
 			return;
 		}
