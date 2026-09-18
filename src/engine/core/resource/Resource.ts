@@ -44,6 +44,7 @@ export default class Resource<L, R> implements Disposable.Target {
 		if (this.loaded == false) {
 			throw new Error("Try getting a resource that is not load.");
 		}
+
 		return this.resource as R;
 	}
 

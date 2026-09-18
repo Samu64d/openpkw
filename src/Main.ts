@@ -94,7 +94,7 @@ export default class Main {
 		ElectronApp.registerEventListener("ready", this.onReadyListener.bind(this));
 	}
 
-	private onWindowErrorListener(channel: ElectronIPC.Channel, errorMessage: Nullable<string>): void {
+	private onWindowErrorListener(channel: ElectronIPC.Channel, errorMessage: Nullable<string> = null): void {
 		if (this.mainWindowError == true || this.mainWindow == null || errorMessage == null) {
 			return;
 		}

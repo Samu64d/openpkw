@@ -185,22 +185,25 @@ export default class Matrix4d {
 	}
 
 	public equals(matrix4d: Matrix4d): boolean {
-		return this.values[0] == matrix4d.values[0]
-			&& this.values[1] == matrix4d.values[1]
-			&& this.values[2] == matrix4d.values[2]
-			&& this.values[3] == matrix4d.values[3]
-			&& this.values[4] == matrix4d.values[4]
-			&& this.values[5] == matrix4d.values[5]
-			&& this.values[6] == matrix4d.values[6]
-			&& this.values[7] == matrix4d.values[7]
-			&& this.values[8] == matrix4d.values[8]
-			&& this.values[9] == matrix4d.values[9]
-			&& this.values[10] == matrix4d.values[10]
-			&& this.values[11] == matrix4d.values[11]
-			&& this.values[12] == matrix4d.values[12]
-			&& this.values[13] == matrix4d.values[13]
-			&& this.values[14] == matrix4d.values[14]
-			&& this.values[15] == matrix4d.values[15];
+		return this === matrix4d
+			|| (
+				this.values[0] == matrix4d.values[0]
+				&& this.values[1] == matrix4d.values[1]
+				&& this.values[2] == matrix4d.values[2]
+				&& this.values[3] == matrix4d.values[3]
+				&& this.values[4] == matrix4d.values[4]
+				&& this.values[5] == matrix4d.values[5]
+				&& this.values[6] == matrix4d.values[6]
+				&& this.values[7] == matrix4d.values[7]
+				&& this.values[8] == matrix4d.values[8]
+				&& this.values[9] == matrix4d.values[9]
+				&& this.values[10] == matrix4d.values[10]
+				&& this.values[11] == matrix4d.values[11]
+				&& this.values[12] == matrix4d.values[12]
+				&& this.values[13] == matrix4d.values[13]
+				&& this.values[14] == matrix4d.values[14]
+				&& this.values[15] == matrix4d.values[15]
+			);
 	}
 
 	public translate(x: number, y: number, z: number): number[] {
@@ -243,7 +246,7 @@ export function identity(): number[] {
 	];
 }
 
-export function multiply(a: number[], b: number[]): number[] {
+export function multiply(a: readonly number[], b: readonly number[]): number[] {
 	const out = new Array<number>(16);
 
 	const a00 = a[0], a01 = a[4], a02 = a[8], a03 = a[12];
@@ -279,9 +282,10 @@ export function multiply(a: number[], b: number[]): number[] {
 	return out;
 }
 
-export function multiplyAll(...matrixList: number[][]): number[] {
+export function multiplyAll(...matrixList: (readonly number[])[]): number[] {
 	let out: number[] = matrixList.at(0) as number[];
-	for (const matrix of matrixList) {
+	for (let i: number = 1; i < matrixList.length; i++) {
+		const matrix: number[] = matrixList.at(i) as number[];
 		out = multiply(out, matrix);
 	}
 	return out;
@@ -306,17 +310,37 @@ export function scale(x: number, y: number, z: number): number[] {
 }
 
 export function rot(yaw: number, pitch: number, roll: number): number[] {
-	const cosa = Math.cos(yaw);
-	const sina = Math.sin(yaw);
-	const cosb = Math.cos(pitch);
-	const sinb = Math.sin(pitch);
-	const cosc = Math.cos(roll);
-	const sinc = Math.sin(roll);
+	const out: number[] = [];
+	const cY = Math.cos(yaw);
+	const sY = Math.sin(yaw);
+	const cX = Math.cos(pitch);
+	const sX = Math.sin(pitch);
+	const cZ = Math.cos(roll);
+	const sZ = Math.sin(roll);
 
-	return [
-		cosb * cosc, cosa * sinc + sina * sinb * cosc, sina * sinc - cosa * sinb * cosc, 0.0,
-		-cosb * sinc, cosa * cosc + sina * sinb * sinc, cosa * sinc - cosa * sinb * sinc, 0.0,
-		sinb, -sina * cosb, cosa * cosb, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	];
+	// Column 0
+	out[0] = cY * cZ + sY * sX * sZ;
+	out[4] = cX * sZ;
+	out[8] = -sY * cZ + cY * sX * sZ;
+	out[12] = 0.0;
+
+	// Column 1
+	out[1] = -cY * sZ + sY * sX * cZ;
+	out[5] = cX * cZ;
+	out[9] = sY * sZ + cY * sX * cZ;
+	out[13] = 0.0;
+
+	// Column 2
+	out[2] = sY * cX;
+	out[6] = -sX;
+	out[10] = cY * cX;
+	out[14] = 0.0;
+
+	// Column 3 (Translation Column)
+	out[3] = 0.0;
+	out[7] = 0.0;
+	out[11] = 0.0;
+	out[15] = 1.0;
+
+	return out;
 }

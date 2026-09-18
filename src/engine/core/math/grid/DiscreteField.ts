@@ -82,7 +82,7 @@ class DiscreteField {
 	}
 
 	public equals(discreteField: DiscreteField): boolean {
-		return this.area.equals(discreteField.area);
+		return this === discreteField || this.area.equals(discreteField.area);
 	}
 
 }

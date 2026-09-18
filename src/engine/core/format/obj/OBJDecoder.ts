@@ -33,13 +33,13 @@ export default class OBJDecoder extends Decoder<Mesh> {
 			const parts = trimmed.split(/\s+/);
 			const type = parts[0];
 
-			if (type === "v") {
+			if (type == "v") {
 				rawPositions.push([Number(parts[1]), Number(parts[2]), Number(parts[3])]);
 			}
-			else if (type === "vt") {
+			else if (type == "vt") {
 				rawUVs.push([Number(parts[1]), 1.0 - Number(parts[2])]);
 			}
-			else if (type === "f") {
+			else if (type == "f") {
 				for (let i = 1; i <= parts.length - 3; i++) {
 					const triangle = [parts[1], parts[i + 1], parts[i + 2]];
 

@@ -55,7 +55,7 @@ export default class Range {
 	}
 
 	public equals(range: Range): boolean {
-		return this.min == range.min && this.max == range.max;
+		return this === range || (this.min == range.min && this.max == range.max);
 	}
 
 }

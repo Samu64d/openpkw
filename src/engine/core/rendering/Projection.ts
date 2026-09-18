@@ -39,6 +39,7 @@ export default class Projection {
 		if (aspectRatio <= 0) {
 			throw new Error("Aspect ratio value must be greater than zero.");
 		}
+
 		this.aspectRatio = aspectRatio;
 		this.invalidate();
 	}
@@ -51,6 +52,7 @@ export default class Projection {
 		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
 			throw new Error("Field of view value must be between greater than zero and PI.");
 		}
+
 		this.fieldOfView = fieldOfView;
 		this.invalidate();
 	}
@@ -63,6 +65,7 @@ export default class Projection {
 		if (nearDistance <= 0 || nearDistance >= this.farDistance) {
 			throw new Error("Invalid near distance value.");
 		}
+
 		this.nearDistance = nearDistance;
 		this.invalidate();
 	}
@@ -75,6 +78,7 @@ export default class Projection {
 		if (farDistance <= 0 || farDistance <= this.nearDistance) {
 			throw new Error("Invalid far distance value.");
 		}
+
 		this.farDistance = farDistance;
 		this.invalidate();
 	}

@@ -34,7 +34,7 @@ export default class Area {
 	}
 
 	public equals(area: Area): boolean {
-		return this.width == area.width && this.height == area.height;
+		return this === area || (this.width == area.width && this.height == area.height);
 	}
 
 }

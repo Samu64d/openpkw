@@ -7,15 +7,15 @@ import ByteBuffer from "./ByteBuffer.ts";
 
 export default class StringByteEncoder {
 
+	private static readonly UTF_8_ENCODER: TextEncoder = new TextEncoder();
+
 	private readonly string: string;
-	private readonly textEncoder: TextEncoder;
 
 	public constructor(string: string) {
 		this.string = string;
-		this.textEncoder = new TextEncoder();
 	}
 
-	public getText(): string {
+	public getString(): string {
 		return this.string;
 	}
 
@@ -27,11 +27,11 @@ export default class StringByteEncoder {
 				}
 			case TextEncoding.UTF_8:
 				{
-					return this.encodeUTF8();
+					return this.encodeUtf8();
 				}
 			case TextEncoding.UTF_16LE:
 				{
-					return this.encodeUTF16LE();
+					return this.encodeUtf16LE();
 				}
 			default:
 				{
@@ -44,29 +44,30 @@ export default class StringByteEncoder {
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(this.string.length);
 		for (let i: number = 0; i < this.string.length; i++) {
 			const charCode: number = this.string.charCodeAt(i);
-			byteBuffer.set(i, charCode & 0x7F);
+
+			if (charCode > 0x7F) {
+				throw new Error("Encountered incorrect char value to be encoded.");
+			}
+
+			byteBuffer.set(i, charCode);
 		}
 		return byteBuffer;
 	}
 
-	private encodeUTF8(): ByteBuffer {
-		const array: Uint8Array = this.textEncoder.encode(this.string);
-		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(array.length);
-		for (let i: number = 0; i < array.length; i++) {
-			byteBuffer.set(i, array[i]);
-		}
-		return byteBuffer;
+	private encodeUtf8(): ByteBuffer {
+		const array: Uint8Array = StringByteEncoder.UTF_8_ENCODER.encode(this.string);
+		return new ByteBuffer(array);
 	}
 
-	private encodeUTF16LE(): ByteBuffer {
+	private encodeUtf16LE(): ByteBuffer {
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(this.string.length * 2);
 		for (let i: number = 0; i < this.string.length; i++) {
-			const position: number = i * 2;
+			const k: number = i * 2;
 			const charCode: number = this.string.charCodeAt(i);
 			const low: number = charCode & 0xFF;
 			const high: number = (charCode >>> 8) & 0xFF;
-			byteBuffer.set(position, low);
-			byteBuffer.set(position + 1, high);
+			byteBuffer.set(k, low);
+			byteBuffer.set(k + 1, high);
 		}
 		return byteBuffer;
 	}

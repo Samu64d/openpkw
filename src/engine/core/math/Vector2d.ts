@@ -141,7 +141,7 @@ export default class Vector2d {
 	}
 
 	public equals(vector2d: Vector2d): boolean {
-		return this.x == vector2d.x && this.y == vector2d.y;
+		return this === vector2d || (this.x == vector2d.x && this.y == vector2d.y);
 	}
 
 }

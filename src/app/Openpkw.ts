@@ -8,7 +8,7 @@ import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
 import LogLevel from "../engine/core/util/logger/LogLevel.ts";
 import Logger from "../engine/core/util/logger/Logger.ts";
 import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
-import GLRenderer from "./GLRenderer.ts";
+import Renderer from "./Renderer.ts";
 
 export default class Openpkw {
 
@@ -29,7 +29,7 @@ export default class Openpkw {
 	private time: number;
 	private lastUpdateTime: number;
 	private readonly logger: Logger;
-	private renderer: Nullable<GLRenderer>;
+	private renderer: Nullable<Renderer>;
 
 	private constructor() {
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
@@ -77,7 +77,7 @@ export default class Openpkw {
 
 		const context: Nullable<WebGL2RenderingContext> = canvasElement.getContext("webgl2", {
 			alpha: false,
-			antialias: false,
+			antialias: true,
 			depth: true,
 			premultipliedAlpha: true
 		});
@@ -86,10 +86,31 @@ export default class Openpkw {
 			return;
 		}
 
-		this.renderer = new GLRenderer(context);
+		this.renderer = new Renderer(context);
 		this.renderer.init();
 		this.lastUpdateTime = performance.now();
 		window.requestAnimationFrame(this.updateRenderer.bind(this));
+
+		document.addEventListener("keydown", (event: KeyboardEvent) => {
+			if (event.code == "ArrowRight") {
+				this.renderer?.moveCamera(0.08, 0, 0);
+			}
+			if (event.code == "ArrowLeft") {
+				this.renderer?.moveCamera(-0.08, 0, 0);
+			}
+			if (event.code == "ArrowUp") {
+				this.renderer?.moveCamera(0, 0, -0.08);
+			}
+			if (event.code == "ArrowDown") {
+				this.renderer?.moveCamera(0.0, 0, 0.08);
+			}
+			if (event.code == "BracketRight") {
+				this.renderer?.moveCamera(0, 0.08, 0);
+			}
+			if (event.code == "Slash") {
+				this.renderer?.moveCamera(0, -0.08, 0);
+			}
+		});
 	}
 
 	private initTest(): void {

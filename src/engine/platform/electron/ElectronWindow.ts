@@ -11,6 +11,7 @@ import Disposable from "../../core/reflection/decorators/Disposable.ts";
 class ElectronWindow implements Disposable.Target {
 
 	private static readonly DEFAULT_WIDTH: number = 800;
+
 	private static readonly DEFAULT_HEIGHT: number = 600;
 
 	private static readonly OPTIONS_BUILDER: (config: Partial<ElectronWindow.BuildConfig>) => Electron.BrowserWindowConstructorOptions = (config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions => {
