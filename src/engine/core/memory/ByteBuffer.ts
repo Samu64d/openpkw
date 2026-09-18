@@ -13,8 +13,11 @@ class ByteBuffer implements Disposable.Target {
 		if (size < 1) {
 			throw new Error("Size value must be at least 1.");
 		}
+
 		const data: Uint8Array = new Uint8Array(size);
-		data.fill(fillValue);
+		if (fillValue != 0) {
+			data.fill(fillValue);
+		}
 		return new ByteBuffer(data);
 	};
 
@@ -43,25 +46,38 @@ class ByteBuffer implements Disposable.Target {
 	}
 
 	public isWithinBounds(position: number, length: number): boolean {
-		return position >= 0 && length >= 0 && position <= this.getSize() - length;
+		return position >= 0 && length >= 0 && position <= this.data.length - length;
 	}
 
 	public get(index: number): number {
-		if (index >= this.data.length) {
+		if (index < 0 || index >= this.data.length) {
 			throw new Error("Out of bounds access.");
 		}
+
 		return this.data[index];
 	}
 
-	public set(index: number, value: number): number {
-		return this.data[index] = value;
+	public set(index: number, value: number): void {
+		if (index < 0 || index >= this.data.length) {
+			throw new Error("Out of bounds access.");
+		}
+
+		this.data[index] = value;
 	}
 
-	public fill(fillValue: number): void {
-		this.data.fill(fillValue);
+	public setArray(data: number[], start: number,): void {
+		if (this.isWithinBounds(start, data.length) == false) {
+			throw new Error("Out of bounds access.");
+		}
+
+		this.data.set(data, start);
 	}
 
-	public view(start: number, end: number): ByteBuffer.View {
+	public fill(fillValue: number, start: number = 0, end: number = this.data.length): void {
+		this.data.fill(fillValue, start, end);
+	}
+
+	public view(start: number = 0, end: number = this.data.length): ByteBuffer.View {
 		if (this.isWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
@@ -72,22 +88,29 @@ class ByteBuffer implements Disposable.Target {
 		return view;
 	}
 
-	public copyTo(byteBuffer: ByteBuffer): void {
-		if (byteBuffer.getSize() < this.getSize()) {
-			throw new Error("Destination buffer size is too small.");
+	public copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.data.length, destinationStart: number = 0): void {
+		const length: number = sourceEnd - sourceStart;
+		if (this.isWithinBounds(sourceStart, length) == false || byteBuffer.isWithinBounds(destinationStart, length) == false) {
+			throw new Error("Out of bounds access.");
 		}
 
-		for (let i = 0; i < this.data.length; i++) {
-			byteBuffer.data[i] = this.data[i];
-		}
+		byteBuffer.data.set(this.data.subarray(sourceStart, sourceEnd), destinationStart);
+	}
+
+	public toArray(): number[] {
+		return Array.from(this.data);
 	}
 
 	public clone(): ByteBuffer {
-		const buffer: Uint8Array = new Uint8Array(this.data);
-		return new ByteBuffer(buffer);
+		const data: Uint8Array = new Uint8Array(this.data);
+		return new ByteBuffer(data);
 	}
 
 	public equals(byteBuffer: ByteBuffer): boolean {
+		if (this === byteBuffer) {
+			return true;
+		}
+
 		if (this.data.length != byteBuffer.data.length) {
 			return false;
 		}

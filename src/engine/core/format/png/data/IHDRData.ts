@@ -3,6 +3,7 @@
 //
 
 import Record from "../../../reflection/decorators/Record.ts";
+import ColorType from "../image/ColorType.ts";
 
 @Record()
 export default class IHDRData {
@@ -11,18 +12,18 @@ export default class IHDRData {
 	private readonly height: number;
 	private readonly depth: number;
 	private readonly colorType: number;
-	private readonly compressionType: number;
-	private readonly filterType: number;
-	private readonly interlaceType: number;
+	private readonly compressionMethod: number;
+	private readonly filterMethod: number;
+	private readonly interlaceMethod: number;
 
-	public constructor(width: number, height: number, depth: number, colorType: number, compressionType: number, filterType: number, interlaceType: number) {
+	public constructor(width: number, height: number, depth: number, colorType: ColorType, compressionMethod: number, filterMethod: number, interlaceMethod: number) {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
 		this.colorType = colorType;
-		this.compressionType = compressionType;
-		this.filterType = filterType;
-		this.interlaceType = interlaceType;
+		this.compressionMethod = compressionMethod;
+		this.filterMethod = filterMethod;
+		this.interlaceMethod = interlaceMethod;
 	}
 
 	public getWidth(): number {
@@ -37,20 +38,20 @@ export default class IHDRData {
 		return this.depth;
 	}
 
-	public getColorType(): number {
+	public getColorType(): ColorType {
 		return this.colorType;
 	}
 
-	public getCompressionType(): number {
-		return this.compressionType;
+	public getCompressionMethod(): number {
+		return this.compressionMethod;
 	}
 
-	public getFilterType(): number {
-		return this.filterType;
+	public getFilterMethod(): number {
+		return this.filterMethod;
 	}
 
-	public getInterlaceType(): number {
-		return this.interlaceType;
+	public getInterlaceMethod(): number {
+		return this.interlaceMethod;
 	}
 
 }

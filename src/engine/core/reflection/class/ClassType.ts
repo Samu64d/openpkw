@@ -24,9 +24,11 @@ namespace ClassType {
 	export function getMethod<T extends object, K extends MethodName<T>>(classType: ClassType<T>, methodName: K): Method<T, K> {
 		const prototype: T = classType.prototype;
 		const method: T[K] = prototype[methodName];
+
 		if (typeof method != "function") {
 			throw new Error("Method not found.");
 		}
+
 		return method as Method<T, K>;
 	}
 

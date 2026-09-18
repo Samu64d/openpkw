@@ -8,6 +8,10 @@ import Record from "../reflection/decorators/Record.ts";
 @Record()
 export default class Image {
 
+	public static readonly FROM_RGBA: (width: number, height: number, rgbaData: ByteBuffer) => Image = (width: number, height: number, rgbaData: ByteBuffer): Image => {
+		return new Image(width, height, rgbaData);
+	}
+
 	private readonly width: number;
 	private readonly height: number;
 	private readonly data: ByteBuffer;

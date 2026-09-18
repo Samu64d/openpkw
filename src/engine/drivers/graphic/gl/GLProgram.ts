@@ -38,6 +38,7 @@ class GLProgram implements Disposable.Target {
 		if (this.linkingStatus != GLProgram.LinkingStatus.UNLINKED) {
 			throw new Error("Trying attach shader to a program that is already linked");
 		}
+
 		this.contextManager.getContext().attachShader(this.programObject, shader.getShaderObject());
 	}
 

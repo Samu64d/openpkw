@@ -72,6 +72,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		if (stats.isFile() == false) {
 			throw new Error("Element at path exists but is not a file.");
 		}
+
 		return stats.size;
 	}
 
@@ -152,6 +153,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 				FS.unlinkSync(sourcePath);
 				return;
 			}
+
 			throw new Error("Cannot move file.");
 		}
 	}

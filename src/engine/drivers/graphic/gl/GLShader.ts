@@ -20,9 +20,11 @@ abstract class GLShader implements Disposable.Target {
 		this.contextManager = contextManager;
 		this.type = type;
 		const shaderObject: Nullable<WebGLShader> = contextManager.getContext().createShader(type);
+
 		if (shaderObject == null) {
 			throw new Error("Unable to create shader.");
 		}
+
 		this.shaderObject = shaderObject;
 		this.source = source;
 		this.compilationStatus = GLShader.CompilationStatus.UNCOMPILED;

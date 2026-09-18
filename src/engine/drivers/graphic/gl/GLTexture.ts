@@ -42,6 +42,7 @@ export default class GLTexture implements Disposable.Target {
 		if (this.isBound() == false) {
 			throw new Error("Try loading image data on a texture that was not bound.");
 		}
+
 		this.contextManager.getContext().texImage2D(this.type, 0, this.contextManager.enum("RGBA"), width, height, 0, this.contextManager.enum("RGBA"), this.contextManager.enum("UNSIGNED_BYTE"), data);
 	}
 
@@ -49,6 +50,7 @@ export default class GLTexture implements Disposable.Target {
 		if (this.isBound() == false) {
 			throw new Error("Try generating mipmap of a texture that was not bound.");
 		}
+
 		this.contextManager.getContext().generateMipmap(this.type);
 	}
 

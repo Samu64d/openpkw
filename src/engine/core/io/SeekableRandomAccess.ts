@@ -29,6 +29,7 @@ export default abstract class SeekableRandomAccess extends RandomAccess {
 		if (position < 0 || position > this.getSize()) {
 			throw new Error("Out of bounds access.");
 		}
+
 		this.cursor = position;
 	}
 
@@ -36,6 +37,7 @@ export default abstract class SeekableRandomAccess extends RandomAccess {
 		if (length < 0) {
 			throw new Error("Cannot skip with a negative value.");
 		}
+
 		this.seek(this.cursor + length);
 	}
 
@@ -43,6 +45,7 @@ export default abstract class SeekableRandomAccess extends RandomAccess {
 		if (length < 0) {
 			throw new Error("Cannot rewind with a negative value.");
 		}
+
 		this.seek(this.cursor - length);
 	}
 
@@ -63,6 +66,7 @@ export default abstract class SeekableRandomAccess extends RandomAccess {
 		if (this.isWithinBounds(resolvedPosition, length) == false) {
 			throw new Error("Cannot access position: out of bounds.");
 		}
+
 		return resolvedPosition;
 	}
 
@@ -71,10 +75,11 @@ export default abstract class SeekableRandomAccess extends RandomAccess {
 		if (this.hasCapacityFor(resolvedPosition, length) == false) {
 			throw new Error("Cannot access position: out of capacity.");
 		}
+
 		return resolvedPosition;
 	}
 
-	protected advanceIfUnspecified(length: number, value: Nullable<number>) {
+	protected advanceIfUnspecified(length: number, value: Nullable<number> = null) {
 		if (value == null) {
 			this.skip(length);
 		}

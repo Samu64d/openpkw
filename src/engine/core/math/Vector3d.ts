@@ -170,7 +170,7 @@ export default class Vector3d {
 	}
 
 	public equals(vector3d: Vector3d): boolean {
-		return this.x == vector3d.x && this.y == vector3d.y && this.z == vector3d.z;
+		return this === vector3d || (this.x == vector3d.x && this.y == vector3d.y && this.z == vector3d.z);
 	}
 
 }

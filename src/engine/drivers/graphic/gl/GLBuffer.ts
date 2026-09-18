@@ -42,6 +42,7 @@ export default abstract class GLBuffer implements Disposable.Target {
 		if (this.isBound() == false) {
 			throw new Error("Cannot load data into an unbound buffer.");
 		}
+
 		this.contextManager.getContext().bufferData(this.type, data, this.contextManager.enum(usage));
 	}
 
