@@ -30,7 +30,7 @@ export default class Image {
 		return this.height;
 	}
 
-	public getData() {
+	public getData(): ByteBuffer {
 		return this.data;
 	}
 

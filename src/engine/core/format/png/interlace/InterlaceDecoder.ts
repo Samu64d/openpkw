@@ -3,10 +3,10 @@
 //
 
 import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import Decoder from "../../Decoder.ts";
+import SingleValueDecoder from "../../../codec/SingleValueDecoder.ts";
 import FilterDecoder from "../filter/FilterDecoder.ts";
 
-export default class InterlaceDecoder extends Decoder<ByteBuffer> {
+export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 
 	private static readonly ROW_START_PER_PASS_LIST: number[] = [0, 0, 4, 0, 2, 0, 1];
 
@@ -58,8 +58,8 @@ export default class InterlaceDecoder extends Decoder<ByteBuffer> {
 
 			const view: ByteBuffer = this.source.view(cursor, passDataSize);
 			const unfilteredData: ByteBuffer = new FilterDecoder(view, blockHeight, scanlineSize, bytesPerPixel).decode();
-
 			this.distributePass(unfilteredData, pass, blockWidth, blockHeight);
+			unfilteredData.dispose();
 			cursor += passDataSize;
 		}
 
@@ -76,8 +76,8 @@ export default class InterlaceDecoder extends Decoder<ByteBuffer> {
 		const colStart: number = InterlaceDecoder.COL_START_PER_PASS_LIST[pass];
 		const colIncrement: number = InterlaceDecoder.COL_INCREMENT_PER_PASS_LIST[pass];
 
-		const sourceRowSize: number = Math.ceil((blockWidth * this.bitsPerPixel) / 8);
-		let sourceIndex: number = 0;
+		const srcRowSize: number = Math.ceil((blockWidth * this.bitsPerPixel) / 8);
+		let srcIndex: number = 0;
 
 		if (this.bitsPerPixel < 8) {
 			const mask: number = (1 << this.bitsPerPixel) - 1;
@@ -87,7 +87,7 @@ export default class InterlaceDecoder extends Decoder<ByteBuffer> {
 
 				for (let blockCol: number = 0; blockCol < blockWidth; blockCol++) {
 					const srcBitOffset: number = blockCol * this.bitsPerPixel;
-					const srcByteOffset: number = sourceIndex + (srcBitOffset >> 3);
+					const srcByteOffset: number = srcIndex + (srcBitOffset >> 3);
 					const srcShift: number = 8 - (srcBitOffset & 7) - this.bitsPerPixel;
 					const srcByte: number = source.get(srcByteOffset);
 					const byteValue: number = (srcByte >> srcShift) & mask;
@@ -104,7 +104,7 @@ export default class InterlaceDecoder extends Decoder<ByteBuffer> {
 					this.destination.set(destByteOffset, newByteValue);
 				}
 
-				sourceIndex += sourceRowSize;
+				srcIndex += srcRowSize;
 			}
 		} else {
 			const bytesPerPixel: number = this.bitsPerPixel / 8;
@@ -113,7 +113,7 @@ export default class InterlaceDecoder extends Decoder<ByteBuffer> {
 				const destRowOffset: number = (rowStart + blockRow * rowIncrement) * this.rowDataSize;
 
 				for (let blockCol: number = 0; blockCol < blockWidth; blockCol++) {
-					const sourceOffset: number = sourceIndex + blockCol * bytesPerPixel;
+					const sourceOffset: number = srcIndex + blockCol * bytesPerPixel;
 					const destOffset: number = destRowOffset + (colStart + blockCol * colIncrement) * bytesPerPixel;
 
 					for (let b: number = 0; b < bytesPerPixel; b++) {
@@ -122,7 +122,7 @@ export default class InterlaceDecoder extends Decoder<ByteBuffer> {
 					}
 				}
 
-				sourceIndex += sourceRowSize;
+				srcIndex += srcRowSize;
 			}
 		}
 	}

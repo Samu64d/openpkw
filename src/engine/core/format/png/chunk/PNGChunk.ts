@@ -4,7 +4,7 @@
 
 import Endian from "../../../memory/Endian.ts";
 import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import ByteBufferReader from "../../../memory/ByteBufferReader.ts";
+import ByteBufferReader from "../../../io/ByteBufferReader.ts";
 import Record from "../../../reflection/decorators/Record.ts";
 
 @Record()
@@ -13,7 +13,7 @@ export default class PNGChunk {
 	public static readonly READ_FROM: (reader: ByteBufferReader) => PNGChunk = (reader: ByteBufferReader): PNGChunk => {
 		const size: number = reader.readUint32(null, Endian.BIG);
 		const name: number = reader.readUint32(null, Endian.BIG);
-		const data: ByteBuffer.View = reader.getByteBuffer().view(reader.getCursor(), reader.getCursor() + size);
+		const data: ByteBuffer.View = reader.getBuffer().view(reader.getCursor(), reader.getCursor() + size);
 		reader.skip(size);
 		const crc: number = reader.readUint32();
 		return new PNGChunk(size, name, data, crc);

@@ -30,13 +30,13 @@ namespace Disposable {
 	const DISPOSED: unique symbol = Symbol("DISPOSED");
 
 	export const DISPOSE_ASPECT = (): Aspect => {
-		return function (this: Target): void {
+		return function <T extends Target>(this: T): void {
 			this[DISPOSED] = true;
 		};
 	};
 
 	export const DISPOSE_GUARD_ASPECT = (): Aspect => {
-		return function (this: Target, ...args: unknown[]): void {
+		return function <T extends Target>(this: T, ...args: unknown[]): void {
 			if (this[DISPOSED] == true) {
 				throw new Error("Trying to access a disposed object.");
 			}

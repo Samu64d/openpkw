@@ -3,7 +3,7 @@
 //
 
 import Endian from "../../../memory/Endian.ts";
-import ByteBufferReader from "../../../memory/ByteBufferReader.ts";
+import ByteBufferReader from "../../../io/ByteBufferReader.ts";
 import IHDRData from "../data/IHDRData.ts";
 import InterlaceMethod from "../interlace/InterlaceMethod.ts";
 import ColorType from "../image/ColorType.ts";

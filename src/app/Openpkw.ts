@@ -3,7 +3,7 @@
 //
 
 import Nullable from "../engine/core/common/Nullable.ts";
-import FileSystemDriver from "../engine/core/io/file/FileSystemDriver.ts";
+import FileSystemDriver from "../engine/core/interop/FileSystemDriver.ts";
 import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
 import LogLevel from "../engine/core/util/logger/LogLevel.ts";
 import Logger from "../engine/core/util/logger/Logger.ts";
@@ -29,6 +29,7 @@ export default class Openpkw {
 	private time: number;
 	private lastUpdateTime: number;
 	private readonly logger: Logger;
+	private keyMap: Map<string, boolean>;
 	private renderer: Nullable<Renderer>;
 
 	private constructor() {
@@ -36,6 +37,7 @@ export default class Openpkw {
 		this.time = 0;
 		this.lastUpdateTime = -1;
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
+		this.keyMap = new Map<string, boolean>();
 		this.renderer = null;
 	}
 
@@ -53,8 +55,31 @@ export default class Openpkw {
 	}
 
 	private updateRenderer(): void {
+		if (this.renderer == null) {
+			return;
+		}
+
 		const now: number = performance.now();
 		const elapsed: number = now - this.lastUpdateTime;
+
+		if (this.keyMap.get("ArrowRight")) {
+			this.renderer.moveCamera(0.015, 0, 0);
+		}
+		if (this.keyMap.get("ArrowLeft")) {
+			this.renderer.moveCamera(-0.015, 0, 0);
+		}
+		if (this.keyMap.get("ArrowUp")) {
+			this.renderer.moveCamera(0, 0, -0.015);
+		}
+		if (this.keyMap.get("ArrowDown")) {
+			this.renderer.moveCamera(0.0, 0, 0.015);
+		}
+		if (this.keyMap.get("BracketRight")) {
+			this.renderer.moveCamera(0, 0.015, 0);
+		}
+		if (this.keyMap.get("Slash")) {
+			this.renderer.moveCamera(0, -0.015, 0);
+		}
 
 		if (elapsed > 10) {
 			this.lastUpdateTime = now - (elapsed % 10);
@@ -69,6 +94,20 @@ export default class Openpkw {
 
 	private initRenderer(): void {
 		this.logger.log(LogLevel.INFO, "Run init renderer");
+
+		document.addEventListener("keydown", (event: KeyboardEvent) => {
+			const code: string = event.code;
+			if (code != null) {
+				this.keyMap.set(code, true);
+			}
+		});
+
+		document.addEventListener("keyup", (event: KeyboardEvent) => {
+			const code: string = event.code;
+			if (code != null) {
+				this.keyMap.set(code, false);
+			}
+		});
 
 		const canvasElement: Nullable<HTMLCanvasElement> = document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
 		if (canvasElement == null) {
@@ -90,27 +129,6 @@ export default class Openpkw {
 		this.renderer.init();
 		this.lastUpdateTime = performance.now();
 		window.requestAnimationFrame(this.updateRenderer.bind(this));
-
-		document.addEventListener("keydown", (event: KeyboardEvent) => {
-			if (event.code == "ArrowRight") {
-				this.renderer?.moveCamera(0.08, 0, 0);
-			}
-			if (event.code == "ArrowLeft") {
-				this.renderer?.moveCamera(-0.08, 0, 0);
-			}
-			if (event.code == "ArrowUp") {
-				this.renderer?.moveCamera(0, 0, -0.08);
-			}
-			if (event.code == "ArrowDown") {
-				this.renderer?.moveCamera(0.0, 0, 0.08);
-			}
-			if (event.code == "BracketRight") {
-				this.renderer?.moveCamera(0, 0.08, 0);
-			}
-			if (event.code == "Slash") {
-				this.renderer?.moveCamera(0, -0.08, 0);
-			}
-		});
 	}
 
 	private initTest(): void {

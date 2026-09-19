@@ -3,10 +3,10 @@
 //
 
 import ByteBuffer from "../../memory/ByteBuffer.ts";
+import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Mesh from "../../resource/Mesh.ts";
-import Decoder from "../Decoder.ts";
 
-export default class OBJDecoder extends Decoder<Mesh> {
+export default class OBJDecoder extends SingleValueDecoder<Mesh> {
 
 	public constructor(source: ByteBuffer) {
 		super(source);

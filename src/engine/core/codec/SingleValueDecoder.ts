@@ -1,10 +1,10 @@
 //
-// Decoder.ts
+// SingleValueDecoder.ts
 //
 
 import ByteBuffer from "../memory/ByteBuffer.ts";
 
-export default abstract class Decoder<T> {
+export default abstract class SingleValueDecoder<T> {
 
 	protected readonly source: ByteBuffer;
 

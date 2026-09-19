@@ -2,16 +2,17 @@
 // ByteBuffer.ts
 //
 
+import StringByteEncoder from "../codec/StringByteEncoder.ts";
 import Disposable from "../reflection/decorators/Disposable.ts";
 import TextEncoding from "./TextEncoding.ts";
-import StringByteEncoder from "./StringByteEncoder.ts";
+import Buffer from "./Buffer.ts";
 
 @Disposable()
-class ByteBuffer implements Disposable.Target {
+class ByteBuffer extends Buffer<number> implements Disposable.Target {
 
 	public static readonly ALLOCATE: (size: number, fillValue?: number) => ByteBuffer = (size: number, fillValue: number = 0): ByteBuffer => {
-		if (size < 1) {
-			throw new Error("Size value must be at least 1.");
+		if (size < 0) {
+			throw new Error("Size value cannot be negative: got " + size + ".");
 		}
 
 		const data: Uint8Array = new Uint8Array(size);
@@ -21,7 +22,7 @@ class ByteBuffer implements Disposable.Target {
 		return new ByteBuffer(data);
 	};
 
-	public static readonly FROM_ARRAY: (array: number[]) => ByteBuffer = (array: number[]): ByteBuffer => {
+	public static readonly FROM_ARRAY: (array: ArrayLike<number>) => ByteBuffer = (array: ArrayLike<number>): ByteBuffer => {
 		return new ByteBuffer(new Uint8Array(array));
 	};
 
@@ -33,6 +34,7 @@ class ByteBuffer implements Disposable.Target {
 	private readonly viewSet: Set<ByteBuffer.View>;
 
 	public constructor(data: Uint8Array) {
+		super(data.length);
 		this.data = data;
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
@@ -41,44 +43,40 @@ class ByteBuffer implements Disposable.Target {
 		return this.data;
 	}
 
-	public getSize(): number {
-		return this.data.length;
-	}
-
-	public isWithinBounds(position: number, length: number): boolean {
-		return position >= 0 && length >= 0 && position <= this.data.length - length;
-	}
-
 	public get(index: number): number {
-		if (index < 0 || index >= this.data.length) {
-			throw new Error("Out of bounds access.");
+		if (index < 0 || index >= this.size) {
+			throw new Error("Out of bounds access: got " + index + ".");
 		}
 
 		return this.data[index];
 	}
 
 	public set(index: number, value: number): void {
-		if (index < 0 || index >= this.data.length) {
-			throw new Error("Out of bounds access.");
+		if (index < 0 || index >= this.size) {
+			throw new Error("Out of bounds access: got " + index + ".");
 		}
 
 		this.data[index] = value;
 	}
 
-	public setArray(data: number[], start: number,): void {
-		if (this.isWithinBounds(start, data.length) == false) {
+	public setArray(data: ArrayLike<number>, start: number): void {
+		if (this.isRangeWithinBounds(start, data.length) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
 		this.data.set(data, start);
 	}
 
-	public fill(fillValue: number, start: number = 0, end: number = this.data.length): void {
+	public fill(fillValue: number, start: number = 0, end: number = this.size): void {
+		if (this.isRangeWithinBounds(start, end - start) == false) {
+			throw new Error("Out of bounds access.");
+		}
+
 		this.data.fill(fillValue, start, end);
 	}
 
-	public view(start: number = 0, end: number = this.data.length): ByteBuffer.View {
-		if (this.isWithinBounds(start, end - start) == false) {
+	public view(start: number = 0, end: number = this.size): ByteBuffer.View {
+		if (this.isRangeWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
@@ -88,9 +86,9 @@ class ByteBuffer implements Disposable.Target {
 		return view;
 	}
 
-	public copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.data.length, destinationStart: number = 0): void {
+	public copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.size, destinationStart: number = 0): void {
 		const length: number = sourceEnd - sourceStart;
-		if (this.isWithinBounds(sourceStart, length) == false || byteBuffer.isWithinBounds(destinationStart, length) == false) {
+		if (this.isRangeWithinBounds(sourceStart, length) == false || byteBuffer.isRangeWithinBounds(destinationStart, length) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
@@ -102,8 +100,7 @@ class ByteBuffer implements Disposable.Target {
 	}
 
 	public clone(): ByteBuffer {
-		const data: Uint8Array = new Uint8Array(this.data);
-		return new ByteBuffer(data);
+		return new ByteBuffer(new Uint8Array(this.data));
 	}
 
 	public equals(byteBuffer: ByteBuffer): boolean {
@@ -111,11 +108,11 @@ class ByteBuffer implements Disposable.Target {
 			return true;
 		}
 
-		if (this.data.length != byteBuffer.data.length) {
+		if (this.size != byteBuffer.size) {
 			return false;
 		}
 
-		for (let i: number = 0; i < this.data.length; i++) {
+		for (let i: number = 0; i < this.size; i++) {
 			if (this.data[i] != byteBuffer.data[i]) {
 				return false;
 			}
@@ -125,12 +122,10 @@ class ByteBuffer implements Disposable.Target {
 
 	public dispose(): void {
 		for (const view of this.viewSet) {
-			view.dispose();
+			if (Disposable.isDisposed(view) == false) {
+				view.dispose();
+			}
 		}
-	}
-
-	public disposeView(view: ByteBuffer.View): void {
-		this.viewSet.delete(view);
 	}
 
 }
@@ -148,11 +143,6 @@ namespace ByteBuffer {
 
 		public getParent(): ByteBuffer {
 			return this.parent;
-		}
-
-		public override dispose(): void {
-			this.parent.disposeView(this);
-			super.dispose();
 		}
 
 	}

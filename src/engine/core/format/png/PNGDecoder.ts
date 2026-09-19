@@ -4,9 +4,9 @@
 
 import Nullable from "../../common/Nullable.ts";
 import ByteBuffer from "../../memory/ByteBuffer.ts";
-import ByteBufferReader from "../../memory/ByteBufferReader.ts";
+import ByteBufferReader from "../../io/ByteBufferReader.ts";
+import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Image from "../../resource/Image.ts";
-import Decoder from "../Decoder.ts";
 import PNGChunk from "./chunk/PNGChunk.ts";
 import IHDRChunkDecoder from "./chunk/IHDRChunkDecoder.ts";
 import PLTEChunkDecoder from "./chunk/PLTEChunkDecoder.ts";
@@ -20,7 +20,7 @@ import tRNSData from "./data/tRNSData.ts";
 import IDATData from "./data/IDATData.ts";
 import PNGImage from "./image/PNGImage.ts";
 
-export default class PNGDecoder extends Decoder<Image> {
+export default class PNGDecoder extends SingleValueDecoder<Image> {
 
 	private static readonly HEADER_SIZE: number = 8;
 
