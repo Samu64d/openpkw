@@ -32,6 +32,8 @@ export default class PNGImage {
 			throw new Error("PLTE chunk missing but required for color type 3.");
 		}
 
+		alert("decoding: " + this.colorType + " " + this.depth);
+
 		this.paletteData = plteData != null ? plteData.getPaletteData() : null;
 		this.transparencyData = trnsData != null ? trnsData.getTransparencyData() : null;
 		this.imageData = idatData.getImageData();

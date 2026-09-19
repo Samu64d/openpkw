@@ -2,7 +2,7 @@
 // GraphicDriver.ts
 //
 
-import Driver from "../../interop/Driver.ts";
+import Driver from "./Driver.ts";
 
 export default abstract class GraphicDriver implements Driver {
 

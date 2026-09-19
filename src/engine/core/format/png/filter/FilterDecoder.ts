@@ -3,10 +3,10 @@
 //
 
 import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import Decoder from "../../Decoder.ts";
+import SingleValueDecoder from "../../../codec/SingleValueDecoder.ts";
 import FilterType from "./FilterType.ts";
 
-export default class FilterDecoder extends Decoder<ByteBuffer> {
+export default class FilterDecoder extends SingleValueDecoder<ByteBuffer> {
 
 	private static paethPredictor(a: number, b: number, c: number): number {
 		const p: number = a + b - c;

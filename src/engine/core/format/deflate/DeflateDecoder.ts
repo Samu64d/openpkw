@@ -5,9 +5,9 @@
 import NodeZlib from "node:zlib";
 
 import ByteBuffer from "../../memory/ByteBuffer.ts";
-import Decoder from "../Decoder.ts";
+import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 
-export default class DeflateDecoder extends Decoder<ByteBuffer> {
+export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer> {
 
 	public constructor(source: ByteBuffer) {
 		super(source);

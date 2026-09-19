@@ -3,7 +3,7 @@
 //
 
 import ByteBuffer from "../../memory/ByteBuffer.ts";
-import StringByteEncoder from "../../memory/StringByteEncoder.ts";
+import StringByteEncoder from "../../codec/StringByteEncoder.ts";
 import OpenMode from "../../io/file/OpenMode.ts";
 import File from "../../io/file/File.ts";
 import FileHandler from "../../io/file/FileHandler.ts";

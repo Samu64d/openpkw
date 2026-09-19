@@ -2,10 +2,10 @@
 // Renderer.ts
 //
 
-import Nullable from "../engine/core/common/Nullable.ts";
 import { multiplyAll, rot, translate } from "../engine/core/math/Matrix4d.ts";
+import Vector3d from "../engine/core/math/Vector3d.ts";
 import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
-import StringByteDecoder from "../engine/core/memory/StringByteDecoder.ts";
+import StringByteDecoder from "../engine/core/codec/StringByteDecoder.ts";
 import OpenMode from "../engine/core/io/file/OpenMode.ts";
 import File from "../engine/core/io/file/File.ts";
 import FileHandler from "../engine/core/io/file/FileHandler.ts";
@@ -13,8 +13,9 @@ import PNGDecoder from "../engine/core/format/png/PNGDecoder.ts";
 import OBJDecoder from "../engine/core/format/obj/OBJDecoder.ts";
 import Image from "../engine/core/resource/Image.ts";
 import Mesh from "../engine/core/resource/Mesh.ts";
+import Color from "../engine/core/rendering/Color.ts";
 import Projection from "../engine/core/rendering/Projection.ts";
-
+import Camera from "../engine/core/rendering/Camera.ts";
 import GLVertexBuffer from "../engine/drivers/graphic/gl/GLVertexBuffer.ts";
 import GLElementBuffer from "../engine/drivers/graphic/gl/GLElementBuffer.ts";
 import GLVertexArray from "../engine/drivers/graphic/gl/GLVertexArray.ts";
@@ -24,11 +25,13 @@ import GLVertexShader from "../engine/drivers/graphic/gl/GLVertexShader.ts";
 import GLFragmentShader from "../engine/drivers/graphic/gl/GLFragmentShader.ts";
 import GLProgram from "../engine/drivers/graphic/gl/GLProgram.ts";
 import GLContextManager from "../engine/drivers/graphic/gl/GLContextManager.ts";
-import Camera from "../engine/core/rendering/Camera.ts";
-import Vector3d from "../engine/core/math/Vector3d.ts";
 
-// Test class
-export default class MapRenderer {
+/**
+ * Playground renderer
+ */
+export default class Renderer {
+
+	private static readonly CLEAR_COLOR: Color = [0, 0, 0, 0];
 
 	private readonly context: WebGL2RenderingContext;
 	private readonly contextManager: GLContextManager;
@@ -65,7 +68,7 @@ export default class MapRenderer {
 	public update(time: number): void {
 		this.time = time;
 		this.contextManager.setViewport(this.context.canvas.width, this.context.canvas.height);
-		this.contextManager.clear();
+		this.contextManager.clear(Renderer.CLEAR_COLOR);
 
 		this.drawModel("grass_0", translate(0.5, 0.5, -4.75));
 		this.drawModel("grass_1", translate(0.75, 0.5, -4.75));
@@ -139,6 +142,7 @@ export default class MapRenderer {
 		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
 		const image: Image = pngDecoder.decode();
 		const texture = new GLTexture(this.contextManager, this.context.TEXTURE_2D);
+
 		texture.bind();
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
@@ -146,6 +150,7 @@ export default class MapRenderer {
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
 		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetData());
 		texture.unbind();
+
 		return texture;
 	}
 
@@ -154,11 +159,11 @@ export default class MapRenderer {
 		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
 		const text: string = new StringByteDecoder(byteBuffer).decode();
 		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text) : new GLVertexShader(this.contextManager, text);
+
 		shader.compile();
 
 		if (shader.getCompilationStatus() == GLShader.CompilationStatus.FAILED) {
-			const error: Nullable<string> = shader.getCompilationError();
-			throw new Error(error ?? "Failed to compile shader.");
+			throw new Error(shader.getCompilationError() ?? "Failed to compile shader.");
 		}
 
 		return shader;
@@ -168,12 +173,12 @@ export default class MapRenderer {
 		const vertexShader: GLShader = this.createShader(path + ".vert", 0);
 		const fragmentShader: GLShader = this.createShader(path + ".frag", 1);
 		const program: GLProgram = new GLProgram(this.contextManager);
+
 		program.attachShaders([vertexShader, fragmentShader]);
 		program.link();
 
 		if (program.getLinkingStatus() == GLProgram.LinkingStatus.FAILED) {
-			const error: Nullable<string> = program.getLinkingError();
-			throw new Error(error ?? "Failed to compile program.");
+			throw new Error(program.getLinkingError() ?? "Failed to compile program.");
 		}
 
 		vertexShader.dispose();

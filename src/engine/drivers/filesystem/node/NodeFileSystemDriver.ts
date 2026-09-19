@@ -8,7 +8,7 @@ import TextEncoding from "../../../core/memory/TextEncoding.ts";
 import ByteBuffer from "../../../core/memory/ByteBuffer.ts";
 import AccessRight from "../../../core/io/file/AccessRight.ts";
 import OpenMode from "../../../core/io/file/OpenMode.ts";
-import FileSystemDriver from "../../../core/io/file/FileSystemDriver.ts";
+import FileSystemDriver from "../../../core/interop/FileSystemDriver.ts";
 import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
 import ErrorInspect from "../../../core/reflection/error/ErrorInspect.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";

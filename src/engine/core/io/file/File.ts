@@ -6,10 +6,10 @@ import TextEncoding from "../../memory/TextEncoding.ts";
 import ByteBuffer from "../../memory/ByteBuffer.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
+import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import AccessRight from "./AccessRight.ts";
 import OpenMode from "./OpenMode.ts";
 import FileHandler from "./FileHandler.ts";
-import FileSystemDriver from "./FileSystemDriver.ts";
 
 export default class File {
 

@@ -2,7 +2,7 @@
 // GLGraphicDriver.ts
 //
 
-import GraphicDriver from "../../../core/io/graphic/GraphicDriver.ts";
+import GraphicDriver from "../../../core/interop/GraphicDriver.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
 
 @Disposable()
