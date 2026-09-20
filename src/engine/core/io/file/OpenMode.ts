@@ -2,7 +2,7 @@
 // OpenMode.ts
 //
 
-export const enum OpenMode {
+const enum OpenMode {
 	READ,
 	WRITE_CREATE,
 	READ_WRITE,

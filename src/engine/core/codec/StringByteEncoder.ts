@@ -4,34 +4,39 @@
 
 import TextEncoding from "../memory/TextEncoding.ts";
 import ByteBuffer from "../memory/ByteBuffer.ts";
+import Encoder from "./Encoder.ts";
 
-export default class StringByteEncoder {
+export default class StringByteEncoder implements Encoder<string> {
 
 	private static readonly UTF_8_ENCODER: TextEncoder = new TextEncoder();
 
-	private readonly string: string;
+	private textEncoding: TextEncoding;
 
-	public constructor(string: string) {
-		this.string = string;
+	public constructor(textEncoding: TextEncoding = TextEncoding.UTF_8) {
+		this.textEncoding = textEncoding;
 	}
 
-	public getString(): string {
-		return this.string;
+	public getTextEncoding(): TextEncoding {
+		return this.textEncoding;
 	}
 
-	public encode(textEncoding: TextEncoding = TextEncoding.UTF_8): ByteBuffer {
-		switch (textEncoding) {
+	public setTextEncoding(textEncoding: TextEncoding): void {
+		this.textEncoding = textEncoding;
+	}
+
+	public encode(source: string): ByteBuffer {
+		switch (this.textEncoding) {
 			case TextEncoding.ASCII:
 				{
-					return this.encodeAscii();
+					return this.encodeAscii(source);
 				}
 			case TextEncoding.UTF_8:
 				{
-					return this.encodeUtf8();
+					return this.encodeUtf8(source);
 				}
 			case TextEncoding.UTF_16LE:
 				{
-					return this.encodeUtf16LE();
+					return this.encodeUtf16LE(source);
 				}
 			default:
 				{
@@ -40,36 +45,40 @@ export default class StringByteEncoder {
 		}
 	}
 
-	private encodeAscii(): ByteBuffer {
-		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(this.string.length);
-		for (let i: number = 0; i < this.string.length; i++) {
-			const charCode: number = this.string.charCodeAt(i);
+	private encodeAscii(source: string): ByteBuffer {
+		const dest: Uint8Array = new Uint8Array(source.length);
+
+		for (let i: number = 0; i < source.length; i++) {
+			const charCode: number = source.charCodeAt(i);
 
 			if (charCode > 0x7F) {
-				throw new Error("Encountered incorrect char value to be encoded.");
+				throw new Error("Encountered incorrect char value to be encoded: " + charCode + ".");
 			}
 
-			byteBuffer.set(i, charCode);
+			dest[i] = charCode;
 		}
-		return byteBuffer;
+
+		return ByteBuffer.FROM_ARRAY(dest);
 	}
 
-	private encodeUtf8(): ByteBuffer {
-		const array: Uint8Array = StringByteEncoder.UTF_8_ENCODER.encode(this.string);
-		return new ByteBuffer(array);
+	private encodeUtf8(source: string): ByteBuffer {
+		const dest: Uint8Array = StringByteEncoder.UTF_8_ENCODER.encode(source);
+		return ByteBuffer.FROM_ARRAY(dest);
 	}
 
-	private encodeUtf16LE(): ByteBuffer {
-		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(this.string.length * 2);
-		for (let i: number = 0; i < this.string.length; i++) {
+	private encodeUtf16LE(source: string): ByteBuffer {
+		const dest: Uint8Array = new Uint8Array(source.length * 2);
+
+		for (let i: number = 0; i < source.length; i++) {
 			const k: number = i * 2;
-			const charCode: number = this.string.charCodeAt(i);
+			const charCode: number = source.charCodeAt(i);
 			const low: number = charCode & 0xFF;
 			const high: number = (charCode >>> 8) & 0xFF;
-			byteBuffer.set(k, low);
-			byteBuffer.set(k + 1, high);
+			dest[k] = low;
+			dest[k + 1] = high;
 		}
-		return byteBuffer;
+
+		return ByteBuffer.FROM_ARRAY(dest);
 	}
 
 }

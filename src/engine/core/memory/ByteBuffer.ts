@@ -16,9 +16,11 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 		}
 
 		const data: Uint8Array = new Uint8Array(size);
+
 		if (fillValue != 0) {
 			data.fill(fillValue);
 		}
+
 		return new ByteBuffer(data);
 	};
 
@@ -27,13 +29,13 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 	};
 
 	public static readonly FROM_STRING: (string: string, textEncoding: TextEncoding) => ByteBuffer = (string: string, textEncoding: TextEncoding): ByteBuffer => {
-		return new StringByteEncoder(string).encode(textEncoding);
+		return new StringByteEncoder(textEncoding).encode(string);
 	};
 
 	private readonly data: Uint8Array;
 	private readonly viewSet: Set<ByteBuffer.View>;
 
-	public constructor(data: Uint8Array) {
+	protected constructor(data: Uint8Array) {
 		super(data.length);
 		this.data = data;
 		this.viewSet = new Set<ByteBuffer.View>();
@@ -100,7 +102,7 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 	}
 
 	public clone(): ByteBuffer {
-		return new ByteBuffer(new Uint8Array(this.data));
+		return ByteBuffer.FROM_ARRAY(this.data);
 	}
 
 	public equals(byteBuffer: ByteBuffer): boolean {
@@ -136,7 +138,7 @@ namespace ByteBuffer {
 
 		private readonly parent: ByteBuffer;
 
-		public constructor(buffer: Uint8Array, parent: ByteBuffer) {
+		protected constructor(buffer: Uint8Array, parent: ByteBuffer) {
 			super(buffer);
 			this.parent = parent;
 		}

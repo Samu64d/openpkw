@@ -2,7 +2,7 @@
 // AccessRight.ts
 //
 
-export const enum AccessRight {
+const enum AccessRight {
 	NONE,
 	READ,
 	WRITE,
