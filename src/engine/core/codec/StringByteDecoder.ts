@@ -4,38 +4,43 @@
 
 import TextEncoding from "../memory/TextEncoding.ts";
 import ByteBuffer from "../memory/ByteBuffer.ts";
+import Decoder from "./Decoder.ts";
 
-export default class StringByteDecoder {
+export default class StringByteDecoder implements Decoder<string> {
 
-	private static readonly SCAN_CHUNK_SIZE: number = 8192;
+	private static readonly READ_CHUNK_SIZE: number = 8192;
 
 	private static readonly UTF_8_DECODER: TextDecoder = new TextDecoder("utf-8", {
 		fatal: true
 	});
 
-	private readonly byteBuffer: ByteBuffer;
+	private textEncoding: TextEncoding;
 
-	public constructor(byteBuffer: ByteBuffer) {
-		this.byteBuffer = byteBuffer;
+	public constructor(textEncoding: TextEncoding = TextEncoding.UTF_8) {
+		this.textEncoding = textEncoding;
 	}
 
-	public getByteBuffer(): ByteBuffer {
-		return this.byteBuffer;
+	public getTextEncoding(): TextEncoding {
+		return this.textEncoding;
 	}
 
-	public decode(textEncoding: TextEncoding = TextEncoding.UTF_8): string {
-		switch (textEncoding) {
+	public setTextEncoding(textEncoding: TextEncoding): void {
+		this.textEncoding = textEncoding;
+	}
+
+	public decode(source: ByteBuffer): string {
+		switch (this.textEncoding) {
 			case TextEncoding.ASCII:
 				{
-					return this.decodeAscii();
+					return this.decodeAscii(source);
 				}
 			case TextEncoding.UTF_8:
 				{
-					return this.decodeUtf8();
+					return this.decodeUtf8(source);
 				}
 			case TextEncoding.UTF_16LE:
 				{
-					return this.decodeUtf16LE();
+					return this.decodeUtf16LE(source);
 				}
 			default:
 				{
@@ -44,51 +49,58 @@ export default class StringByteDecoder {
 		}
 	}
 
-	private decodeAscii(): string {
-		const size: number = this.byteBuffer.getSize();
-		let string: string = "";
+	private decodeAscii(source: ByteBuffer): string {
+		const size: number = source.getSize();
+		const src: Uint8Array = source.unsafeGetData();
+		let dest: string = "";
 
-		for (let i: number = 0; i < size; i += StringByteDecoder.SCAN_CHUNK_SIZE) {
-			const end: number = Math.min(i + StringByteDecoder.SCAN_CHUNK_SIZE, size);
+		for (let i: number = 0; i < size; i += StringByteDecoder.READ_CHUNK_SIZE) {
+			const end: number = Math.min(i + StringByteDecoder.READ_CHUNK_SIZE, size);
 			const charCodeList: number[] = new Array<number>(end - i);
+
 			for (let j: number = i; j < end; j++) {
-				const charCode: number = this.byteBuffer.get(j);
+				const charCode: number = src[j];
 				if (charCode > 0x7F) {
-					throw new Error("Encountered incorrect byte buffer value to be decoded.");
+					throw new Error("Encountered incorrect byte value to be decoded: " + charCode + ".");
 				}
 				charCodeList[j - i] = charCode;
 			}
-			string += String.fromCharCode(...charCodeList);
+
+			dest += String.fromCharCode(...charCodeList);
 		}
 
-		return string;
+		return dest;
 	}
 
-	private decodeUtf8(): string {
-		return StringByteDecoder.UTF_8_DECODER.decode(this.byteBuffer.unsafeGetData());
+	private decodeUtf8(source: ByteBuffer): string {
+		const src: Uint8Array = source.unsafeGetData();
+		return StringByteDecoder.UTF_8_DECODER.decode(src);
 	}
 
-	private decodeUtf16LE(): string {
-		if (this.byteBuffer.getSize() % 2 != 0) {
-			throw new Error("Byte buffer to be decoded has incorrect size.");
+	private decodeUtf16LE(source: ByteBuffer): string {
+		if (source.getSize() % 2 != 0) {
+			throw new Error("Byte buffer to be decoded has incorrect size: " + source.getSize());
 		}
 
-		const size: number = this.byteBuffer.getSize() / 2;
-		let string: string = "";
+		const size: number = source.getSize() / 2;
+		const src: Uint8Array = source.unsafeGetData();
+		let dest: string = "";
 
-		for (let i: number = 0; i < size; i += StringByteDecoder.SCAN_CHUNK_SIZE) {
-			const end: number = Math.min(i + StringByteDecoder.SCAN_CHUNK_SIZE, size);
-			const charCodeList: number[] = new Array<number>(end - i);
+		for (let i: number = 0; i < size; i += StringByteDecoder.READ_CHUNK_SIZE) {
+			const end: number = Math.min(i + StringByteDecoder.READ_CHUNK_SIZE, size);
+			const charCodeList: Uint16Array = new Uint16Array(end - i);
+
 			for (let j: number = i; j < end; j++) {
-				const low: number = this.byteBuffer.get(j * 2);
-				const high: number = this.byteBuffer.get(j * 2 + 1);
+				const low: number = src[j * 2];
+				const high: number = src[j * 2 + 1];
 				const charCode: number = low | (high << 8);
 				charCodeList[j - i] = charCode;
 			}
-			string += String.fromCharCode(...charCodeList);
+
+			dest += String.fromCharCode(...charCodeList);
 		}
 
-		return string;
+		return dest;
 	}
 
 }

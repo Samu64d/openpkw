@@ -77,7 +77,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override readFile(path: string): ByteBuffer {
-		return new ByteBuffer(this.readBinaryFile(path));
+		return ByteBuffer.FROM_ARRAY(this.readBinaryFile(path));
 	}
 
 	public override readTextFile(path: string, textEncoding: TextEncoding = TextEncoding.UTF_8): string {

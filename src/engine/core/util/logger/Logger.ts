@@ -32,11 +32,14 @@ export default class Logger {
 
 	public log(logLevel: LogLevel, text: string): void {
 		if (this.handler.isValid() == true) {
-			const logText: string = "[" + this.getId() + "] [" + logLevel.toString() + "] " + text + "\n";
-			const encoder: StringByteEncoder = new StringByteEncoder(logText);
-			const byteBuffer: ByteBuffer = encoder.encode();
+			const logText: string = this.line(logLevel, text);
+			const byteBuffer: ByteBuffer = new StringByteEncoder().encode(logText);
 			this.handler.write(byteBuffer.getSize(), byteBuffer);
 		}
+	}
+
+	private line(logLevel: LogLevel, text: string): string {
+		return "[" + this.getId() + "] [" + logLevel.toString() + "] " + text + "\n";
 	}
 
 }

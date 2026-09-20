@@ -157,7 +157,7 @@ export default class Renderer {
 	private createShader(path: string, type: number): GLShader {
 		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
 		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
-		const text: string = new StringByteDecoder(byteBuffer).decode();
+		const text: string = new StringByteDecoder().decode(byteBuffer);
 		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text) : new GLVertexShader(this.contextManager, text);
 
 		shader.compile();
