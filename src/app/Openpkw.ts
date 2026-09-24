@@ -9,7 +9,6 @@ import LogLevel from "../engine/core/util/logger/LogLevel.ts";
 import Logger from "../engine/core/util/logger/Logger.ts";
 import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import Renderer from "./Renderer.ts";
-import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
 
 export default class Openpkw {
 
@@ -134,24 +133,6 @@ export default class Openpkw {
 
 	private initTest(): void {
 		this.logger.log(LogLevel.INFO, "Run init test");
-
-		// const t0 = performance.now()
-		// const buffer: ByteBuffer = ByteBuffer.ALLOCATE(1000000);
-		// for (let i = 0; i < buffer.getSize(); i++) {
-		// 	const value = buffer.get(i);
-		// }
-		// const t1 = performance.now();
-
-		// const data = buffer.unsafeGetData();
-
-		// const t2 = performance.now();
-		// for (let i = 0; i < buffer.getSize(); i++) {
-		// 	const value = data[i];
-		// }
-
-		// const t3 = performance.now();
-
-		// //alert((t1 - t0) + " <=> " + (t3 - t2));
 
 	}
 

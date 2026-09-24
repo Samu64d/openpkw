@@ -14,7 +14,7 @@ class ArrayLikePoolAllocator<T extends ArrayLike<unknown>> implements Allocator<
 
 	private static readonly MAX_BUCKET_ITEM_COUNT: number = 4096;
 
-	private readonly itemType: ArrayConstructor;
+	private readonly itemType: ArrayLikePoolAllocator.ArrayLikeConstructor<T>;
 	private readonly maxMallocSize: number;
 	private readonly bucketIdFreeItemListMap: Map<number, T[]>;
 	private readonly bucketIdFreeItemCountMap: Map<number, number>;
