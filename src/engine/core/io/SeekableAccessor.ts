@@ -5,7 +5,7 @@
 import Nullable from "../common/Nullable.ts";
 import Buffer from "../memory/Buffer.ts";
 
-export default abstract class SeekableAccessor<T extends Buffer<number>> {
+export default abstract class SeekableAccessor<T extends Buffer<unknown>> {
 
 	protected readonly buffer: T;
 	private cursor: number;
@@ -77,8 +77,8 @@ export default abstract class SeekableAccessor<T extends Buffer<number>> {
 		return resolvedPosition;
 	}
 
-	protected advanceIfUnspecified(length: number, value: Nullable<number> = null): void {
-		if (value == null) {
+	protected advanceIfUnspecified(length: number, position: Nullable<number> = null): void {
+		if (position == null) {
 			this.skip(length);
 		}
 	}

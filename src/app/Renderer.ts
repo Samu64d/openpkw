@@ -52,6 +52,7 @@ export default class Renderer {
 	}
 
 	public init(): void {
+		const t0: number = performance.now();
 		this.contextManager.enableDepthTest();
 		this.contextManager.enableBlend();
 		this.contextManager.setAlphaBlend();
@@ -94,6 +95,7 @@ export default class Renderer {
 		this.drawModel("cliff_corner_outer", translate(1.0, 0.25, -4.25));
 		this.drawModel("cliff_straight", multiplyAll(translate(1.0, 0.25, -4.5), rot(-1.57, 0.0, 0.0)));
 		this.drawModel("cliff_straight", multiplyAll(translate(1.0, 0.25, -4.75), rot(-1.57, 0.0, 0.0)));
+		this.drawModel("cliff_straight", multiplyAll(translate(1.0, 0.25, -5.0), rot(-1.57, 0.0, 0.0)));
 
 		this.drawModel("tree", translate(0.0, 0, -4.0));
 		this.drawModel("tree", translate(0.0, 0, -5.0));
