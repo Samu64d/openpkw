@@ -2,10 +2,12 @@
 // ByteBuffer.ts
 //
 
+import Nullable from "../common/Nullable.ts";
 import StringByteEncoder from "../codec/StringByteEncoder.ts";
 import Disposable from "../reflection/decorators/Disposable.ts";
 import TextEncoding from "./TextEncoding.ts";
 import Buffer from "./Buffer.ts";
+import ArrayLikePoolAllocator from "./ArrayLikePoolAllocator.ts";
 
 @Disposable()
 class ByteBuffer extends Buffer<number> implements Disposable.Target {
@@ -15,37 +17,45 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 			throw new Error("Size value cannot be negative: got " + size + ".");
 		}
 
-		const data: Uint8Array = new Uint8Array(size);
+		const data: Nullable<Uint8Array> = ByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(size);
 
-		if (fillValue != 0) {
-			data.fill(fillValue);
+		if (data == null) {
+			throw new Error("Cannot allocate new byte buffer.");
 		}
 
-		return new ByteBuffer(data);
+		data.fill(fillValue, 0, size);
+
+		return new ByteBuffer(data, size);
 	};
 
 	public static readonly FROM_ARRAY: (array: ArrayLike<number>) => ByteBuffer = (array: ArrayLike<number>): ByteBuffer => {
-		return new ByteBuffer(new Uint8Array(array));
+		const data: Nullable<Uint8Array> = ByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(array.length);
+
+		if (data == null) {
+			throw new Error("Cannot allocate new byte buffer.");
+		}
+
+		data.set(array);
+
+		return new ByteBuffer(data, array.length);
 	};
 
 	public static readonly FROM_STRING: (string: string, textEncoding: TextEncoding) => ByteBuffer = (string: string, textEncoding: TextEncoding): ByteBuffer => {
 		return new StringByteEncoder(textEncoding).encode(string);
 	};
 
-	private readonly data: Uint8Array;
+	private static readonly UINT8_ARRAY_ALLOCATOR: ArrayLikePoolAllocator<Uint8Array> = new ArrayLikePoolAllocator<Uint8Array>(Uint8Array);
+
+	protected readonly data: Uint8Array;
 	private readonly viewSet: Set<ByteBuffer.View>;
 
-	protected constructor(data: Uint8Array) {
-		super(data.length);
+	protected constructor(data: Uint8Array, size: number) {
+		super(size);
 		this.data = data;
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
 
-	public unsafeGetData(): Uint8Array {
-		return this.data;
-	}
-
-	public get(index: number): number {
+	public override get(index: number): number {
 		if (index < 0 || index >= this.size) {
 			throw new Error("Out of bounds access: got " + index + ".");
 		}
@@ -53,12 +63,16 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 		return this.data[index];
 	}
 
-	public set(index: number, value: number): void {
+	public override set(index: number, value: number): void {
 		if (index < 0 || index >= this.size) {
 			throw new Error("Out of bounds access: got " + index + ".");
 		}
 
 		this.data[index] = value;
+	}
+
+	public unsafeGetData(): Uint8Array {
+		return this.data.subarray(0, this.size);
 	}
 
 	public setArray(data: ArrayLike<number>, start: number): void {
@@ -82,8 +96,8 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 			throw new Error("Out of bounds access.");
 		}
 
-		const subBuffer: Uint8Array = this.data.subarray(start, end);
-		const view: ByteBuffer.View = new ByteBuffer.View(subBuffer, this);
+		const view: ByteBuffer.View = new ByteBuffer.View(this, start, end);
+
 		this.viewSet.add(view);
 		return view;
 	}
@@ -98,11 +112,11 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 	}
 
 	public toArray(): number[] {
-		return Array.from(this.data);
+		return Array.from(this.data.subarray(0, this.size));
 	}
 
 	public clone(): ByteBuffer {
-		return ByteBuffer.FROM_ARRAY(this.data);
+		return ByteBuffer.FROM_ARRAY(this.data.subarray(0, this.size));
 	}
 
 	public equals(byteBuffer: ByteBuffer): boolean {
@@ -119,7 +133,12 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 				return false;
 			}
 		}
+
 		return true;
+	}
+
+	public removeView(view: ByteBuffer.View): void {
+		this.viewSet.delete(view);
 	}
 
 	public dispose(): void {
@@ -127,6 +146,10 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 			if (Disposable.isDisposed(view) == false) {
 				view.dispose();
 			}
+		}
+
+		if ((this instanceof ByteBuffer.View) == false) {
+			ByteBuffer.UINT8_ARRAY_ALLOCATOR.free(this.data);
 		}
 	}
 
@@ -138,13 +161,19 @@ namespace ByteBuffer {
 
 		private readonly parent: ByteBuffer;
 
-		protected constructor(buffer: Uint8Array, parent: ByteBuffer) {
-			super(buffer);
-			this.parent = parent;
+		public constructor(source: ByteBuffer, start: number, end: number) {
+			const subData: Uint8Array = source.unsafeGetData().subarray(start, end);
+			super(subData, end - start);
+			this.parent = source;
 		}
 
 		public getParent(): ByteBuffer {
 			return this.parent;
+		}
+
+		public override dispose(): void {
+			super.dispose();
+			this.parent.removeView(this);
 		}
 
 	}

@@ -50,13 +50,13 @@ export default class StringByteDecoder implements Decoder<string> {
 	}
 
 	private decodeAscii(source: ByteBuffer): string {
-		const size: number = source.getSize();
+		const sizeInBytes: number = source.getSize();
 		const src: Uint8Array = source.unsafeGetData();
 		let dest: string = "";
 
-		for (let i: number = 0; i < size; i += StringByteDecoder.READ_CHUNK_SIZE) {
-			const end: number = Math.min(i + StringByteDecoder.READ_CHUNK_SIZE, size);
-			const charCodeList: number[] = new Array<number>(end - i);
+		for (let i: number = 0; i < sizeInBytes; i += StringByteDecoder.READ_CHUNK_SIZE) {
+			const end: number = Math.min(i + StringByteDecoder.READ_CHUNK_SIZE, sizeInBytes);
+			const charCodeList: Uint8Array = new Uint8Array(end - i);
 
 			for (let j: number = i; j < end; j++) {
 				const charCode: number = src[j];
@@ -79,21 +79,22 @@ export default class StringByteDecoder implements Decoder<string> {
 
 	private decodeUtf16LE(source: ByteBuffer): string {
 		if (source.getSize() % 2 != 0) {
-			throw new Error("Byte buffer to be decoded has incorrect size: " + source.getSize());
+			throw new Error("Byte buffer to be decoded has incorrect size: " + source.getSize() + ".");
 		}
 
-		const size: number = source.getSize() / 2;
+		const sizeInBytes: number = source.getSize() / 2;
 		const src: Uint8Array = source.unsafeGetData();
 		let dest: string = "";
 
-		for (let i: number = 0; i < size; i += StringByteDecoder.READ_CHUNK_SIZE) {
-			const end: number = Math.min(i + StringByteDecoder.READ_CHUNK_SIZE, size);
+		for (let i: number = 0; i < sizeInBytes; i += StringByteDecoder.READ_CHUNK_SIZE) {
+			const end: number = Math.min(i + StringByteDecoder.READ_CHUNK_SIZE, sizeInBytes);
 			const charCodeList: Uint16Array = new Uint16Array(end - i);
 
 			for (let j: number = i; j < end; j++) {
 				const low: number = src[j * 2];
 				const high: number = src[j * 2 + 1];
 				const charCode: number = low | (high << 8);
+
 				charCodeList[j - i] = charCode;
 			}
 

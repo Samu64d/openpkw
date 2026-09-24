@@ -33,6 +33,19 @@ export default class MathHelper {
 		return (t - v0) / range;
 	}
 
+	public static findNextPowerOfTwo(x: number): number {
+		if (x <= 1) {
+			return 1;
+		}
+
+		x--;
+		x |= x >> 1;
+		x |= x >> 2;
+		x |= x >> 4;
+		x |= x >> 8;
+		x |= x >> 16;
+		return ++x;
+	}
 
 	public static pointGradientCenterLerp(x: number, y: number, rx: number, ry: number): number {
 		const dx: number = 1 - Math.abs(x * 2 - rx) / rx;
