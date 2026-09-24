@@ -52,7 +52,6 @@ export default class Renderer {
 	}
 
 	public init(): void {
-		const t0: number = performance.now();
 		this.contextManager.enableDepthTest();
 		this.contextManager.enableBlend();
 		this.contextManager.setAlphaBlend();
