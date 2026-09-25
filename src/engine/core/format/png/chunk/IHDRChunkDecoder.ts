@@ -7,16 +7,16 @@ import ByteBufferReader from "../../../io/ByteBufferReader.ts";
 import IHDRData from "../data/IHDRData.ts";
 import InterlaceMethod from "../interlace/InterlaceMethod.ts";
 import ColorType from "../image/ColorType.ts";
-import PNGChunk from "./PNGChunk.ts";
-import PNGChunkDecoder from "./PNGChunkDecoder.ts";
+import Chunk from "./Chunk.ts";
+import ChunkDecoder from "./ChunkDecoder.ts";
 
-export default class IHDRChunkDecoder extends PNGChunkDecoder<IHDRData> {
+export default class IHDRChunkDecoder extends ChunkDecoder<IHDRData> {
 
 	public static readonly CHUNK_SIGNATURE: number = 0x49484452;
 
 	private static readonly MAX_IMAGE_DIMENSION: number = 0x7FFFFFFF;
 
-	public constructor(chunk: PNGChunk) {
+	public constructor(chunk: Chunk) {
 		super(chunk, IHDRChunkDecoder.CHUNK_SIGNATURE, 13, 13);
 	}
 
