@@ -3,14 +3,14 @@
 //
 
 import PLTEData from "../data/PLTEData.ts";
-import PNGChunk from "./PNGChunk.ts";
-import PNGChunkDecoder from "./PNGChunkDecoder.ts";
+import Chunk from "./Chunk.ts";
+import ChunkDecoder from "./ChunkDecoder.ts";
 
-export default class PLTEChunkDecoder extends PNGChunkDecoder<PLTEData> {
+export default class PLTEChunkDecoder extends ChunkDecoder<PLTEData> {
 
 	public static readonly CHUNK_SIGNATURE: number = 0x504C5445;
 
-	public constructor(chunk: PNGChunk) {
+	public constructor(chunk: Chunk) {
 		super(chunk, PLTEChunkDecoder.CHUNK_SIGNATURE, 3, 768);
 	}
 

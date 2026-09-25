@@ -5,16 +5,16 @@
 import IHDRData from "../data/IHDRData.ts";
 import tRNSData from "../data/tRNSData.ts";
 import ColorType from "../image/ColorType.ts";
-import PNGChunk from "./PNGChunk.ts";
-import PNGChunkDecoder from "./PNGChunkDecoder.ts";
+import Chunk from "./Chunk.ts";
+import ChunkDecoder from "./ChunkDecoder.ts";
 
-export default class tRNSChunkDecoder extends PNGChunkDecoder<tRNSData> {
+export default class tRNSChunkDecoder extends ChunkDecoder<tRNSData> {
 
 	public static readonly CHUNK_SIGNATURE: number = 0x74524E53;
 
 	private readonly colorType: ColorType;
 
-	public constructor(chunk: PNGChunk, ihdrData: IHDRData) {
+	public constructor(chunk: Chunk, ihdrData: IHDRData) {
 		super(chunk, tRNSChunkDecoder.CHUNK_SIGNATURE);
 		this.colorType = ihdrData.getColorType();
 	}

@@ -2,12 +2,12 @@
 // UnknownChunkDecoder.ts
 //
 
-import PNGChunk from "./PNGChunk.ts";
-import PNGChunkDecoder from "./PNGChunkDecoder.ts";
+import Chunk from "./Chunk.ts";
+import ChunkDecoder from "./ChunkDecoder.ts";
 
-export default class UnknownChunkDecoder extends PNGChunkDecoder<void> {
+export default class UnknownChunkDecoder extends ChunkDecoder<void> {
 
-	public constructor(chunk: PNGChunk) {
+	public constructor(chunk: Chunk) {
 		super(chunk, chunk.getSignature());
 	}
 

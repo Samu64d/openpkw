@@ -12,10 +12,10 @@ import FilterDecoder from "../filter/FilterDecoder.ts";
 import InterlaceMethod from "../interlace/InterlaceMethod.ts";
 import InterlaceDecoder from "../interlace/InterlaceDecoder.ts";
 import ColorType from "../image/ColorType.ts";
-import PNGChunk from "./PNGChunk.ts";
-import PNGChunkDecoder from "./PNGChunkDecoder.ts";
+import Chunk from "./Chunk.ts";
+import ChunkDecoder from "./ChunkDecoder.ts";
 
-export default class IDATChunkDecoder extends PNGChunkDecoder<IDATData> {
+export default class IDATChunkDecoder extends ChunkDecoder<IDATData> {
 
 	public static readonly CHUNK_SIGNATURE: number = 0x49444154;
 
@@ -25,7 +25,7 @@ export default class IDATChunkDecoder extends PNGChunkDecoder<IDATData> {
 	private readonly colorType: ColorType;
 	private readonly interlaceMethod: InterlaceMethod;
 
-	public constructor(chunk: PNGChunk, ihdrData: IHDRData) {
+	public constructor(chunk: Chunk, ihdrData: IHDRData) {
 		super(chunk, IDATChunkDecoder.CHUNK_SIGNATURE);
 		this.width = ihdrData.getWidth();
 		this.height = ihdrData.getHeight();

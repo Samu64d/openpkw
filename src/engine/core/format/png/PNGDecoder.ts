@@ -7,7 +7,7 @@ import ByteBuffer from "../../memory/ByteBuffer.ts";
 import ByteBufferReader from "../../io/ByteBufferReader.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Image from "../../resource/Image.ts";
-import PNGChunk from "./chunk/PNGChunk.ts";
+import Chunk from "./chunk/Chunk.ts";
 import IHDRChunkDecoder from "./chunk/IHDRChunkDecoder.ts";
 import PLTEChunkDecoder from "./chunk/PLTEChunkDecoder.ts";
 import tRNSChunkDecoder from "./chunk/tRNSChunkDecoder.ts";
@@ -28,12 +28,12 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 
 	private static readonly CHUNK_REGION_OFFSET: number = 8;
 
-	private ihdrChunk: Nullable<PNGChunk>;
-	private plteChunk: Nullable<PNGChunk>;
-	private trnsChunk: Nullable<PNGChunk>;
-	private idatChunk: Nullable<PNGChunk>;
-	private readonly unknownChunkList: PNGChunk[];
-	private iendChunk: Nullable<PNGChunk>;
+	private ihdrChunk: Nullable<Chunk>;
+	private plteChunk: Nullable<Chunk>;
+	private trnsChunk: Nullable<Chunk>;
+	private idatChunk: Nullable<Chunk>;
+	private readonly unknownChunkList: Chunk[];
+	private iendChunk: Nullable<Chunk>;
 	private ihdrData: Nullable<IHDRData>;
 	private plteData: Nullable<PLTEData>;
 	private trnsData: Nullable<tRNSData>;
@@ -45,7 +45,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 		this.plteChunk = null;
 		this.trnsChunk = null;
 		this.idatChunk = null;
-		this.unknownChunkList = new Array<PNGChunk>();
+		this.unknownChunkList = new Array<Chunk>();
 		this.iendChunk = null;
 		this.ihdrData = null;
 		this.plteData = null;
@@ -72,7 +72,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 		const reader: ByteBufferReader = new ByteBufferReader(this.source);
 		reader.seek(PNGDecoder.CHUNK_REGION_OFFSET);
 
-		const chunk: PNGChunk = PNGChunk.READ_FROM(reader);
+		const chunk: Chunk = Chunk.READ_FROM(reader);
 
 		if (chunk.getSignature() != IHDRChunkDecoder.CHUNK_SIGNATURE) {
 			throw new Error("First chunk must be IHDR: got " + chunk.getSignatureAsString() + ".");
@@ -81,10 +81,10 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 		this.ihdrChunk = chunk;
 
 		let idatAccum: number = 0;
-		const idatChunkList: PNGChunk[] = new Array<PNGChunk>();
+		const idatChunkList: Chunk[] = new Array<Chunk>();
 
 		while (reader.isEof() == false) {
-			const chunk: PNGChunk = PNGChunk.READ_FROM(reader);
+			const chunk: Chunk = Chunk.READ_FROM(reader);
 			const signature: number = chunk.getSignature();
 
 			if (signature == PLTEChunkDecoder.CHUNK_SIGNATURE) {
@@ -122,7 +122,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 
 		reader.dispose();
 
-		this.idatChunk = PNGChunk.FROM_CHUNK_LIST(idatChunkList);
+		this.idatChunk = Chunk.FROM_CHUNK_LIST(idatChunkList);
 	}
 
 	private decodeChunks(): void {

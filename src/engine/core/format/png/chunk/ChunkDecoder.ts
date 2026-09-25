@@ -1,17 +1,17 @@
 //
-// PNGChunkDecoder.ts
+// ChunkDecoder.ts
 //
 
 import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import PNGChunk from "./PNGChunk.ts";
+import Chunk from "./Chunk.ts";
 
-export default abstract class PNGChunkDecoder<T> {
+export default abstract class ChunkDecoder<T> {
 
 	private static readonly MAX_CHUNK_SIZE: number = 0x7FFFFFFF;
 
-	protected readonly chunk: PNGChunk;
+	protected readonly chunk: Chunk;
 
-	public constructor(chunk: PNGChunk, expectedSignature: number, expectedMinSize: number = 0, expectedMaxSize: number = PNGChunkDecoder.MAX_CHUNK_SIZE) {
+	public constructor(chunk: Chunk, expectedSignature: number, expectedMinSize: number = 0, expectedMaxSize: number = ChunkDecoder.MAX_CHUNK_SIZE) {
 		if (chunk.getSignature() != expectedSignature) {
 			throw new Error("Chunk signature is incorrect: expected " + expectedSignature + ", got " + chunk.getSignature() + ".)");
 		}
@@ -23,7 +23,7 @@ export default abstract class PNGChunkDecoder<T> {
 		this.chunk = chunk;
 	}
 
-	public getChunk(): PNGChunk {
+	public getChunk(): Chunk {
 		return this.chunk;
 	}
 
