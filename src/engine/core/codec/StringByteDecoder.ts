@@ -2,8 +2,8 @@
 // StringByteDecoder.ts
 //
 
-import TextEncoding from "../memory/TextEncoding.ts";
-import ByteBuffer from "../memory/ByteBuffer.ts";
+import ByteBuffer from "../io/buffer/ByteBuffer.ts";
+import TextEncoding from "./TextEncoding.ts";
 import Decoder from "./Decoder.ts";
 
 export default class StringByteDecoder implements Decoder<string> {

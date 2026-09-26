@@ -3,7 +3,7 @@
 //
 
 import Nullable from "../../../common/Nullable.ts";
-import ByteBuffer from "../../../memory/ByteBuffer.ts";
+import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import ErrorInspect from "../../../reflection/error/ErrorInspect.ts";
 import DeflateDecoder from "../../deflate/DeflateDecoder.ts";
 import IHDRData from "../data/IHDRData.ts";

@@ -2,8 +2,8 @@
 // StringByteEncoder.ts
 //
 
-import TextEncoding from "../memory/TextEncoding.ts";
-import ByteBuffer from "../memory/ByteBuffer.ts";
+import ByteBuffer from "../io/buffer/ByteBuffer.ts";
+import TextEncoding from "./TextEncoding.ts";
 import Encoder from "./Encoder.ts";
 
 export default class StringByteEncoder implements Encoder<string> {
@@ -15,6 +15,7 @@ export default class StringByteEncoder implements Encoder<string> {
 
 		for (let i: number = 0; i < string.length; i++) {
 			const charCode: number = string.charCodeAt(i);
+
 			if (charCode < 0x80) {
 				sizeInBytes += 1;
 			} else if (charCode < 0x800) {

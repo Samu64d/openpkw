@@ -4,10 +4,10 @@
 
 import * as FS from "node:fs";
 
-import TextEncoding from "../../../core/memory/TextEncoding.ts";
-import ByteBuffer from "../../../core/memory/ByteBuffer.ts";
+import ByteBuffer from "../../../core/io/buffer/ByteBuffer.ts";
 import AccessRight from "../../../core/io/file/AccessRight.ts";
 import OpenMode from "../../../core/io/file/OpenMode.ts";
+import TextEncoding from "../../../core/codec/TextEncoding.ts";
 import FileSystemDriver from "../../../core/interop/FileSystemDriver.ts";
 import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
 import ErrorInspect from "../../../core/reflection/error/ErrorInspect.ts";

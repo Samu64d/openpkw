@@ -3,8 +3,8 @@
 //
 
 import Nullable from "../../common/Nullable.ts";
-import ByteBuffer from "../../memory/ByteBuffer.ts";
-import ByteBufferReader from "../../io/ByteBufferReader.ts";
+import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
+import ByteBufferReader from "../../io/buffer/ByteBufferReader.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Image from "../../resource/Image.ts";
 import Chunk from "./chunk/Chunk.ts";
@@ -67,7 +67,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 			throw new Error("Invalid PNG file header.");
 		}
 	}
-
+    
 	private discoverChunks(): void {
 		const reader: ByteBufferReader = new ByteBufferReader(this.source);
 		reader.seek(PNGDecoder.CHUNK_REGION_OFFSET);

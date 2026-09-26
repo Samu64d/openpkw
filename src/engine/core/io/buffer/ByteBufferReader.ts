@@ -2,17 +2,17 @@
 // ByteBufferReader.ts
 //
 
-import Nullable from "../common/Nullable.ts";
-import Endian from "../memory/Endian.ts";
-import ByteBuffer from "../memory/ByteBuffer.ts";
-import Disposable from "../reflection/decorators/Disposable.ts";
-import BinaryAccessor from "./BinaryAccessor.ts";
+import Nullable from "../../common/Nullable.ts";
+import ByteOrder from "../../memory/ByteOrder.ts";
+import Disposable from "../../reflection/decorators/Disposable.ts";
+import BaseByteBuffer from "./BaseByteBuffer.ts";
+import BufferAccessor from "./ByteBufferAccessor.ts";
 
 @Disposable()
-export default class ByteBufferReader extends BinaryAccessor<ByteBuffer> implements Disposable.Target {
+export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> implements Disposable.Target {
 
-	public constructor(byteBuffer: ByteBuffer, defaultEndianness: Endian = Endian.LITTLE) {
-		super(byteBuffer, defaultEndianness);
+	public constructor(byteBuffer: BaseByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
+		super(byteBuffer, defaultByteOrder);
 	}
 
 	public readUint8(position: Nullable<number> = null): number {
@@ -24,7 +24,7 @@ export default class ByteBufferReader extends BinaryAccessor<ByteBuffer> impleme
 		return value;
 	}
 
-	public readUint16(position: Nullable<number> = null, endianness: Nullable<Endian> = null): number {
+	public readUint16(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
 		const src: Uint8Array = this.buffer.unsafeGetData();
 		const index: number = this.resolvePositionForAccess(position, 2);
 		let value: number;
@@ -43,7 +43,7 @@ export default class ByteBufferReader extends BinaryAccessor<ByteBuffer> impleme
 		return value;
 	}
 
-	public readUint24(position: Nullable<number> = null, endianness: Nullable<Endian> = null): number {
+	public readUint24(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
 		const src: Uint8Array = this.buffer.unsafeGetData();
 		const index: number = this.resolvePositionForAccess(position, 3);
 		let value: number;
@@ -64,7 +64,7 @@ export default class ByteBufferReader extends BinaryAccessor<ByteBuffer> impleme
 		return value;
 	}
 
-	public readUint32(position: Nullable<number> = null, endianness: Nullable<Endian> = null): number {
+	public readUint32(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
 		const src: Uint8Array = this.buffer.unsafeGetData();
 		const index: number = this.resolvePositionForAccess(position, 4);
 		let value: number;

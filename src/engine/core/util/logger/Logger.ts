@@ -2,11 +2,11 @@
 // Logger.ts
 //
 
-import ByteBuffer from "../../memory/ByteBuffer.ts";
-import StringByteEncoder from "../../codec/StringByteEncoder.ts";
+import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import OpenMode from "../../io/file/OpenMode.ts";
 import File from "../../io/file/File.ts";
 import FileHandler from "../../io/file/FileHandler.ts";
+import StringByteEncoder from "../../codec/StringByteEncoder.ts";
 import LogLevel from "./LogLevel.ts";
 
 export default class Logger {

@@ -2,8 +2,8 @@
 // IHDRChunkDecoder.ts
 //
 
-import Endian from "../../../memory/Endian.ts";
-import ByteBufferReader from "../../../io/ByteBufferReader.ts";
+import ByteOrder from "../../../memory/ByteOrder.ts";
+import ByteBufferReader from "../../../io/buffer/ByteBufferReader.ts";
 import IHDRData from "../data/IHDRData.ts";
 import InterlaceMethod from "../interlace/InterlaceMethod.ts";
 import ColorType from "../image/ColorType.ts";
@@ -23,8 +23,8 @@ export default class IHDRChunkDecoder extends ChunkDecoder<IHDRData> {
 	public override decode(): IHDRData {
 		const reader: ByteBufferReader = new ByteBufferReader(this.getChunkData());
 
-		const width: number = reader.readUint32(null, Endian.BIG);
-		const height: number = reader.readUint32(null, Endian.BIG);
+		const width: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
+		const height: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const depth: number = reader.readUint8();
 		const colorType: number = reader.readUint8();
 		const compressionMethod: number = reader.readUint8();

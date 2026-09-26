@@ -2,17 +2,17 @@
 // SingleValueDecoder.ts
 //
 
-import ByteBuffer from "../memory/ByteBuffer.ts";
+import BaseByteBuffer from "../io/buffer/BaseByteBuffer.ts";
 
 export default abstract class SingleValueDecoder<T> {
 
-	protected readonly source: ByteBuffer;
+	protected readonly source: BaseByteBuffer;
 
-	public constructor(source: ByteBuffer) {
+	public constructor(source: BaseByteBuffer) {
 		this.source = source;
 	}
 
-	public getSource(): ByteBuffer {
+	public getSource(): BaseByteBuffer {
 		return this.source;
 	}
 

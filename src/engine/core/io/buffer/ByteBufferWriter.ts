@@ -2,17 +2,17 @@
 // ByteBufferWriter.ts
 //
 
-import Nullable from "../common/Nullable.ts";
-import Endian from "../memory/Endian.ts";
-import ByteBuffer from "../memory/ByteBuffer.ts";
-import Disposable from "../reflection/decorators/Disposable.ts";
-import BinaryAccessor from "./BinaryAccessor.ts";
+import Nullable from "../../common/Nullable.ts";
+import ByteOrder from "../../memory/ByteOrder.ts";
+import Disposable from "../../reflection/decorators/Disposable.ts";
+import ByteBuffer from "./ByteBuffer.ts";
+import BufferAccessor from "./ByteBufferAccessor.ts";
 
 @Disposable()
-export default class ByteBufferWriter extends BinaryAccessor<ByteBuffer> implements Disposable.Target {
+export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> implements Disposable.Target {
 
-	public constructor(byteBuffer: ByteBuffer, defaultEndianness: Endian = Endian.LITTLE) {
-		super(byteBuffer, defaultEndianness);
+	public constructor(byteBuffer: ByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
+		super(byteBuffer, defaultByteOrder);
 	}
 
 	public writeUint8(value: number, position: Nullable<number> = null): void {
@@ -23,7 +23,7 @@ export default class ByteBufferWriter extends BinaryAccessor<ByteBuffer> impleme
 		this.advanceIfUnspecified(1, position);
 	}
 
-	public writeUint16(value: number, position: Nullable<number> = null, endianness: Nullable<Endian> = null): void {
+	public writeUint16(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 2);
 		const dest: Uint8Array = this.buffer.unsafeGetData();
 
@@ -38,7 +38,7 @@ export default class ByteBufferWriter extends BinaryAccessor<ByteBuffer> impleme
 		this.advanceIfUnspecified(2, position);
 	}
 
-	public writeUint24(value: number, position: Nullable<number> = null, endianness: Nullable<Endian> = null): void {
+	public writeUint24(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 3);
 		const dest: Uint8Array = this.buffer.unsafeGetData();
 
@@ -55,7 +55,7 @@ export default class ByteBufferWriter extends BinaryAccessor<ByteBuffer> impleme
 		this.advanceIfUnspecified(3, position);
 	}
 
-	public writeUint32(value: number, position: Nullable<number> = null, endianness: Nullable<Endian> = null): void {
+	public writeUint32(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 4);
 		const dest: Uint8Array = this.buffer.unsafeGetData();
 
