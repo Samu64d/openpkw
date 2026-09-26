@@ -2,12 +2,12 @@
 // FileSystemDriver.ts
 //
 
-import TextEncoding from "../memory/TextEncoding.ts";
-import ByteBuffer from "../memory/ByteBuffer.ts";
-import ResourceHandle from "./ResourceHandle.ts";
-import Driver from "./Driver.ts";
+import ByteBuffer from "../io/buffer/ByteBuffer.ts";
 import AccessRight from "../io/file/AccessRight.ts";
 import OpenMode from "../io/file/OpenMode.ts";
+import TextEncoding from "../codec/TextEncoding.ts";
+import ResourceHandle from "./ResourceHandle.ts";
+import Driver from "./Driver.ts";
 
 export default abstract class FileSystemDriver implements Driver {
 

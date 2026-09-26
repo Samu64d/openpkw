@@ -2,17 +2,17 @@
 // Chunk.ts
 //
 
-import Endian from "../../../memory/Endian.ts";
-import ByteBuffer from "../../../memory/ByteBuffer.ts";
-import ByteBufferReader from "../../../io/ByteBufferReader.ts";
+import ByteOrder from "../../../memory/ByteOrder.ts";
+import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
+import ByteBufferReader from "../../../io/buffer/ByteBufferReader.ts";
 import Record from "../../../reflection/decorators/Record.ts";
 
 @Record()
 export default class Chunk {
 
 	public static readonly READ_FROM: (reader: ByteBufferReader) => Chunk = (reader: ByteBufferReader): Chunk => {
-		const size: number = reader.readUint32(null, Endian.BIG);
-		const name: number = reader.readUint32(null, Endian.BIG);
+		const size: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
+		const name: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const data: ByteBuffer.View = reader.getBuffer().view(reader.getCursor(), reader.getCursor() + size);
 		reader.skip(size);
 		const crc: number = reader.readUint32();

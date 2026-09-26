@@ -2,77 +2,42 @@
 // ByteBuffer.ts
 //
 
-import Nullable from "../common/Nullable.ts";
-import StringByteEncoder from "../codec/StringByteEncoder.ts";
-import Disposable from "../reflection/decorators/Disposable.ts";
-import TextEncoding from "./TextEncoding.ts";
-import Buffer from "./Buffer.ts";
-import ArrayLikePoolAllocator from "./ArrayLikePoolAllocator.ts";
+import TextEncoding from "../../codec/TextEncoding.ts";
+import StringByteEncoder from "../../codec/StringByteEncoder.ts";
+import Disposable from "../../reflection/decorators/Disposable.ts";
+import BaseByteBuffer from "./BaseByteBuffer.ts";
 
 @Disposable()
-class ByteBuffer extends Buffer<number> implements Disposable.Target {
+class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	public static readonly ALLOCATE: (size: number, fillValue?: number) => ByteBuffer = (size: number, fillValue: number = 0): ByteBuffer => {
-		if (size < 0) {
-			throw new Error("Size value cannot be negative: got " + size + ".");
-		}
-
-		const data: Nullable<Uint8Array> = ByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(size);
-
-		if (data == null) {
-			throw new Error("Cannot allocate new byte buffer.");
-		}
-
-		data.fill(fillValue, 0, size);
-
-		return new ByteBuffer(data, size);
+		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(size, fillValue);
+		return new ByteBuffer(uint8Array, size);
 	};
 
 	public static readonly FROM_ARRAY: (array: ArrayLike<number>) => ByteBuffer = (array: ArrayLike<number>): ByteBuffer => {
-		const data: Nullable<Uint8Array> = ByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(array.length);
-
-		if (data == null) {
-			throw new Error("Cannot allocate new byte buffer.");
-		}
-
-		data.set(array);
-
-		return new ByteBuffer(data, array.length);
+		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(array.length, 0);
+		uint8Array.set(array);
+		return new ByteBuffer(uint8Array, array.length);
 	};
 
 	public static readonly FROM_STRING: (string: string, textEncoding: TextEncoding) => ByteBuffer = (string: string, textEncoding: TextEncoding): ByteBuffer => {
 		return new StringByteEncoder(textEncoding).encode(string);
 	};
 
-	private static readonly UINT8_ARRAY_ALLOCATOR: ArrayLikePoolAllocator<Uint8Array> = new ArrayLikePoolAllocator<Uint8Array>(Uint8Array);
-
-	protected readonly data: Uint8Array;
 	private readonly viewSet: Set<ByteBuffer.View>;
 
-	protected constructor(data: Uint8Array, size: number) {
-		super(size);
-		this.data = data;
+	public constructor(data: Uint8Array, size: number) {
+		super(data, size);
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
 
-	public override get(index: number): number {
-		if (index < 0 || index >= this.size) {
-			throw new Error("Out of bounds access: got " + index + ".");
-		}
-
-		return this.data[index];
-	}
-
-	public override set(index: number, value: number): void {
+	public set(index: number, value: number): void {
 		if (index < 0 || index >= this.size) {
 			throw new Error("Out of bounds access: got " + index + ".");
 		}
 
 		this.data[index] = value;
-	}
-
-	public unsafeGetData(): Uint8Array {
-		return this.data.subarray(0, this.size);
 	}
 
 	public setArray(data: ArrayLike<number>, start: number): void {
@@ -111,30 +76,8 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 		byteBuffer.data.set(this.data.subarray(sourceStart, sourceEnd), destinationStart);
 	}
 
-	public toArray(): number[] {
-		return Array.from(this.data.subarray(0, this.size));
-	}
-
 	public clone(): ByteBuffer {
 		return ByteBuffer.FROM_ARRAY(this.data.subarray(0, this.size));
-	}
-
-	public equals(byteBuffer: ByteBuffer): boolean {
-		if (this === byteBuffer) {
-			return true;
-		}
-
-		if (this.size != byteBuffer.size) {
-			return false;
-		}
-
-		for (let i: number = 0; i < this.size; i++) {
-			if (this.data[i] != byteBuffer.data[i]) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public removeView(view: ByteBuffer.View): void {
@@ -149,7 +92,7 @@ class ByteBuffer extends Buffer<number> implements Disposable.Target {
 		}
 
 		if ((this instanceof ByteBuffer.View) == false) {
-			ByteBuffer.UINT8_ARRAY_ALLOCATOR.free(this.data);
+			ByteBuffer.freeUint8Array(this.data);
 		}
 	}
 

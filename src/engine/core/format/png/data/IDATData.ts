@@ -2,7 +2,7 @@
 // IDATData.ts
 //
 
-import ByteBuffer from "../../../memory/ByteBuffer.ts";
+import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import Record from "../../../reflection/decorators/Record.ts";
 
 @Record()

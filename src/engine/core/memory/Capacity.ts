@@ -1,8 +1,8 @@
 //
-// Buffer.ts
+// Capacity.ts
 //
 
-export default abstract class Buffer<T> {
+export default abstract class Capacity {
 
 	protected size: number;
 	protected readonly resizable: boolean;
@@ -24,10 +24,6 @@ export default abstract class Buffer<T> {
 		return this.resizable;
 	}
 
-	public abstract get(index: number): T;
-
-	public abstract set(index: number, value: T): void;
-
 	public isRangeWithinBounds(position: number, length: number): boolean {
 		return position >= 0 && length >= 0 && position + length <= this.size;
 	}
@@ -42,7 +38,7 @@ export default abstract class Buffer<T> {
 
 	public grow(length: number): void {
 		if (this.resizable == false) {
-			throw new Error("Cannot grow unresizable buffer.");
+			throw new Error("Cannot grow unresizable item.");
 		}
 		if (length < 0) {
 			throw new Error("Cannot grow with negative values: got " + length + ".");

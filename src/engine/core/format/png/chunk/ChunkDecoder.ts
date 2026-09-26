@@ -2,7 +2,7 @@
 // ChunkDecoder.ts
 //
 
-import ByteBuffer from "../../../memory/ByteBuffer.ts";
+import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import Chunk from "./Chunk.ts";
 
 export default abstract class ChunkDecoder<T> {

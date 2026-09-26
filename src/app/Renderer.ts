@@ -4,11 +4,11 @@
 
 import { multiplyAll, rot, translate } from "../engine/core/math/Matrix4d.ts";
 import Vector3d from "../engine/core/math/Vector3d.ts";
-import ByteBuffer from "../engine/core/memory/ByteBuffer.ts";
-import StringByteDecoder from "../engine/core/codec/StringByteDecoder.ts";
+import ByteBuffer from "../engine/core/io/buffer/ByteBuffer.ts";
 import OpenMode from "../engine/core/io/file/OpenMode.ts";
 import File from "../engine/core/io/file/File.ts";
 import FileHandler from "../engine/core/io/file/FileHandler.ts";
+import StringByteDecoder from "../engine/core/codec/StringByteDecoder.ts";
 import PNGDecoder from "../engine/core/format/png/PNGDecoder.ts";
 import OBJDecoder from "../engine/core/format/obj/OBJDecoder.ts";
 import Image from "../engine/core/resource/Image.ts";
@@ -25,6 +25,63 @@ import GLVertexShader from "../engine/drivers/graphic/gl/GLVertexShader.ts";
 import GLFragmentShader from "../engine/drivers/graphic/gl/GLFragmentShader.ts";
 import GLProgram from "../engine/drivers/graphic/gl/GLProgram.ts";
 import GLContextManager from "../engine/drivers/graphic/gl/GLContextManager.ts";
+
+const test: string[][][] = [
+	[
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1;cliff_straight:270", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3;cliff_straight:270", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1;cliff_straight:270", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3;cliff_straight:270", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_corner_outer", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
+		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
+		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"]
+	],
+	[
+		["air", "air", "air", "air", "air", "air", "air", "air", "grass_3;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "grass_1;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "grass_3;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
+		["grass_1;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_1;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
+	],
+	[
+		["air", "air", "air", "air", "air", "air", "air", "grass_3;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "grass_1;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_1;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
+	]
+]
 
 /**
  * Playground renderer
@@ -62,45 +119,73 @@ export default class Renderer {
 		this.loadModel("cliff_straight");
 		this.loadModel("cliff_corner_outer");
 		this.loadModel("tree");
-		this.camera.lookAt(new Vector3d(0, 3.0, 0), new Vector3d(0, 0, -4.5));
+		this.camera.lookAt(new Vector3d(3, 2.85, 3), new Vector3d(3, 0, 0));
+	}
+
+	private drawMap(): void {
+		const step: number = 0.25;
+		const data: string[][][] = test;
+
+		for (let y: number = 0; y < data.length; y++) {
+			const layer: string[][] = data[y];
+			for (let z: number = 0; z < layer.length; z++) {
+				const row: string[] = layer[z];
+				for (let x: number = 0; x < row.length; x++) {
+					const tileConfig: string = row[x];
+					const xPos: number = x * step;
+					const yPos: number = y * step;
+					const zPos: number = z * step;
+					let model: number[] = translate(xPos, yPos, zPos);
+
+					const elementConfigList: string[] = tileConfig.split(";");
+					for (const elementConfig of elementConfigList) {
+						const name: string = elementConfig.split(":").at(0) ?? "air";
+						if (name == "air") {
+							continue;
+						}
+
+						const rx: number = Number(elementConfig.split(":").at(1) ?? 0);
+						if (rx != 0) {
+							const rxs: number = rx / 180 * Math.PI;
+							model = multiplyAll(model, rot(rxs, 0.0, 0.0));
+						}
+
+						this.drawModel(name, model);
+					}
+
+				}
+			}
+		}
+
+	}
+
+	private drawObject(name: string, x: number, y: number, z: number): void {
+		const step: number = 0.25;
+		const xPos: number = (x - 0.5) * step;
+		const yPos: number = y * step + 0.1;
+		const zPos: number = (z - 0.5) * step;
+		let model: number[] = translate(xPos, yPos, zPos);
+		this.drawModel(name, model);
+	}
+
+	private drawObjects(): void {
+		this.drawObject("tree", 2, 0, 9);
+		this.drawObject("tree", 2, 0, 11);
+		this.drawObject("tree", 2, 0, 13);
+		this.drawObject("tree", 2, 0, 15);
+
+		this.drawObject("tree", 8, 0, 9);
+		this.drawObject("tree", 8, 0, 11);
+		this.drawObject("tree", 8, 0, 13);
+		this.drawObject("tree", 8, 0, 15);
 	}
 
 	public update(time: number): void {
 		this.time = time;
 		this.contextManager.setViewport(this.context.canvas.width, this.context.canvas.height);
 		this.contextManager.clear(Renderer.CLEAR_COLOR);
-
-		this.drawModel("grass_0", translate(0.5, 0.5, -4.75));
-		this.drawModel("grass_1", translate(0.75, 0.5, -4.75));
-		this.drawModel("grass_2", translate(0.5, 0.5, -4.5));
-		this.drawModel("grass_3", translate(0.75, 0.5, -4.5));
-
-		this.drawModel("grass_0", translate(0.5, 0.25, -4.25));
-		this.drawModel("grass_1", translate(0.75, 0.25, -4.25));
-		this.drawModel("grass_0", translate(1.0, 0.25, -4.25));
-		this.drawModel("grass_3", translate(1.0, 0.25, -4.5));
-		this.drawModel("grass_1", translate(1.0, 0.25, -4.75));
-
-		this.drawModel("cliff_straight", translate(0.5, 0, -4));
-		this.drawModel("cliff_straight", translate(0.75, 0, -4));
-		this.drawModel("cliff_straight", translate(1.0, 0, -4));
-		this.drawModel("cliff_corner_outer", translate(1.25, 0, -4));
-		this.drawModel("cliff_straight", multiplyAll(translate(1.25, 0, -4.25), rot(-1.57, 0.0, 0.0)));
-		this.drawModel("cliff_straight", multiplyAll(translate(1.25, 0, -4.5), rot(-1.57, 0.0, 0.0)));
-		this.drawModel("cliff_straight", multiplyAll(translate(1.25, 0, -4.75), rot(-1.57, 0.0, 0.0)));
-
-		this.drawModel("cliff_straight", translate(0.5, 0.25, -4.25));
-		this.drawModel("cliff_straight", translate(0.75, 0.25, -4.25));
-		this.drawModel("cliff_corner_outer", translate(1.0, 0.25, -4.25));
-		this.drawModel("cliff_straight", multiplyAll(translate(1.0, 0.25, -4.5), rot(-1.57, 0.0, 0.0)));
-		this.drawModel("cliff_straight", multiplyAll(translate(1.0, 0.25, -4.75), rot(-1.57, 0.0, 0.0)));
-		this.drawModel("cliff_straight", multiplyAll(translate(1.0, 0.25, -5.0), rot(-1.57, 0.0, 0.0)));
-
-		this.drawModel("tree", translate(0.0, 0, -4.0));
-		this.drawModel("tree", translate(0.0, 0, -5.0));
-		this.drawModel("tree", translate(-1.0, 0, -4.0));
-		this.drawModel("tree", translate(-1.0, 0, -5.0));
-
+		this.drawMap();
+		this.drawObjects();
 	}
 
 	public moveCamera(x: number, y: number, z: number): void {

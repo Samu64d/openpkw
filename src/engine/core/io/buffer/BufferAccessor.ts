@@ -1,11 +1,11 @@
 //
-// SeekableAccessor.ts
+// BufferAccessor.ts
 //
 
-import Nullable from "../common/Nullable.ts";
-import Buffer from "../memory/Buffer.ts";
+import Nullable from "../../common/Nullable.ts";
+import Buffer from "./Buffer.ts";
 
-export default abstract class SeekableAccessor<T extends Buffer<unknown>> {
+export default abstract class BufferAccessor<T extends Buffer> {
 
 	protected readonly buffer: T;
 	private cursor: number;

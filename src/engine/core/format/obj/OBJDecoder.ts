@@ -2,7 +2,7 @@
 // OBJDecoder.ts
 //
 
-import ByteBuffer from "../../memory/ByteBuffer.ts";
+import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Mesh from "../../resource/Mesh.ts";
 

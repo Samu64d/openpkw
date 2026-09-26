@@ -3,20 +3,20 @@
 //
 
 import Nullable from "../../common/Nullable.ts";
-import Endian from "../../memory/Endian.ts";
-import ByteBuffer from "../../memory/ByteBuffer.ts";
-import FileBuffer from "../../memory/FileBuffer.ts";
+import ByteOrder from "../../memory/ByteOrder.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import ErrorInspect from "../../reflection/error/ErrorInspect.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
+import ByteBuffer from "../buffer/ByteBuffer.ts";
+import MappedBuffer from "../buffer/MappedBuffer.ts";
+import BufferAccessor from "../buffer/BufferAccessor.ts";
+import ByteBufferReader from "../buffer/ByteBufferReader.ts";
 import OpenMode from "./OpenMode.ts";
-import SeekableAccessor from "../SeekableAccessor.ts";
-import ByteBufferReader from "../ByteBufferReader.ts";
 
 @Disposable()
-export default class FileHandler extends SeekableAccessor<FileBuffer> implements Disposable.Target {
+export default class FileHandler extends BufferAccessor<MappedBuffer> implements Disposable.Target {
 
 	private handle: ResourceHandle;
 	private readonly mode: OpenMode;
@@ -25,7 +25,7 @@ export default class FileHandler extends SeekableAccessor<FileBuffer> implements
 	private readonly driver: FileSystemDriver;
 
 	public constructor(handle: ResourceHandle, size: number, openMode: OpenMode = OpenMode.READ_WRITE) {
-		const fileBuffer: FileBuffer = new FileBuffer(size);
+		const fileBuffer: MappedBuffer = new MappedBuffer(size);
 		super(fileBuffer);
 		this.handle = handle;
 		this.mode = openMode;
@@ -56,7 +56,7 @@ export default class FileHandler extends SeekableAccessor<FileBuffer> implements
 		return value;
 	}
 
-	public readUint16(position: Nullable<number> = null, endianness: Nullable<Endian> = Endian.LITTLE): number {
+	public readUint16(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = ByteOrder.LITTLE_ENDIAN): number {
 		const resolvedPosition: number = this.resolvePositionForAccess(position, 2);
 
 		this.readIntoBuffer(resolvedPosition, 2, this.chunkBuffer);
@@ -66,7 +66,7 @@ export default class FileHandler extends SeekableAccessor<FileBuffer> implements
 		return value;
 	}
 
-	public readUint24(position: Nullable<number> = null, endianness: Endian = Endian.LITTLE): number {
+	public readUint24(position: Nullable<number> = null, endianness: ByteOrder = ByteOrder.LITTLE_ENDIAN): number {
 		const resolvedPosition: number = this.resolvePositionForAccess(position, 3);
 
 		this.readIntoBuffer(resolvedPosition, 3, this.chunkBuffer);
@@ -76,7 +76,7 @@ export default class FileHandler extends SeekableAccessor<FileBuffer> implements
 		return value;
 	}
 
-	public readUint32(position: Nullable<number> = null, endianness: Endian = Endian.LITTLE): number {
+	public readUint32(position: Nullable<number> = null, endianness: ByteOrder = ByteOrder.LITTLE_ENDIAN): number {
 		const resolvedPosition: number = this.resolvePositionForAccess(position, 4);
 
 		this.readIntoBuffer(resolvedPosition, 4, this.chunkBuffer);
