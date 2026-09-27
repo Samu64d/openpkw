@@ -41,13 +41,13 @@ export default class Chunk {
 		}
 
 		const destination: ByteBuffer = ByteBuffer.ALLOCATE(resultSize);
-		let index: number = 0;
+		let position: number = 0;
 		for (let i: number = 0; i < chunkList.length; i++) {
 			const chunk: Chunk = chunkList[i];
 			const data: ByteBuffer = chunk.getData();
 			const size: number = chunk.getSize();
-			data.copyTo(destination, 0, size, index);
-			index += size;
+			data.copyTo(destination, 0, size, position);
+			position += size;
 		}
 
 		return new Chunk(resultSize, signature, destination, 0);

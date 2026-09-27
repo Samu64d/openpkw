@@ -10,9 +10,9 @@ import BaseByteBuffer from "./BaseByteBuffer.ts";
 @Disposable()
 class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
-	public static readonly ALLOCATE: (size: number, fillValue?: number) => ByteBuffer = (size: number, fillValue: number = 0): ByteBuffer => {
-		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(size, fillValue);
-		return new ByteBuffer(uint8Array, size);
+	public static readonly ALLOCATE: (capacity: number, fillValue?: number) => ByteBuffer = (capacity: number, fillValue: number = 0): ByteBuffer => {
+		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(capacity, fillValue);
+		return new ByteBuffer(uint8Array, capacity);
 	};
 
 	public static readonly FROM_ARRAY: (array: ArrayLike<number>) => ByteBuffer = (array: ArrayLike<number>): ByteBuffer => {
@@ -27,17 +27,17 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	private readonly viewSet: Set<ByteBuffer.View>;
 
-	public constructor(data: Uint8Array, size: number) {
-		super(data, size);
+	public constructor(data: Uint8Array, capacity: number) {
+		super(data, capacity);
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
 
-	public set(index: number, value: number): void {
-		if (index < 0 || index >= this.size) {
-			throw new Error("Out of bounds access: got " + index + ".");
+	public set(position: number, value: number): void {
+		if (position < 0 || position >= this.capacity) {
+			throw new Error("Out of bounds access: got " + position + ".");
 		}
 
-		this.data[index] = value;
+		this.data[position] = value;
 	}
 
 	public setArray(data: ArrayLike<number>, start: number): void {
@@ -48,7 +48,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		this.data.set(data, start);
 	}
 
-	public fill(fillValue: number, start: number = 0, end: number = this.size): void {
+	public fill(fillValue: number, start: number = 0, end: number = this.capacity): void {
 		if (this.isRangeWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
@@ -56,7 +56,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		this.data.fill(fillValue, start, end);
 	}
 
-	public view(start: number = 0, end: number = this.size): ByteBuffer.View {
+	public view(start: number = 0, end: number = this.capacity): ByteBuffer.View {
 		if (this.isRangeWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
@@ -67,7 +67,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		return view;
 	}
 
-	public copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.size, destinationStart: number = 0): void {
+	public copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.capacity, destinationStart: number = 0): void {
 		const length: number = sourceEnd - sourceStart;
 		if (this.isRangeWithinBounds(sourceStart, length) == false || byteBuffer.isRangeWithinBounds(destinationStart, length) == false) {
 			throw new Error("Out of bounds access.");
@@ -77,7 +77,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 	}
 
 	public clone(): ByteBuffer {
-		return ByteBuffer.FROM_ARRAY(this.data.subarray(0, this.size));
+		return ByteBuffer.FROM_ARRAY(this.data.subarray(0, this.capacity));
 	}
 
 	public removeView(view: ByteBuffer.View): void {

@@ -165,7 +165,7 @@ export default class PNGImage {
 		}
 
 		const src: ByteBuffer = this.imageData;
-		const trnsSize: number = this.transparencyData != null ? this.transparencyData.getSize() : 0;
+		const trnsSize: number = this.transparencyData != null ? this.transparencyData.getCapacity() : 0;
 		const buffer: number[] = this.sampleBuffer;
 
 		if (this.depth < 8) {

@@ -52,8 +52,8 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 			const scanlineSize: number = rowDataSize + 1;
 			const passDataSize: number = blockHeight * scanlineSize;
 
-			if (cursor + passDataSize > this.source.getSize()) {
-				throw new Error("Insufficient interlaced image data for pass " + pass + ": need " + passDataSize + " bytes got " + (this.source.getSize() - cursor) + ".");
+			if (cursor + passDataSize > this.source.getCapacity()) {
+				throw new Error("Insufficient interlaced image data for pass " + pass + ": need " + passDataSize + " bytes got " + (this.source.getCapacity() - cursor) + ".");
 			}
 
 			const view: ByteBuffer = this.source.view(cursor, passDataSize);
@@ -63,8 +63,8 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 			cursor += passDataSize;
 		}
 
-		if (cursor != this.source.getSize()) {
-			throw new Error("Unexpected trailing data after interlaced image: " + (this.source.getSize() - cursor) + " bytes.");
+		if (cursor != this.source.getCapacity()) {
+			throw new Error("Unexpected trailing data after interlaced image: " + (this.source.getCapacity() - cursor) + " bytes.");
 		}
 
 		return this.destination;

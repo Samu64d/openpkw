@@ -8,8 +8,8 @@ import Buffer from "./Buffer.ts";
 @Disposable()
 export default class MappedBuffer extends Buffer implements Disposable.Target {
 
-	public constructor(size: number) {
-		super(size, true);
+	public constructor(capacity: number) {
+		super(capacity, true);
 	}
 
 	public dispose(): void {

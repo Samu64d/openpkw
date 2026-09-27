@@ -24,7 +24,7 @@ export default abstract class BufferAccessor<T extends Buffer> {
 	}
 
 	public seek(position: number): void {
-		if (position < 0 || position > this.buffer.getSize()) {
+		if (position < 0 || position > this.buffer.getCapacity()) {
 			throw new Error("Out of bounds access: " + position + ".");
 		}
 
@@ -48,11 +48,11 @@ export default abstract class BufferAccessor<T extends Buffer> {
 	}
 
 	public remainingLength(): number {
-		return Math.max(0, this.buffer.getSize() - this.cursor);
+		return Math.max(0, this.buffer.getCapacity() - this.cursor);
 	}
 
 	public isEof(): boolean {
-		return this.cursor >= this.buffer.getSize();
+		return this.cursor >= this.buffer.getCapacity();
 	}
 
 	public reset(): void {

@@ -43,7 +43,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 	}
 
 	public getSize(): number {
-		return this.buffer.getSize();
+		return this.buffer.getCapacity();
 	}
 
 	public readUint8(position: Nullable<number> = null): number {
@@ -104,7 +104,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 
 	public write(length: number, byteBuffer: ByteBuffer, position: Nullable<number> = null): void {
 		const resolvedPosition: number = this.resolvePositionForCapacity(position, length);
-		const delta: number = resolvedPosition + length - this.buffer.getSize();
+		const delta: number = resolvedPosition + length - this.buffer.getCapacity();
 
 		if (delta > 0) {
 			this.buffer.grow(delta);
@@ -126,7 +126,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 	}
 
 	private readIntoBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
-		if (length > byteBuffer.getSize()) {
+		if (length > byteBuffer.getCapacity()) {
 			throw new Error("Cannot read into buffer: length must be at most equal to size value.");
 		}
 
@@ -140,7 +140,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 	}
 
 	private writeFromBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
-		if (length > byteBuffer.getSize()) {
+		if (length > byteBuffer.getCapacity()) {
 			throw new Error("Cannot write from buffer: length must be at most equal to size value.");
 		}
 

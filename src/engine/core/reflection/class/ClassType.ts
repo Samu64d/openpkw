@@ -5,9 +5,13 @@
 import Nullable from "../../common/Nullable.ts";
 import Callable from "../../common/Callable.ts";
 
-type ClassType<T extends object> = abstract new (...args: any[]) => T;
+type ClassType<T extends object = object> = ClassType.NoAbstract<T> | ClassType.Abstract<T>;
 
 namespace ClassType {
+
+	export type Abstract<T extends object> = abstract new (...args: any[]) => T;
+
+	export type NoAbstract<T extends object> = new (...args: any[]) => T;
 
 	export type MethodName<T extends object> = {
 		[K in keyof T]: T[K] extends Callable ? K : never;

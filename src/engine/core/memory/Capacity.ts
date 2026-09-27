@@ -4,20 +4,20 @@
 
 export default abstract class Capacity {
 
-	protected size: number;
+	protected capacity: number;
 	protected readonly resizable: boolean;
 
-	public constructor(size: number, resizable: boolean = false) {
-		if (size < 0) {
-			throw new Error("Size value cannot be negative: got " + size + ".");
+	public constructor(capacity: number, resizable: boolean = false) {
+		if (capacity < 0) {
+			throw new Error("Capacity value cannot be negative: got " + capacity + ".");
 		}
 
-		this.size = size;
+		this.capacity = capacity;
 		this.resizable = resizable;
 	}
 
-	public getSize(): number {
-		return this.size;
+	public getCapacity(): number {
+		return this.capacity;
 	}
 
 	public isResizable(): boolean {
@@ -25,7 +25,7 @@ export default abstract class Capacity {
 	}
 
 	public isRangeWithinBounds(position: number, length: number): boolean {
-		return position >= 0 && length >= 0 && position + length <= this.size;
+		return position >= 0 && length >= 0 && position + length <= this.capacity;
 	}
 
 	public hasCapacityFor(position: number, length: number): boolean {
@@ -33,7 +33,7 @@ export default abstract class Capacity {
 			return this.isRangeWithinBounds(position, length);
 		}
 
-		return position >= 0 && length >= 0 && position <= this.size;
+		return position >= 0 && length >= 0 && position <= this.capacity;
 	}
 
 	public grow(length: number): void {
@@ -44,18 +44,18 @@ export default abstract class Capacity {
 			throw new Error("Cannot grow with negative values: got " + length + ".");
 		}
 
-		this.size += length;
+		this.capacity += length;
 	}
 
 	public shrink(length: number): void {
 		if (this.resizable == false) {
 			throw new Error("Cannot shrink unresizable item.");
 		}
-		if (length < 0 || length > this.size) {
-			throw new Error("Cannot shrink with negative or outbounds values: got size " + this.size + ", length " + length + ".");
+		if (length < 0 || length > this.capacity) {
+			throw new Error("Cannot shrink with negative or outbounds values: got capacity " + this.capacity + ", length " + length + ".");
 		}
 
-		this.size -= length;
+		this.capacity -= length;
 	}
 
 }

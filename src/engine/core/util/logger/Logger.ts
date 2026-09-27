@@ -34,7 +34,7 @@ export default class Logger {
 		if (this.handler.isValid() == true) {
 			const logText: string = this.line(logLevel, text);
 			const byteBuffer: ByteBuffer = new StringByteEncoder().encode(logText);
-			this.handler.write(byteBuffer.getSize(), byteBuffer);
+			this.handler.write(byteBuffer.getCapacity(), byteBuffer);
 		}
 	}
 

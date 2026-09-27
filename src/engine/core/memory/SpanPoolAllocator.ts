@@ -10,15 +10,15 @@ import Allocator from "./Allocator.ts";
 
 class SpanPoolAllocator<T extends object> implements Allocator<T> {
 
-	public static readonly FACTORY_OF: <T extends object>(classType: ClassType<T>) => SpanPoolAllocator.ItemFactory<T> = <T extends object>(classType: ClassType<T>): SpanPoolAllocator.ItemFactory<T> => {
+	public static readonly FACTORY_OF: <T extends object>(classType: ClassType.NoAbstract<T>) => SpanPoolAllocator.ItemFactory<T> = <T extends object>(classType: ClassType.NoAbstract<T>): SpanPoolAllocator.ItemFactory<T> => {
 		return (itemSize: number): T => {
 			return new classType(itemSize);
 		}
 	};
 
-	private static readonly DEFAULT_INITIAL_POOL_SIZE: number = 32;
+	private static readonly DEFAULT_INITIAL_POOL_CAPACITY: number = 32;
 
-	private static readonly MAX_POOL_SIZE: number = 4096;
+	private static readonly MAX_POOL_CAPACITY: number = 4096;
 
 	private static readonly POOL_COUNT: number = 16;
 
@@ -28,18 +28,18 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 	private readonly poolRegistry: Map<SpanPoolAllocator.PoolId, Pool<T>>;
 	private readonly globalItemRegistry: Map<T, SpanPoolAllocator.PoolId>;
 
-	public constructor(factory: SpanPoolAllocator.ItemFactory<T>, initialPoolSize: number = SpanPoolAllocator.DEFAULT_INITIAL_POOL_SIZE) {
-		if (initialPoolSize < 1) {
-			throw new Error("Initial pool size must be at least 1: got " + initialPoolSize + ".");
+	public constructor(factory: SpanPoolAllocator.ItemFactory<T>, initialPoolCapacity: number = SpanPoolAllocator.DEFAULT_INITIAL_POOL_CAPACITY) {
+		if (initialPoolCapacity < 1) {
+			throw new Error("Initial pool capacity must be at least 1: got " + initialPoolCapacity + ".");
 		}
-		if (initialPoolSize > SpanPoolAllocator.MAX_POOL_SIZE) {
-			throw new Error("Initial pool size cannot exceed " + SpanPoolAllocator.MAX_POOL_SIZE + ": got " + initialPoolSize + ".");
+		if (initialPoolCapacity > SpanPoolAllocator.MAX_POOL_CAPACITY) {
+			throw new Error("Initial pool capacity cannot exceed " + SpanPoolAllocator.MAX_POOL_CAPACITY + ": got " + initialPoolCapacity + ".");
 		}
 
 		this.factory = factory;
 		this.poolRegistry = new Map<SpanPoolAllocator.PoolId, Pool<T>>();
 		this.globalItemRegistry = new Map<T, SpanPoolAllocator.PoolId>();
-		this.initializePools(initialPoolSize);
+		this.initializePools(initialPoolCapacity);
 	}
 
 	public malloc(size: number): Nullable<T> {
@@ -95,13 +95,13 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 		}
 	}
 
-	private initializePools(initialPoolSize: number): void {
+	private initializePools(initialPoolCapacity: number): void {
 		for (let i: number = 0; i < SpanPoolAllocator.POOL_COUNT; i++) {
 			const poolId: number = 1 << i;
-			const pool: Pool<T> = Pool.EMPTY(initialPoolSize);
+			const pool: Pool<T> = Pool.EMPTY(initialPoolCapacity);
 
 			this.poolRegistry.set(poolId, pool);
-			this.fillPool(poolId, initialPoolSize);
+			this.fillPool(poolId, initialPoolCapacity);
 		}
 	}
 
@@ -117,14 +117,14 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 
 	private tryGrowPool(poolId: SpanPoolAllocator.PoolId): boolean {
 		const pool: Pool<T> = this.poolRegistry.get(poolId) as Pool<T>;
-		const size: number = pool.getSize();
+		const capacity: number = pool.getCapacity();
 
-		if (size * 2 > SpanPoolAllocator.MAX_POOL_SIZE) {
+		if (capacity * 2 > SpanPoolAllocator.MAX_POOL_CAPACITY) {
 			return false;
 		}
 
-		pool.doubleSize();
-		this.fillPool(poolId, size);
+		pool.doubleCapacity();
+		this.fillPool(poolId, capacity);
 
 		return true;
 	}
