@@ -12,7 +12,7 @@ export default class UnknownChunkDecoder extends ChunkDecoder<void> {
 	}
 
 	public override decode(): void {
-		if (this.chunk.isCritical()) {
+		if (this.chunk.isCritical() == true) {
 			throw new Error("Encountered unknown critical chunk: " + this.chunk.getSignatureAsString() + ".");
 		}
 	}

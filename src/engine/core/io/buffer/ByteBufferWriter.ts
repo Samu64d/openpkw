@@ -27,7 +27,7 @@ export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> impleme
 		const index: number = this.resolvePositionForCapacity(position, 2);
 		const dest: Uint8Array = this.buffer.unsafeGetData();
 
-		if (this.isLittleEndian(endianness)) {
+		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
 			dest[index + 1] = (value >>> 8) & 0xFF;
 		} else {
@@ -42,7 +42,7 @@ export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> impleme
 		const index: number = this.resolvePositionForCapacity(position, 3);
 		const dest: Uint8Array = this.buffer.unsafeGetData();
 
-		if (this.isLittleEndian(endianness)) {
+		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
 			dest[index + 1] = (value >>> 8) & 0xFF;
 			dest[index + 2] = (value >>> 16) & 0xFF;
@@ -59,7 +59,7 @@ export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> impleme
 		const index: number = this.resolvePositionForCapacity(position, 4);
 		const dest: Uint8Array = this.buffer.unsafeGetData();
 
-		if (this.isLittleEndian(endianness)) {
+		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
 			dest[index + 1] = (value >>> 8) & 0xFF;
 			dest[index + 2] = (value >>> 16) & 0xFF;

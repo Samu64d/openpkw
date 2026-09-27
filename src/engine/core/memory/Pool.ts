@@ -36,7 +36,7 @@ class Pool<T> extends Capacity {
 		if (this.isItemRegistered(item) == true) {
 			throw new Error("Item is already registered.");
 		}
-		if (this.isFull()) {
+		if (this.isFull() == true) {
 			throw new Error("Cannot register item: pool is full.");
 		}
 
@@ -63,7 +63,7 @@ class Pool<T> extends Capacity {
 	}
 
 	public acquireItem(): T {
-		if (this.isEmpty()) {
+		if (this.isEmpty() == true) {
 			throw new Error("Cannot acquire item: pool is empty.");
 		}
 
