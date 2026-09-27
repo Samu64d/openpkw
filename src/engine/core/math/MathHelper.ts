@@ -47,12 +47,6 @@ export default class MathHelper {
 		return ++x;
 	}
 
-	public static pointGradientCenterLerp(x: number, y: number, rx: number, ry: number): number {
-		const dx: number = 1 - Math.abs(x * 2 - rx) / rx;
-		const dy: number = 1 - Math.abs(y * 2 - ry) / ry;
-		return Math.min(dx, dy);
-	}
-
 	private constructor() {
 	}
 

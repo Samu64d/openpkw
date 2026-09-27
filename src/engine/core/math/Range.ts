@@ -10,16 +10,16 @@ export default class Range {
 
 	private readonly min: number;
 	private readonly max: number;
-	private readonly value: number;
+	private readonly size: number;
 
 	public constructor(min: number, max: number) {
-		if (isNaN(min) || isNaN(max) || max - min <= 0) {
-			throw new Error("Invalid range bounds.");
+		if (max - min <= 0) {
+			throw new Error("Invalid range bounds: " + min + ", " + max + ".");
 		}
 
 		this.min = min;
 		this.max = max;
-		this.value = max - min;
+		this.size = max - min;
 	}
 
 	public getMin(): number {
@@ -30,8 +30,8 @@ export default class Range {
 		return this.max;
 	}
 
-	public getValue(): number {
-		return this.value;
+	public getSize(): number {
+		return this.size;
 	}
 
 	public inside(value: number): boolean {
@@ -44,6 +44,10 @@ export default class Range {
 
 	public clamp(value: number): number {
 		return MathHelper.clamp(value, this.min, this.max);
+	}
+
+	public lerp(value: number): number {
+		return MathHelper.lerp(this.min, this.max, value);
 	}
 
 	public inverseLerp(value: number): number {
