@@ -6,18 +6,18 @@ import Capacity from "./Capacity.ts";
 
 class Pool<T> extends Capacity {
 
-	public static readonly EMPTY: <T>(size: number) => Pool<T> = <T>(size: number): Pool<T> => {
+	public static readonly EMPTY: <T>(capacity: number) => Pool<T> = <T>(capacity: number): Pool<T> => {
 		const itemList: T[] = new Array<T>();
-		return new Pool(size, itemList);
+		return new Pool(capacity, itemList);
 	};
 
 	private readonly itemStack: T[];
 	private readonly itemRegistry: Map<T, Pool.PoolItemInfo<T>>;
 
-	private constructor(size: number, initialItemList: T[]) {
-		super(size, true);
-		if (size < initialItemList.length) {
-			throw new Error("Initial item list length value cannot exceed pool size value: got size " + size + ", length " + initialItemList.length + ".");
+	private constructor(capacity: number, initialItemList: T[]) {
+		super(capacity, true);
+		if (capacity < initialItemList.length) {
+			throw new Error("Initial item list length value cannot exceed pool capacity value: got capacity " + capacity + ", length " + initialItemList.length + ".");
 		}
 
 		this.itemRegistry = new Map<T, Pool.PoolItemInfo<T>>();
@@ -25,8 +25,8 @@ class Pool<T> extends Capacity {
 	}
 
 	public override shrink(length: number): void {
-		if (this.size - length < this.itemStack.length) {
-			throw new Error("Cannot shrink pool below current item count: got size " + (this.size - length) + ", item count " + this.itemStack.length + ".");
+		if (this.capacity - length < this.itemStack.length) {
+			throw new Error("Cannot shrink pool below current item count: got capacity " + (this.capacity - length) + ", item count " + this.itemStack.length + ".");
 		}
 
 		super.shrink(length);
@@ -55,11 +55,11 @@ class Pool<T> extends Capacity {
 	}
 
 	public isFull(): boolean {
-		return this.itemStack.length == this.size;
+		return this.itemStack.length == this.capacity;
 	}
 
-	public doubleSize(): void {
-		this.grow(this.size);
+	public doubleCapacity(): void {
+		this.grow(this.capacity);
 	}
 
 	public acquireItem(): T {

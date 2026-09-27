@@ -17,7 +17,7 @@ export default class PNGImagePixelSampler {
 	private readonly mask: number;
 
 	public constructor(source: ByteBuffer, width: number, height: number, depth: number, channelCount: number) {
-		const bufferSize: number = source.getSize();
+		const bufferSize: number = source.getCapacity();
 		const expectedSize: number = (width * height * depth * channelCount);
 
 		if (bufferSize != expectedSize) {

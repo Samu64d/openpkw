@@ -50,7 +50,7 @@ export default class StringByteDecoder implements Decoder<string> {
 	}
 
 	private decodeAscii(source: ByteBuffer): string {
-		const sizeInBytes: number = source.getSize();
+		const sizeInBytes: number = source.getCapacity();
 		const src: Uint8Array = source.unsafeGetData();
 		let dest: string = "";
 
@@ -78,11 +78,11 @@ export default class StringByteDecoder implements Decoder<string> {
 	}
 
 	private decodeUtf16LE(source: ByteBuffer): string {
-		if (source.getSize() % 2 != 0) {
-			throw new Error("Byte buffer to be decoded has incorrect size: " + source.getSize() + ".");
+		if (source.getCapacity() % 2 != 0) {
+			throw new Error("Byte buffer to be decoded has incorrect size: " + source.getCapacity() + ".");
 		}
 
-		const sizeInBytes: number = source.getSize() / 2;
+		const sizeInBytes: number = source.getCapacity() / 2;
 		const src: Uint8Array = source.unsafeGetData();
 		let dest: string = "";
 

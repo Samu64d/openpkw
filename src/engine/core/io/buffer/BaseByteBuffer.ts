@@ -8,18 +8,18 @@ import Buffer from "./Buffer.ts";
 
 export default abstract class BaseByteBuffer extends Buffer {
 
-	protected static allocateUint8Array(size: number, fillValue: number = 0): Uint8Array {
-		if (size < 0) {
-			throw new Error("Size value cannot be negative: got " + size + ".");
+	protected static allocateUint8Array(length: number, fillValue: number = 0): Uint8Array {
+		if (length < 0) {
+			throw new Error("Length value cannot be negative: got " + length + ".");
 		}
 
-		const uint8Array: Nullable<Uint8Array> = BaseByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(size);
+		const uint8Array: Nullable<Uint8Array> = BaseByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(length);
 
 		if (uint8Array == null) {
-			throw new Error("Cannot allocate new array of size: " + size + ".");
+			throw new Error("Cannot allocate new array of length: " + length + ".");
 		}
 
-		uint8Array.fill(fillValue, 0, size);
+		uint8Array.fill(fillValue, 0, length);
 		return uint8Array;
 	};
 
@@ -31,25 +31,25 @@ export default abstract class BaseByteBuffer extends Buffer {
 
 	protected readonly data: Uint8Array;
 
-	protected constructor(data: Uint8Array, size: number) {
-		super(size, false);
+	protected constructor(data: Uint8Array, capacity: number) {
+		super(capacity, false);
 		this.data = data;
 	}
 
-	public unsafeGetData(): Uint8Array {
-		return this.data.subarray(0, this.size);
-	}
-
-	public get(index: number): number {
-		if (index < 0 || index >= this.size) {
-			throw new Error("Out of bounds access: got " + index + ".");
+	public override get(position: number): number {
+		if (position < 0 || position >= this.capacity) {
+			throw new Error("Out of bounds access: got " + position + ".");
 		}
 
-		return this.data[index];
+		return this.data[position];
+	}
+
+	public unsafeGetData(): Uint8Array {
+		return this.data.subarray(0, this.capacity);
 	}
 
 	public toArray(): number[] {
-		return Array.from(this.data.subarray(0, this.size));
+		return Array.from(this.data.subarray(0, this.capacity));
 	}
 
 	public equals(byteBuffer: BaseByteBuffer): boolean {
@@ -57,11 +57,11 @@ export default abstract class BaseByteBuffer extends Buffer {
 			return true;
 		}
 
-		if (this.size != byteBuffer.size) {
+		if (this.capacity != byteBuffer.capacity) {
 			return false;
 		}
 
-		for (let i: number = 0; i < this.size; i++) {
+		for (let i: number = 0; i < this.capacity; i++) {
 			if (this.data[i] != byteBuffer.data[i]) {
 				return false;
 			}

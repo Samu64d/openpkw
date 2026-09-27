@@ -9,26 +9,26 @@ import BaseByteBuffer from "./BaseByteBuffer.ts";
 class ImmutableByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	public static readonly OF: (byteBuffer: BaseByteBuffer) => ImmutableByteBuffer = (byteBuffer: BaseByteBuffer): ImmutableByteBuffer => {
-		const size: number = byteBuffer.getSize();
-		const uint8Array: Uint8Array = ImmutableByteBuffer.allocateUint8Array(size, 0);
+		const capacity: number = byteBuffer.getCapacity();
+		const uint8Array: Uint8Array = ImmutableByteBuffer.allocateUint8Array(capacity, 0);
 		uint8Array.set(byteBuffer.unsafeGetData());
 		Object.freeze(uint8Array);
 
-		return new ImmutableByteBuffer(uint8Array, size);
+		return new ImmutableByteBuffer(uint8Array, capacity);
 	};
 
 	private readonly viewSet: Set<ImmutableByteBuffer.View>;
 
-	public constructor(data: Uint8Array, size: number) {
-		super(data, size);
+	public constructor(data: Uint8Array, capacity: number) {
+		super(data, capacity);
 		this.viewSet = new Set<ImmutableByteBuffer.View>();
 	}
 
 	public override unsafeGetData(): Readonly<Uint8Array> {
-		return this.data.subarray(0, this.size);
+		return this.data.subarray(0, this.capacity);
 	}
 
-	public view(start: number = 0, end: number = this.size): ImmutableByteBuffer.View {
+	public view(start: number = 0, end: number = this.capacity): ImmutableByteBuffer.View {
 		if (this.isRangeWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}

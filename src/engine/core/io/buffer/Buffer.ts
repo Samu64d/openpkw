@@ -2,60 +2,17 @@
 // Buffer.ts
 //
 
-export default abstract class Buffer {
+import Capacity from "../../memory/Capacity.ts";
+import SpanAccessor from "./SpanAccessor.ts";
 
-	protected size: number;
-	protected readonly resizable: boolean;
+export default abstract class Buffer extends Capacity implements SpanAccessor<number> {
 
-	public constructor(size: number, resizable: boolean = false) {
-		if (size < 0) {
-			throw new Error("Size value cannot be negative: got " + size + ".");
-		}
-
-		this.size = size;
-		this.resizable = resizable;
+	public constructor(capacity: number, resizable: boolean = false) {
+		super(capacity, resizable);
 	}
 
-	public getSize(): number {
-		return this.size;
-	}
+	public abstract get(position: number): number;
 
-	public isResizable(): boolean {
-		return this.resizable;
-	}
-
-	public isRangeWithinBounds(position: number, length: number): boolean {
-		return position >= 0 && length >= 0 && position + length <= this.size;
-	}
-
-	public hasCapacityFor(position: number, length: number): boolean {
-		if (this.resizable == false) {
-			return this.isRangeWithinBounds(position, length);
-		}
-
-		return position >= 0 && length >= 0 && position <= this.size;
-	}
-
-	public grow(length: number): void {
-		if (this.resizable == false) {
-			throw new Error("Cannot grow unresizable buffer.");
-		}
-		if (length < 0) {
-			throw new Error("Cannot grow with negative values: got " + length + ".");
-		}
-
-		this.size += length;
-	}
-
-	public shrink(length: number): void {
-		if (this.resizable == false) {
-			throw new Error("Cannot shrink unresizable item.");
-		}
-		if (length < 0 || length > this.size) {
-			throw new Error("Cannot shrink with negative or outbounds values: got size " + this.size + ", length " + length + ".");
-		}
-
-		this.size -= length;
-	}
+	public abstract set(position: number, value: number): void;
 
 }
