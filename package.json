@@ -20,7 +20,7 @@
 		"reflect-metadata": "0.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "24.21.0",
+		"@types/node": "24.19.0",
 		"typescript": "6.0.3",
 		"ts-loader": "9.6.2",
 		"webpack": "5.111.1",
