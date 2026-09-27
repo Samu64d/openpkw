@@ -9,16 +9,16 @@ export default class Area {
 
 	private readonly width: number;
 	private readonly height: number;
-	private readonly value: number;
+	private readonly size: number;
 
 	public constructor(width: number, height: number) {
-		if (width < 0 || height < 0) {
-			throw new Error("Width and height values must be non negative.");
+		if (width < 1 || height < 1) {
+			throw new Error("Width and height values must be at least 1: got width " + width + ", height " + height + ".");
 		}
 
 		this.width = width;
 		this.height = height;
-		this.value = width * height;
+		this.size = width * height;
 	}
 
 	public getWidth(): number {
@@ -29,8 +29,8 @@ export default class Area {
 		return this.height;
 	}
 
-	public getValue(): number {
-		return this.value;
+	public getSize(): number {
+		return this.size;
 	}
 
 	public equals(area: Area): boolean {

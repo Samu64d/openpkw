@@ -6,12 +6,12 @@ import Nullable from "../common/Nullable.ts";
 
 export default class Vector3d {
 
-	public static readonly ZERO = (): Vector3d => {
+	public static readonly ZERO: () => Vector3d = (): Vector3d => {
 		return new Vector3d(0, 0, 0);
 	};
 
-	public static readonly ONE = (): Vector3d => {
-		return new Vector3d(1.0, 1.0, 1.0);
+	public static readonly ONE: () => Vector3d = (): Vector3d => {
+		return new Vector3d(1, 1, 1);
 	};
 
 	private x: number;
@@ -139,6 +139,7 @@ export default class Vector3d {
 		if (this.length == null) {
 			this.length = Math.hypot(this.x, this.y, this.z);
 		}
+
 		return this.length;
 	}
 
@@ -154,6 +155,7 @@ export default class Vector3d {
 		const x: number = this.x - vector3d.x;
 		const y: number = this.y - vector3d.y;
 		const z: number = this.z - vector3d.z;
+
 		return x * x + y * y + z * z;
 	}
 

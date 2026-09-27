@@ -6,12 +6,12 @@ import Nullable from "../common/Nullable.ts";
 
 export default class Vector2d {
 
-	public static readonly ZERO = (): Vector2d => {
+	public static readonly ZERO: () => Vector2d = (): Vector2d => {
 		return new Vector2d(0, 0);
 	};
 
-	public static readonly ONE = (): Vector2d => {
-		return new Vector2d(1.0, 1.0);
+	public static readonly ONE: () => Vector2d = (): Vector2d => {
+		return new Vector2d(1, 1);
 	};
 
 	private x: number;
@@ -115,6 +115,7 @@ export default class Vector2d {
 		if (this.length == null) {
 			this.length = Math.hypot(this.x, this.y);
 		}
+
 		return this.length;
 	}
 
@@ -129,6 +130,7 @@ export default class Vector2d {
 	public getDistanceSquared(vector2d: Vector2d): number {
 		const x: number = this.x - vector2d.x;
 		const y: number = this.y - vector2d.y;
+
 		return x * x + y * y;
 	}
 
