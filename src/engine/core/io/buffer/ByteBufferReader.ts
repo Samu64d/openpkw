@@ -29,7 +29,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 		const index: number = this.resolvePositionForAccess(position, 2);
 		let value: number;
 
-		if (this.isLittleEndian(endianness)) {
+		if (this.isLittleEndian(endianness) == true) {
 			const b0: number = src[index];
 			const b1: number = src[index + 1] << 8;
 			value = b0 | b1;
@@ -48,7 +48,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 		const index: number = this.resolvePositionForAccess(position, 3);
 		let value: number;
 
-		if (this.isLittleEndian(endianness)) {
+		if (this.isLittleEndian(endianness) == true) {
 			const b0: number = src[index];
 			const b1: number = src[index + 1] << 8;
 			const b2: number = src[index + 2] << 16;
@@ -69,7 +69,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 		const index: number = this.resolvePositionForAccess(position, 4);
 		let value: number;
 
-		if (this.isLittleEndian(endianness)) {
+		if (this.isLittleEndian(endianness) == true) {
 			const b0: number = src[index];
 			const b1: number = src[index + 1] << 8;
 			const b2: number = src[index + 2] << 16;
