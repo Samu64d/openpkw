@@ -2,9 +2,11 @@
 // Matrix4d.ts
 //
 
+import Supplier from "../common/Supplier.ts";
+
 export default class Matrix4d {
 
-	public static readonly IDENTITY: () => Matrix4d = (): Matrix4d => {
+	public static readonly IDENTITY: Supplier<Matrix4d> = (): Matrix4d => {
 		return new Matrix4d(
 			1.0, 0.0, 0.0, 0.0,
 			0.0, 1.0, 0.0, 0.0,

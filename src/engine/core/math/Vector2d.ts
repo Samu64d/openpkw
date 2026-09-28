@@ -3,14 +3,15 @@
 //
 
 import Nullable from "../common/Nullable.ts";
+import Supplier from "../common/Supplier.ts";
 
 export default class Vector2d {
 
-	public static readonly ZERO: () => Vector2d = (): Vector2d => {
+	public static readonly ZERO: Supplier<Vector2d> = (): Vector2d => {
 		return new Vector2d(0, 0);
 	};
 
-	public static readonly ONE: () => Vector2d = (): Vector2d => {
+	public static readonly ONE: Supplier<Vector2d> = (): Vector2d => {
 		return new Vector2d(1, 1);
 	};
 
@@ -64,7 +65,7 @@ export default class Vector2d {
 	}
 
 	public addWith(vector2d: Vector2d): Vector2d {
-		return this.set(this.x + vector2d.getX(), this.y + vector2d.getY());
+		return this.set(this.x + vector2d.x, this.y + vector2d.y);
 	}
 
 	public subX(x: number): Vector2d {
@@ -80,11 +81,19 @@ export default class Vector2d {
 	}
 
 	public subWith(vector2d: Vector2d): Vector2d {
-		return this.set(this.x - vector2d.getX(), this.y - vector2d.getY());
+		return this.set(this.x - vector2d.x, this.y - vector2d.y);
 	}
 
 	public mul(value: number): Vector2d {
 		return this.set(this.x * value, this.y * value);
+	}
+
+	public div(value: number): Vector2d {
+		if (value == 0) {
+			throw new Error("Cannot divide vector components by 0.");
+		}
+
+		return this.set(this.x / value, this.y / value);
 	}
 
 	public negateX(): Vector2d {
@@ -139,7 +148,10 @@ export default class Vector2d {
 	}
 
 	public clone(): Vector2d {
-		return new Vector2d(this.x, this.y);
+		const vector2d: Vector2d = new Vector2d(this.x, this.y);
+
+		vector2d.length = this.length;
+		return vector2d;
 	}
 
 	public equals(vector2d: Vector2d): boolean {

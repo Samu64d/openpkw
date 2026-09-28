@@ -4,9 +4,9 @@
 
 import Capacity from "./Capacity.ts";
 
-class Pool<T> extends Capacity {
+class Pool<T extends object> extends Capacity {
 
-	public static readonly EMPTY: <T>(capacity: number) => Pool<T> = <T>(capacity: number): Pool<T> => {
+	public static readonly EMPTY: <T extends object>(capacity: number) => Pool<T> = <T extends object>(capacity: number): Pool<T> => {
 		const itemList: T[] = new Array<T>();
 		return new Pool(capacity, itemList);
 	};

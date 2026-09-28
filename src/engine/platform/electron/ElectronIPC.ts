@@ -5,6 +5,7 @@
 import * as Electron from "electron";
 
 import Nullable from "../../core/common/Nullable.ts";
+import BiConsumer from "../../core/common/BiConsumer.ts";
 import EventListener from "../../core/common/EventListener.ts";
 import ElectronProcess from "./ElectronProcess.ts";
 
@@ -28,7 +29,7 @@ class ElectronIPC {
 		return ElectronIPC.invoker(channel, ...args);
 	}
 
-	private static register: Nullable<(channel: ElectronIPC.Channel, listener: EventListener<any>) => void> = null;
+	private static register: Nullable<BiConsumer<ElectronIPC.Channel, EventListener<any>>> = null;
 
 	private static invoker: Nullable<(channel: ElectronIPC.Channel, ...args: any[]) => any> = null;
 

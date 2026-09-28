@@ -3,6 +3,7 @@
 //
 
 import Nullable from "../common/Nullable.ts";
+import Function from "../common/Function.ts";
 import MathHelper from "../math/MathHelper.ts";
 import ClassType from "../reflection/class/ClassType.ts";
 import Pool from "./Pool.ts";
@@ -10,7 +11,7 @@ import Allocator from "./Allocator.ts";
 
 class SpanPoolAllocator<T extends object> implements Allocator<T> {
 
-	public static readonly FACTORY_OF: <T extends object>(classType: ClassType.NoAbstract<T>) => SpanPoolAllocator.ItemFactory<T> = <T extends object>(classType: ClassType.NoAbstract<T>): SpanPoolAllocator.ItemFactory<T> => {
+	public static createFactory<T extends object>(classType: ClassType.NoAbstract<T>): Function<number, T> {
 		return (itemSize: number): T => {
 			return new classType(itemSize);
 		}
@@ -24,11 +25,11 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 
 	private static readonly MAX_MALLOC_SIZE: number = 1 << (SpanPoolAllocator.POOL_COUNT - 1);
 
-	private readonly factory: SpanPoolAllocator.ItemFactory<T>;
+	private readonly factory: Function<number, T>;
 	private readonly poolRegistry: Map<SpanPoolAllocator.PoolId, Pool<T>>;
 	private readonly globalItemRegistry: Map<T, SpanPoolAllocator.PoolId>;
 
-	public constructor(factory: SpanPoolAllocator.ItemFactory<T>, initialPoolCapacity: number = SpanPoolAllocator.DEFAULT_INITIAL_POOL_CAPACITY) {
+	public constructor(factory: Function<number, T>, initialPoolCapacity: number = SpanPoolAllocator.DEFAULT_INITIAL_POOL_CAPACITY) {
 		if (initialPoolCapacity < 1) {
 			throw new Error("Initial pool capacity must be at least 1: got " + initialPoolCapacity + ".");
 		}
@@ -126,7 +127,6 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 
 		pool.doubleCapacity();
 		this.fillPool(poolId, capacity);
-
 		return true;
 	}
 
@@ -135,8 +135,6 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 namespace SpanPoolAllocator {
 
 	export type PoolId = number;
-
-	export type ItemFactory<T extends object> = (itemSize: number) => T;
 
 }
 

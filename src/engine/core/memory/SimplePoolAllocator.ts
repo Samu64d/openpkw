@@ -3,13 +3,14 @@
 //
 
 import Nullable from "../common/Nullable.ts";
+import Supplier from "../common/Supplier.ts";
 import ClassType from "../reflection/class/ClassType.ts";
 import Pool from "./Pool.ts";
 import Allocator from "./Allocator.ts";
 
-class SimplePoolAllocator<T extends object> implements Allocator<T> {
+export default class SimplePoolAllocator<T extends object> implements Allocator<T> {
 
-	public static readonly FACTORY_OF: <T extends object>(classType: ClassType.NoAbstract<T>) => SimplePoolAllocator.ItemFactory<T> = <T extends object>(classType: ClassType.NoAbstract<T>): SimplePoolAllocator.ItemFactory<T> => {
+	public static createFactory<T extends object>(classType: ClassType.NoAbstract<T>): Supplier<T> {
 		return (): T => {
 			return new classType();
 		}
@@ -19,10 +20,10 @@ class SimplePoolAllocator<T extends object> implements Allocator<T> {
 
 	private static readonly MAX_POOL_CAPACITY: number = 2048;
 
-	private readonly factory: SimplePoolAllocator.ItemFactory<T>;
+	private readonly factory: Supplier<T>;
 	private readonly pool: Pool<T>;
 
-	public constructor(factory: SimplePoolAllocator.ItemFactory<T>, initialPoolCapacity: number = SimplePoolAllocator.DEFAULT_INITIAL_POOL_CAPACITY) {
+	public constructor(factory: Supplier<T>, initialPoolCapacity: number = SimplePoolAllocator.DEFAULT_INITIAL_POOL_CAPACITY) {
 		if (initialPoolCapacity < 1) {
 			throw new Error("Initial pool capacity must be at least 1: got " + initialPoolCapacity + ".");
 		}
@@ -87,11 +88,3 @@ class SimplePoolAllocator<T extends object> implements Allocator<T> {
 	}
 
 }
-
-namespace SimplePoolAllocator {
-
-	export type ItemFactory<T extends object> = () => T;
-
-}
-
-export default SimplePoolAllocator;

@@ -2,6 +2,8 @@
 // ColorType.ts
 //
 
+import ReadonlyRecord from "../../../common/ReadonlyRecord.ts";
+
 enum ColorType {
 	GREYSCALE = 0,
 	TRUECOLOR = 2,
@@ -12,7 +14,7 @@ enum ColorType {
 
 namespace ColorType {
 
-	const COLOR_TYPE_TO_CHANNEL_COUNT_MAP: Readonly<Record<ColorType, number>> = {
+	const COLOR_TYPE_TO_CHANNEL_COUNT_MAP: ReadonlyRecord<ColorType, number> = {
 		[ColorType.GREYSCALE]: 1,
 		[ColorType.TRUECOLOR]: 3,
 		[ColorType.INDEXED]: 1,
@@ -20,7 +22,7 @@ namespace ColorType {
 		[ColorType.ALPHA_TRUECOLOR]: 4
 	};
 
-	const COLOR_TYPE_TO_DEPTH_VALUE_LIST_MAP: Readonly<Record<ColorType, readonly number[]>> = {
+	const COLOR_TYPE_TO_DEPTH_VALUE_LIST_MAP: ReadonlyRecord<ColorType, readonly number[]> = {
 		[ColorType.GREYSCALE]: [1, 2, 4, 8, 16],
 		[ColorType.TRUECOLOR]: [8, 16],
 		[ColorType.INDEXED]: [1, 2, 4, 8],
