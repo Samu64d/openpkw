@@ -163,7 +163,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 		const width: number = this.ihdrData.getWidth();
 		const height: number = this.ihdrData.getHeight();
 		const rgbaData: ByteBuffer = new PNGImage(this.ihdrData, this.idatData, this.plteData, this.trnsData).toRGBA8();
-		return Image.FROM_RGBA(width, height, rgbaData);
+		return new Image(width, height, rgbaData);
 	}
 
 }

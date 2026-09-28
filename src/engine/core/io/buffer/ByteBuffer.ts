@@ -2,6 +2,8 @@
 // ByteBuffer.ts
 //
 
+import Function from "../../common/Function.ts";
+import BiFunction from "../../common/BiFunction.ts";
 import TextEncoding from "../../codec/TextEncoding.ts";
 import StringByteEncoder from "../../codec/StringByteEncoder.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
@@ -10,20 +12,20 @@ import BaseByteBuffer from "./BaseByteBuffer.ts";
 @Disposable()
 class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
-	public static readonly ALLOCATE: (capacity: number, fillValue?: number) => ByteBuffer = (capacity: number, fillValue: number = 0): ByteBuffer => {
-		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(capacity, fillValue);
-		
+	public static readonly ALLOCATE: Function<number, ByteBuffer> = (capacity: number): ByteBuffer => {
+		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(capacity);
+
 		return new ByteBuffer(uint8Array, capacity, false);
 	};
 
-	public static readonly FROM_ARRAY: (array: ArrayLike<number>) => ByteBuffer = (array: ArrayLike<number>): ByteBuffer => {
+	public static readonly FROM_ARRAY: Function<ArrayLike<number>, ByteBuffer> = (array: ArrayLike<number>): ByteBuffer => {
 		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(array.length, 0);
 		uint8Array.set(array);
-		
+
 		return new ByteBuffer(uint8Array, array.length, false);
 	};
 
-	public static readonly FROM_STRING: (string: string, textEncoding: TextEncoding) => ByteBuffer = (string: string, textEncoding: TextEncoding): ByteBuffer => {
+	public static readonly FROM_STRING: BiFunction<string, TextEncoding, ByteBuffer> = (string: string, textEncoding: TextEncoding): ByteBuffer => {
 		return new StringByteEncoder(textEncoding).encode(string);
 	};
 

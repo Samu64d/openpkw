@@ -3,14 +3,15 @@
 //
 
 import Nullable from "../common/Nullable.ts";
+import Supplier from "../common/Supplier.ts";
 
 export default class Vector3d {
 
-	public static readonly ZERO: () => Vector3d = (): Vector3d => {
+	public static readonly ZERO: Supplier<Vector3d> = (): Vector3d => {
 		return new Vector3d(0, 0, 0);
 	};
 
-	public static readonly ONE: () => Vector3d = (): Vector3d => {
+	public static readonly ONE: Supplier<Vector3d> = (): Vector3d => {
 		return new Vector3d(1, 1, 1);
 	};
 
@@ -79,7 +80,7 @@ export default class Vector3d {
 	}
 
 	public addWith(vector3d: Vector3d): Vector3d {
-		return this.set(this.x + vector3d.getX(), this.y + vector3d.getY(), this.z + vector3d.getZ());
+		return this.set(this.x + vector3d.x, this.y + vector3d.y, this.z + vector3d.z);
 	}
 
 	public subX(x: number): Vector3d {
@@ -99,11 +100,19 @@ export default class Vector3d {
 	}
 
 	public subWith(vector3d: Vector3d): Vector3d {
-		return this.set(this.x - vector3d.getX(), this.y - vector3d.getY(), this.z - vector3d.getZ());
+		return this.set(this.x - vector3d.x, this.y - vector3d.y, this.z - vector3d.z);
 	}
 
 	public mul(value: number): Vector3d {
 		return this.set(this.x * value, this.y * value, this.z * value);
+	}
+
+	public div(value: number): Vector3d {
+		if (value == 0) {
+			throw new Error("Cannot divide vector components by 0.");
+		}
+
+		return this.set(this.x / value, this.y / value, this.z / value);
 	}
 
 	public negateX(): Vector3d {
@@ -168,7 +177,10 @@ export default class Vector3d {
 	}
 
 	public clone(): Vector3d {
-		return new Vector3d(this.x, this.y, this.z);
+		const vector3d: Vector3d = new Vector3d(this.x, this.y, this.z);
+
+		vector3d.length = this.length;
+		return vector3d;
 	}
 
 	public equals(vector3d: Vector3d): boolean {

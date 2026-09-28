@@ -4,25 +4,26 @@
 
 import * as FS from "node:fs";
 
+import ReadonlyRecord from "../../../core/common/ReadonlyRecord.ts";
 import ByteBuffer from "../../../core/io/buffer/ByteBuffer.ts";
 import AccessRight from "../../../core/io/file/AccessRight.ts";
 import OpenMode from "../../../core/io/file/OpenMode.ts";
 import TextEncoding from "../../../core/codec/TextEncoding.ts";
 import FileSystemDriver from "../../../core/interop/FileSystemDriver.ts";
 import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
-import ErrorInspect from "../../../core/reflection/error/ErrorInspect.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import ErrorInspect from "../../../core/error/ErrorInspect.ts";
 
 @Disposable()
 export default class NodeFileSystemDriver extends FileSystemDriver implements Disposable.Target {
 
-	private static readonly TEXT_ENCODING_MAP: Readonly<Record<TextEncoding, BufferEncoding>> = {
+	private static readonly TEXT_ENCODING_MAP: ReadonlyRecord<TextEncoding, BufferEncoding> = {
 		[TextEncoding.ASCII]: "ascii",
 		[TextEncoding.UTF_8]: "utf8",
 		[TextEncoding.UTF_16LE]: "utf16le"
 	};
 
-	private static readonly OPEN_MODE_MAP: Readonly<Record<OpenMode, string>> = {
+	private static readonly OPEN_MODE_MAP: ReadonlyRecord<OpenMode, string> = {
 		[OpenMode.READ]: "r",
 		[OpenMode.WRITE_CREATE]: "w",
 		[OpenMode.READ_WRITE]: "r+",

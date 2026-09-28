@@ -4,6 +4,7 @@
 
 import * as Electron from "electron";
 
+import Function from "../../core/common/Function.ts";
 import EventListener from "../../core/common/EventListener.ts";
 import Disposable from "../../core/reflection/decorators/Disposable.ts";
 
@@ -14,7 +15,7 @@ class ElectronWindow implements Disposable.Target {
 
 	private static readonly DEFAULT_HEIGHT: number = 600;
 
-	private static readonly OPTIONS_BUILDER: (config: Partial<ElectronWindow.BuildConfig>) => Electron.BrowserWindowConstructorOptions = (config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions => {
+	private static readonly BUILD_OPTIONS: Function<Partial<ElectronWindow.BuildConfig>, Electron.BrowserWindowConstructorOptions> = (config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions => {
 		const options: Electron.BrowserWindowConstructorOptions = {
 			width: config.width ?? ElectronWindow.DEFAULT_WIDTH,
 			height: config.height ?? ElectronWindow.DEFAULT_HEIGHT,
@@ -33,7 +34,7 @@ class ElectronWindow implements Disposable.Target {
 	private readonly windowObject: Electron.BrowserWindow;
 
 	public constructor(config: Partial<ElectronWindow.BuildConfig>) {
-		const options: Electron.BrowserWindowConstructorOptions = ElectronWindow.OPTIONS_BUILDER(config);
+		const options: Electron.BrowserWindowConstructorOptions = ElectronWindow.BUILD_OPTIONS(config);
 		options.webPreferences = {};
 		options.webPreferences.nodeIntegration = true;
 		options.webPreferences.webSecurity = false;

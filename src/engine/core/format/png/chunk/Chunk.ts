@@ -2,6 +2,7 @@
 // Chunk.ts
 //
 
+import Function from "../../../common/Function.ts";
 import ByteOrder from "../../../memory/ByteOrder.ts";
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import ByteBufferReader from "../../../io/buffer/ByteBufferReader.ts";
@@ -10,16 +11,17 @@ import Record from "../../../reflection/decorators/Record.ts";
 @Record()
 export default class Chunk {
 
-	public static readonly READ_FROM: (reader: ByteBufferReader) => Chunk = (reader: ByteBufferReader): Chunk => {
+	public static readonly READ_FROM: Function<ByteBufferReader, Chunk> = (reader: ByteBufferReader): Chunk => {
 		const size: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const name: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const data: ByteBuffer.View = reader.getBuffer().view(reader.getCursor(), reader.getCursor() + size);
 		reader.skip(size);
 		const crc: number = reader.readUint32();
+
 		return new Chunk(size, name, data, crc);
 	};
 
-	public static readonly FROM_CHUNK_LIST: (chunkList: Chunk[]) => Chunk = (chunkList: Chunk[]): Chunk => {
+	public static readonly FROM_CHUNK_LIST: Function<Chunk[], Chunk> = (chunkList: Chunk[]): Chunk => {
 		if (chunkList.length == 0) {
 			throw new Error("Chunk list must contain at least one element.");
 		}
@@ -30,6 +32,7 @@ export default class Chunk {
 
 		const signature: number = chunkList[0].getSignature();
 		let resultSize: number = 0;
+
 		for (let i: number = 0; i < chunkList.length; i++) {
 			const chunk: Chunk = chunkList[i];
 
@@ -42,6 +45,7 @@ export default class Chunk {
 
 		const destination: ByteBuffer = ByteBuffer.ALLOCATE(resultSize);
 		let position: number = 0;
+
 		for (let i: number = 0; i < chunkList.length; i++) {
 			const chunk: Chunk = chunkList[i];
 			const data: ByteBuffer = chunk.getData();
@@ -58,6 +62,7 @@ export default class Chunk {
 		const b1: number = (signature >>> 8) & 0xFF;
 		const b2: number = (signature >>> 16) & 0xFF;
 		const b3: number = (signature >>> 24) & 0xFF;
+
 		return String.fromCharCode(b3, b2, b1, b0);
 	};
 

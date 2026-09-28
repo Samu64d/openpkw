@@ -7,8 +7,8 @@ import ByteOrder from "../../memory/ByteOrder.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
-import ErrorInspect from "../../reflection/error/ErrorInspect.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
+import ErrorInspect from "../../error/ErrorInspect.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
 import MappedBuffer from "../buffer/MappedBuffer.ts";
 import BufferAccessor from "../buffer/BufferAccessor.ts";
@@ -29,7 +29,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 		super(fileBuffer);
 		this.handle = handle;
 		this.mode = openMode;
-		this.chunkBuffer = ByteBuffer.ALLOCATE(4, 0);
+		this.chunkBuffer = ByteBuffer.ALLOCATE(4);
 		this.chunkBufferReader = new ByteBufferReader(this.chunkBuffer);
 		this.driver = DriverRegistry.get(FileSystemDriver);
 	}
@@ -135,6 +135,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 
 	private readCreateBuffer(position: number, length: number): ByteBuffer {
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(length);
+
 		this.readIntoBuffer(position, length, byteBuffer);
 		return byteBuffer;
 	}
