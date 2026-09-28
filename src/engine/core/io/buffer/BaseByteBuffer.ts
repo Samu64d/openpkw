@@ -27,7 +27,7 @@ export default abstract class BaseByteBuffer extends Buffer {
 		BaseByteBuffer.UINT8_ARRAY_ALLOCATOR.free(uint8Array);
 	}
 
-	private static readonly UINT8_ARRAY_ALLOCATOR: SpanPoolAllocator<Uint8Array> = new SpanPoolAllocator<Uint8Array>(SpanPoolAllocator.FACTORY_OF(Uint8Array));
+	private static readonly UINT8_ARRAY_ALLOCATOR: SpanPoolAllocator<Uint8Array> = new SpanPoolAllocator<Uint8Array>(SpanPoolAllocator.createFactory(Uint8Array));
 
 	protected readonly data: Uint8Array;
 	private readonly readonly: boolean;

@@ -13,13 +13,13 @@ export default class Projection {
 
 	public constructor(aspectRatio: number, fieldOfView: number, nearDistance: number, farDistance: number) {
 		if (aspectRatio <= 0) {
-			throw new Error("Aspect ratio value must be greater than zero.");
+			throw new Error("Aspect ratio value must be greater than 0: got " + aspectRatio + ".");
 		}
 		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
-			throw new Error("Field of view value must be between greater than zero and PI.");
+			throw new Error("Field of view value must be between greater than 0 and PI: got " + fieldOfView + ".");
 		}
 		if (nearDistance <= 0 || farDistance <= 0 || farDistance <= nearDistance) {
-			throw new Error("Invalid distance values.");
+			throw new Error("Invalid distance range values: near " + nearDistance + ", far " + farDistance + ".");
 		}
 
 		this.aspectRatio = aspectRatio;
@@ -37,7 +37,7 @@ export default class Projection {
 
 	public setAspectRatio(aspectRatio: number): void {
 		if (aspectRatio <= 0) {
-			throw new Error("Aspect ratio value must be greater than zero.");
+			throw new Error("Aspect ratio value must be greater than 0: got " + aspectRatio + ".");
 		}
 
 		this.aspectRatio = aspectRatio;
@@ -50,7 +50,7 @@ export default class Projection {
 
 	public setFieldOfView(fieldOfView: number): void {
 		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
-			throw new Error("Field of view value must be between greater than zero and PI.");
+			throw new Error("Field of view value must be between greater than 0 and PI: got " + fieldOfView + ".");
 		}
 
 		this.fieldOfView = fieldOfView;
@@ -63,7 +63,7 @@ export default class Projection {
 
 	public setNearDistance(nearDistance: number): void {
 		if (nearDistance <= 0 || nearDistance >= this.farDistance) {
-			throw new Error("Invalid near distance value.");
+			throw new Error("Invalid distance range values: near " + nearDistance + ", far " + this.farDistance + ".");
 		}
 
 		this.nearDistance = nearDistance;
@@ -76,7 +76,7 @@ export default class Projection {
 
 	public setFarDistance(farDistance: number): void {
 		if (farDistance <= 0 || farDistance <= this.nearDistance) {
-			throw new Error("Invalid far distance value.");
+			throw new Error("Invalid distance range values: near " + this.nearDistance + ", far " + farDistance + ".");
 		}
 
 		this.farDistance = farDistance;
