@@ -30,22 +30,16 @@ export default abstract class BaseByteBuffer extends Buffer {
 	private static readonly UINT8_ARRAY_ALLOCATOR: SpanPoolAllocator<Uint8Array> = new SpanPoolAllocator<Uint8Array>(SpanPoolAllocator.FACTORY_OF(Uint8Array));
 
 	protected readonly data: Uint8Array;
+	private readonly readonly: boolean;
 
-	protected constructor(data: Uint8Array, capacity: number) {
+	protected constructor(data: Uint8Array, capacity: number, readonly: boolean) {
 		super(capacity, false);
 		this.data = data;
+		this.readonly = readonly;
 	}
 
-	public override get(position: number): number {
-		if (position < 0 || position >= this.capacity) {
-			throw new Error("Out of bounds access: got " + position + ".");
-		}
-
-		return this.data[position];
-	}
-
-	public unsafeGetData(): Uint8Array {
-		return this.data.subarray(0, this.capacity);
+	public isReadonly(): boolean {
+		return this.readonly;
 	}
 
 	public toArray(): number[] {

@@ -60,6 +60,7 @@ class SimplePoolAllocator<T extends object> implements Allocator<T> {
 	private fillPool(itemCount: number): void {
 		for (let i: number = 0; i < itemCount; i++) {
 			const item: T = this.allocateItem();
+
 			this.pool.registerItem(item);
 		}
 	}
