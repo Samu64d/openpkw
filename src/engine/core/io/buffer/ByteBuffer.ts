@@ -12,13 +12,15 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	public static readonly ALLOCATE: (capacity: number, fillValue?: number) => ByteBuffer = (capacity: number, fillValue: number = 0): ByteBuffer => {
 		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(capacity, fillValue);
-		return new ByteBuffer(uint8Array, capacity);
+		
+		return new ByteBuffer(uint8Array, capacity, false);
 	};
 
 	public static readonly FROM_ARRAY: (array: ArrayLike<number>) => ByteBuffer = (array: ArrayLike<number>): ByteBuffer => {
 		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(array.length, 0);
 		uint8Array.set(array);
-		return new ByteBuffer(uint8Array, array.length);
+		
+		return new ByteBuffer(uint8Array, array.length, false);
 	};
 
 	public static readonly FROM_STRING: (string: string, textEncoding: TextEncoding) => ByteBuffer = (string: string, textEncoding: TextEncoding): ByteBuffer => {
@@ -27,12 +29,23 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	private readonly viewSet: Set<ByteBuffer.View>;
 
-	public constructor(data: Uint8Array, capacity: number) {
-		super(data, capacity);
+	public constructor(data: Uint8Array, capacity: number, readonly: boolean) {
+		super(data, capacity, readonly);
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
 
-	public set(position: number, value: number): void {
+	public override get(position: number): number {
+		if (position < 0 || position >= this.capacity) {
+			throw new Error("Out of bounds access: got " + position + ".");
+		}
+
+		return this.data[position];
+	}
+
+	public override set(position: number, value: number): void {
+		if (this.isReadonly() == true) {
+			throw new Error("Cannot set value: buffer is readonly.");
+		}
 		if (position < 0 || position >= this.capacity) {
 			throw new Error("Out of bounds access: got " + position + ".");
 		}
@@ -40,7 +53,14 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		this.data[position] = value;
 	}
 
+	public unsafeGetData(): Uint8Array {
+		return this.data.subarray(0, this.capacity);
+	}
+
 	public setArray(data: ArrayLike<number>, start: number): void {
+		if (this.isReadonly() == true) {
+			throw new Error("Cannot set value: buffer is readonly.");
+		}
 		if (this.isRangeWithinBounds(start, data.length) == false) {
 			throw new Error("Out of bounds access.");
 		}
@@ -49,6 +69,9 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 	}
 
 	public fill(fillValue: number, start: number = 0, end: number = this.capacity): void {
+		if (this.isReadonly() == true) {
+			throw new Error("Cannot set value: buffer is readonly.");
+		}
 		if (this.isRangeWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
@@ -74,6 +97,10 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		}
 
 		byteBuffer.data.set(this.data.subarray(sourceStart, sourceEnd), destinationStart);
+	}
+
+	public asReadonly(): ByteBuffer {
+		return new ByteBuffer(this.data.subarray(0, this.capacity), this.capacity, true);
 	}
 
 	public clone(): ByteBuffer {
@@ -106,7 +133,7 @@ namespace ByteBuffer {
 
 		public constructor(source: ByteBuffer, start: number, end: number) {
 			const subData: Uint8Array = source.unsafeGetData().subarray(start, end);
-			super(subData, end - start);
+			super(subData, end - start, false);
 			this.parent = source;
 		}
 

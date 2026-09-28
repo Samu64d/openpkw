@@ -90,6 +90,7 @@ class SpanPoolAllocator<T extends object> implements Allocator<T> {
 
 		for (let i: number = 0; i < itemCount; i++) {
 			const item: T = this.allocateItem(itemSize);
+
 			pool.registerItem(item);
 			this.globalItemRegistry.set(item, poolId);
 		}
