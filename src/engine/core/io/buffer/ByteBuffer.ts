@@ -33,6 +33,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	public constructor(data: Uint8Array, capacity: number, readonly: boolean) {
 		super(data, capacity, readonly);
+
 		this.viewSet = new Set<ByteBuffer.View>();
 	}
 
@@ -55,10 +56,6 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		this.data[position] = value;
 	}
 
-	public unsafeGetData(): Uint8Array {
-		return this.data.subarray(0, this.capacity);
-	}
-
 	public setArray(data: ArrayLike<number>, start: number): void {
 		if (this.isReadonly() == true) {
 			throw new Error("Cannot set value: buffer is readonly.");
@@ -70,18 +67,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		this.data.set(data, start);
 	}
 
-	public fill(fillValue: number, start: number = 0, end: number = this.capacity): void {
-		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
-		}
-		if (this.isRangeWithinBounds(start, end - start) == false) {
-			throw new Error("Out of bounds access.");
-		}
-
-		this.data.fill(fillValue, start, end);
-	}
-
-	public view(start: number = 0, end: number = this.capacity): ByteBuffer.View {
+	public override view(start: number = 0, end: number = this.capacity): ByteBuffer.View {
 		if (this.isRangeWithinBounds(start, end - start) == false) {
 			throw new Error("Out of bounds access.");
 		}
@@ -92,7 +78,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		return view;
 	}
 
-	public copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.capacity, destinationStart: number = 0): void {
+	public override copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.capacity, destinationStart: number = 0): void {
 		const length: number = sourceEnd - sourceStart;
 		if (this.isRangeWithinBounds(sourceStart, length) == false || byteBuffer.isRangeWithinBounds(destinationStart, length) == false) {
 			throw new Error("Out of bounds access.");
@@ -102,7 +88,10 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 	}
 
 	public asReadonly(): ByteBuffer {
-		return new ByteBuffer(this.data.subarray(0, this.capacity), this.capacity, true);
+		const data: Uint8Array = this.data.subarray(0, this.capacity);
+
+		Object.freeze(data);
+		return new ByteBuffer(data, this.capacity, true);
 	}
 
 	public clone(): ByteBuffer {
@@ -134,8 +123,8 @@ namespace ByteBuffer {
 		private readonly parent: ByteBuffer;
 
 		public constructor(source: ByteBuffer, start: number, end: number) {
-			const subData: Uint8Array = source.unsafeGetData().subarray(start, end);
-			super(subData, end - start, false);
+			super(source.unsafeGetData().subarray(start, end), end - start, false);
+
 			this.parent = source;
 		}
 

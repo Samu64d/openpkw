@@ -41,6 +41,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 
 	public constructor(source: ByteBuffer) {
 		super(source);
+
 		this.ihdrChunk = null;
 		this.plteChunk = null;
 		this.trnsChunk = null;
@@ -67,7 +68,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 			throw new Error("Invalid PNG file header.");
 		}
 	}
-    
+
 	private discoverChunks(): void {
 		const reader: ByteBufferReader = new ByteBufferReader(this.source);
 		reader.seek(PNGDecoder.CHUNK_REGION_OFFSET);

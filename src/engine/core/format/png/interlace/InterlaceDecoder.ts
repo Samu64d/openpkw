@@ -24,6 +24,7 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 
 	public constructor(source: ByteBuffer, width: number, height: number, bitsPerPixel: number) {
 		super(source);
+
 		this.width = width;
 		this.height = height;
 		this.bitsPerPixel = bitsPerPixel;

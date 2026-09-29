@@ -35,6 +35,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	public constructor() {
 		super();
+
 		this.fileHandleNextId = 0;
 		this.fileHandleMap = new Map<ResourceHandle, number>();
 	}

@@ -46,6 +46,7 @@ export default class File {
 			const driver: FileSystemDriver = DriverRegistry.get(FileSystemDriver);
 			const fileHandle: ResourceHandle = driver.openFD(path, openMode);
 			const size: number = driver.getFileSize(path);
+
 			return new FileHandler(fileHandle, size, openMode);
 		} catch (e: unknown) {
 			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));

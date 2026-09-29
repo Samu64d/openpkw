@@ -13,6 +13,7 @@ export default abstract class ByteBufferAccessor<T extends BaseByteBuffer> exten
 
 	public constructor(buffer: T, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
 		super(buffer);
+
 		this.defaultByteOrder = defaultByteOrder;
 	}
 
