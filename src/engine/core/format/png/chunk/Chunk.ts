@@ -64,7 +64,7 @@ export default class Chunk {
 		const b3: number = (signature >>> 24) & 0xFF;
 
 		return String.fromCharCode(b3, b2, b1, b0);
-	};
+	}
 
 	private readonly size: number;
 	private readonly signature: number;

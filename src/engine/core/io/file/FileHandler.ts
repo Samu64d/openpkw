@@ -10,7 +10,7 @@ import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
 import ErrorInspect from "../../error/ErrorInspect.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
-import MappedBuffer from "../buffer/MappedBuffer.ts";
+import MappedBuffer from "../buffer/MappedByteBufferBuffer.ts";
 import BufferAccessor from "../buffer/BufferAccessor.ts";
 import ByteBufferReader from "../buffer/ByteBufferReader.ts";
 import OpenMode from "./OpenMode.ts";
@@ -25,8 +25,8 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 	private readonly driver: FileSystemDriver;
 
 	public constructor(handle: ResourceHandle, size: number, openMode: OpenMode = OpenMode.READ_WRITE) {
-		const fileBuffer: MappedBuffer = new MappedBuffer(size);
-		super(fileBuffer);
+		super(new MappedBuffer(size));
+
 		this.handle = handle;
 		this.mode = openMode;
 		this.chunkBuffer = ByteBuffer.ALLOCATE(4);

@@ -18,6 +18,7 @@ class ConstructorAfterReturningAdvice<T extends Aspect, C extends ClassType<obje
 
 			public constructor(...args: any[]) {
 				super(...args);
+
 				aspect(this);
 			}
 

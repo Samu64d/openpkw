@@ -30,6 +30,7 @@ export default class FilterDecoder extends SingleValueDecoder<ByteBuffer> {
 
 	public constructor(source: ByteBuffer, scanlineCount: number, scanlineSize: number, scanlinePixelSize: number) {
 		super(source);
+
 		const bufferSize: number = source.getCapacity();
 		const expectedSize: number = scanlineCount * scanlineSize;
 		const rowSize: number = scanlineSize - 1; // We need to exclude the leading filter type byte to get the actual data size.

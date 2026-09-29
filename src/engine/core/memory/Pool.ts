@@ -11,115 +11,91 @@ class Pool<T extends object> extends Capacity {
 		return new Pool(capacity, itemList);
 	};
 
-	private readonly itemStack: T[];
-	private readonly itemRegistry: Map<T, Pool.PoolItemInfo<T>>;
+	private readonly availableItemStack: T[];
+	private readonly itemMap: Map<T, Pool.ItemState>;
 
-	private constructor(capacity: number, initialItemList: T[]) {
+	public constructor(capacity: number, initialItemList: T[]) {
 		super(capacity, true);
+
 		if (capacity < initialItemList.length) {
 			throw new Error("Initial item list length value cannot exceed pool capacity value: got capacity " + capacity + ", length " + initialItemList.length + ".");
 		}
 
-		this.itemRegistry = new Map<T, Pool.PoolItemInfo<T>>();
-		this.itemStack = Array.from(initialItemList);
+		this.availableItemStack = new Array<T>();
+		this.itemMap = new Map<T, Pool.ItemState>();
+
+		for (const item of initialItemList) {
+			this.addItem(item);
+		}
 	}
 
 	public override shrink(length: number): void {
-		if (this.capacity - length < this.itemStack.length) {
-			throw new Error("Cannot shrink pool below current item count: got capacity " + (this.capacity - length) + ", item count " + this.itemStack.length + ".");
+		const remainingCapacity: number = this.getRemainingCapacity();
+
+		if (remainingCapacity < length) {
+			throw new Error("Cannot shrink pool below the current registered item count: got capacity " + (this.capacity - length) + ", registered item count " + this.itemMap.size + ".");
 		}
 
 		super.shrink(length);
 	}
 
-	public registerItem(item: T): void {
-		if (this.isItemRegistered(item) == true) {
-			throw new Error("Item is already registered.");
+	public addItem(item: T): void {
+		if (this.hasItem(item) == true) {
+			throw new Error("Cannot add new item to the pool: item was already added.");
 		}
-		if (this.isFull() == true) {
-			throw new Error("Cannot register item: pool is full.");
+		if (this.getRemainingCapacity() == 0) {
+			throw new Error("Cannot add new item to the pool: pool is full.");
 		}
 
-		const poolItemInfo: Pool.PoolItemInfo<T> = new Pool.PoolItemInfo(item);
-
-		this.itemStack.push(item);
-		this.itemRegistry.set(item, poolItemInfo);
+		this.availableItemStack.push(item);
+		this.itemMap.set(item, Pool.ItemState.AVAILABLE);
 	}
 
-	public isItemRegistered(item: T): boolean {
-		return this.itemRegistry.has(item);
+	public hasItem(item: T): boolean {
+		return this.itemMap.has(item);
 	}
 
-	public isEmpty(): boolean {
-		return this.itemStack.length == 0;
+	public getRemainingCapacity(): number {
+		return Math.max(0, this.capacity - this.itemMap.size);
 	}
 
-	public isFull(): boolean {
-		return this.itemStack.length == this.capacity;
-	}
-
-	public doubleCapacity(): void {
-		this.grow(this.capacity);
+	public getAvailableItemCount(): number {
+		return this.availableItemStack.length;
 	}
 
 	public acquireItem(): T {
-		if (this.isEmpty() == true) {
-			throw new Error("Cannot acquire item: pool is empty.");
+		if (this.getAvailableItemCount() == 0) {
+			throw new Error("Cannot acquire item from pool: no items are available.");
 		}
 
-		const item: T = this.itemStack.pop() as T;
-		const poolItemInfo: Pool.PoolItemInfo<T> = this.itemRegistry.get(item) as Pool.PoolItemInfo<T>;
+		const item: T = this.availableItemStack.pop() as T;
 
-		poolItemInfo.setState(Pool.PoolItemState.ACQUIRED);
+		this.itemMap.set(item, Pool.ItemState.ACQUIRED);
 		return item;
 	}
 
 	public releaseItem(item: T): void {
-		if (this.isItemRegistered(item) == false) {
-			throw new Error("Invalid pool item reference.");
+		if (this.hasItem(item) == false) {
+			throw new Error("Invalid item reference.");
 		}
 
-		const poolItemInfo: Pool.PoolItemInfo<T> = this.itemRegistry.get(item) as Pool.PoolItemInfo<T>;
+		const state: Pool.ItemState = this.itemMap.get(item) as Pool.ItemState;
 
-		if (poolItemInfo.getState() != Pool.PoolItemState.ACQUIRED) {
-			throw new Error("Item was already released.");
+		if (state != Pool.ItemState.ACQUIRED) {
+			throw new Error("Cannot release item: item is already available.");
 		}
 
-		this.itemStack.push(item);
-		poolItemInfo.setState(Pool.PoolItemState.RELEASED);
+		this.availableItemStack.push(item);
+		this.itemMap.set(item, Pool.ItemState.AVAILABLE);
 	}
 
 }
 
 namespace Pool {
 
-	export const enum PoolItemState {
-		RELEASED,
+	export const enum ItemState {
+		AVAILABLE,
 		ACQUIRED
-	}
-
-	export class PoolItemInfo<T> {
-
-		private readonly ref: T;
-		private state: PoolItemState;
-
-		public constructor(ref: T, state: PoolItemState = PoolItemState.RELEASED) {
-			this.ref = ref;
-			this.state = state;
-		}
-
-		public getRef(): T {
-			return this.ref;
-		}
-
-		public getState(): PoolItemState {
-			return this.state;
-		}
-
-		public setState(state: PoolItemState): void {
-			this.state = state;
-		}
-
 	}
 
 }

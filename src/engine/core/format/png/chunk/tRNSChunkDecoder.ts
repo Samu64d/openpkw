@@ -16,6 +16,7 @@ export default class tRNSChunkDecoder extends ChunkDecoder<tRNSData> {
 
 	public constructor(chunk: Chunk, ihdrData: IHDRData) {
 		super(chunk, tRNSChunkDecoder.CHUNK_SIGNATURE);
+
 		this.colorType = ihdrData.getColorType();
 	}
 
