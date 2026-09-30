@@ -119,6 +119,7 @@ export default class Renderer {
 		this.loadModel("cliff_straight");
 		this.loadModel("cliff_corner_outer");
 		this.loadModel("tree");
+		this.loadModel("sign_0");
 		this.camera.lookAt(new Vector3d(3, 2.85, 3), new Vector3d(3, 0, 0));
 	}
 
@@ -174,10 +175,22 @@ export default class Renderer {
 		this.drawObject("tree", 2, 0, 13);
 		this.drawObject("tree", 2, 0, 15);
 
+		this.drawObject("tree", 4, 0, 9);
+		this.drawObject("tree", 4, 0, 11);
+		this.drawObject("tree", 4, 0, 13);
+		this.drawObject("tree", 4, 0, 15);
+
+		this.drawObject("tree", 6, 0, 9);
+		this.drawObject("tree", 6, 0, 11);
+		this.drawObject("tree", 6, 0, 13);
+		this.drawObject("tree", 6, 0, 15);
+
 		this.drawObject("tree", 8, 0, 9);
 		this.drawObject("tree", 8, 0, 11);
 		this.drawObject("tree", 8, 0, 13);
 		this.drawObject("tree", 8, 0, 15);
+
+		this.drawObject("sign_0", 10, -0.3, 9);
 	}
 
 	public update(time: number): void {
