@@ -247,7 +247,7 @@ export default class Renderer {
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
 		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
-		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetData());
+		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetSource());
 		texture.unbind();
 
 		return texture;

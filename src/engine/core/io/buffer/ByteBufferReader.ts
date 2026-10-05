@@ -4,6 +4,7 @@
 
 import Nullable from "../../common/Nullable.ts";
 import ByteOrder from "../../memory/ByteOrder.ts";
+import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 import BufferAccessor from "./ByteBufferAccessor.ts";
@@ -16,7 +17,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 	}
 
 	public readUint8(position: Nullable<number> = null): number {
-		const src: Uint8Array = this.buffer.unsafeGetData();
+		const src: Spannable = this.buffer.unsafeGetSource();
 		const index: number = this.resolvePositionForAccess(position, 1);
 		const value: number = src[index];
 
@@ -25,7 +26,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 	}
 
 	public readUint16(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
-		const src: Uint8Array = this.buffer.unsafeGetData();
+		const src: Spannable = this.buffer.unsafeGetSource();
 		const index: number = this.resolvePositionForAccess(position, 2);
 		let value: number;
 
@@ -44,7 +45,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 	}
 
 	public readUint24(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
-		const src: Uint8Array = this.buffer.unsafeGetData();
+		const src: Spannable = this.buffer.unsafeGetSource();
 		const index: number = this.resolvePositionForAccess(position, 3);
 		let value: number;
 
@@ -65,7 +66,7 @@ export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> imp
 	}
 
 	public readUint32(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
-		const src: Uint8Array = this.buffer.unsafeGetData();
+		const src: Spannable = this.buffer.unsafeGetSource();
 		const index: number = this.resolvePositionForAccess(position, 4);
 		let value: number;
 

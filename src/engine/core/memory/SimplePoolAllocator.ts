@@ -31,10 +31,6 @@ export default class SimplePoolAllocator<T extends object> extends PoolAllocator
 		this.fillPoolUpToCapacity();
 	}
 
-	public getItemFactory(): Supplier<T> {
-		return this.itemFactory;
-	}
-
 	public override malloc(): Nullable<T> {
 		while (true) {
 			const item: Nullable<T> = this.tryAcquireItemFromPool(this.pool);
@@ -53,6 +49,10 @@ export default class SimplePoolAllocator<T extends object> extends PoolAllocator
 
 	public override free(item: T): void {
 		this.pool.releaseItem(item);
+	}
+
+	public getItemFactory(): Supplier<T> {
+		return this.itemFactory;
 	}
 
 	private createItem(): T {

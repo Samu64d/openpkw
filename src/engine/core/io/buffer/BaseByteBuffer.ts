@@ -2,18 +2,22 @@
 // BaseByteBuffer.ts
 //
 
+import Comparable from "../../common/Comparable.ts";
 import Nullable from "../../common/Nullable.ts";
-import SpanPoolAllocator from "../../memory/SpanPoolAllocator.ts";
+import Spannable from "../../memory/Spannable.ts";
+import SpannablePoolAllocator from "../../memory/SpannablePoolAllocator.ts";
 import Buffer from "./Buffer.ts";
+import ByteBuffer from "./ByteBuffer.ts";
+import ByteBufferView from "./ByteBufferView.ts";
 
-export default abstract class BaseByteBuffer extends Buffer {
+export default abstract class BaseByteBuffer extends Buffer implements Comparable<BaseByteBuffer> {
 
 	protected static allocateUint8Array(length: number, fillValue: number = 0): Uint8Array {
 		if (length < 0) {
 			throw new Error("Length value cannot be negative: got " + length + ".");
 		}
 
-		const uint8Array: Nullable<Uint8Array> = BaseByteBuffer.UINT8_ARRAY_ALLOCATOR.malloc(length);
+		const uint8Array: Nullable<Uint8Array> = BaseByteBuffer.ARRAY_ALLOCATOR.malloc(length);
 
 		if (uint8Array == null) {
 			throw new Error("Cannot allocate new array of length: " + length + ".");
@@ -24,64 +28,41 @@ export default abstract class BaseByteBuffer extends Buffer {
 	};
 
 	protected static freeUint8Array(uint8Array: Uint8Array): void {
-		BaseByteBuffer.UINT8_ARRAY_ALLOCATOR.free(uint8Array);
+		ByteBuffer.ARRAY_ALLOCATOR.free(uint8Array);
 	}
 
-	private static readonly UINT8_ARRAY_ALLOCATOR: SpanPoolAllocator<Uint8Array> = new SpanPoolAllocator<Uint8Array>(SpanPoolAllocator.createItemFactory(Uint8Array));
+	private static readonly ARRAY_ALLOCATOR: SpannablePoolAllocator<Uint8Array> = new SpannablePoolAllocator<Uint8Array>(SpannablePoolAllocator.createItemFactory(Uint8Array));
 
-	protected readonly data: Uint8Array;
-	private readonly readonly: boolean;
+	protected readonly readonly: boolean;
+	protected readonly viewSet: Set<ByteBufferView>;
 
-	protected constructor(data: Uint8Array, capacity: number, readonly: boolean) {
+	protected constructor(capacity: number, readonly: boolean) {
 		super(capacity, false);
 
-		this.data = data;
 		this.readonly = readonly;
-	}
-
-	public unsafeGetData(): Uint8Array {
-		return this.data.subarray(0, this.capacity);
+		this.viewSet = new Set<ByteBufferView>();
 	}
 
 	public isReadonly(): boolean {
 		return this.readonly;
 	}
 
-	public fill(fillValue: number, start: number = 0, end: number = this.capacity): void {
-		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
-		}
-		if (this.isRangeWithinBounds(start, end - start) == false) {
-			throw new Error("Out of bounds access.");
-		}
+	public abstract unsafeGetSource(): Spannable;
 
-		this.data.fill(fillValue, start, end);
-	}
+	public abstract get(position: number): number;
 
-	public abstract view(start: number, end: number): ByteBuffer.View;
+	public abstract set(position: number, value: number): void;
 
-	public abstract copyTo(byteBuffer: ByteBuffer, sourceStart: number, sourceEnd: number, destinationStart: number): void;
+	public abstract fill(value: number, startPosition: number, endPosition: number): void;
 
-	public toArray(): number[] {
-		return Array.from(this.data.subarray(0, this.capacity));
-	}
+	public abstract copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number, sourceEndPosition: number, destinationStartPosition: number): void;
 
-	public equals(byteBuffer: BaseByteBuffer): boolean {
-		if (this === byteBuffer) {
-			return true;
-		}
+	public abstract toArray(startPosition: number, endPosition: number): number[];
 
-		if (this.capacity != byteBuffer.capacity) {
-			return false;
-		}
+	public abstract setArray(data: ArrayLike<number>, start: number): void;
 
-		for (let i: number = 0; i < this.capacity; i++) {
-			if (this.data[i] != byteBuffer.data[i]) {
-				return false;
-			}
-		}
+	public abstract view(startPosition: number, endPosition: number): ByteBufferView;
 
-		return true;
-	}
+	public abstract equals(byteBuffer: BaseByteBuffer): boolean;
 
 }

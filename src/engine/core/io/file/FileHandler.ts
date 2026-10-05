@@ -2,40 +2,38 @@
 // FileHandler.ts
 //
 
-import Nullable from "../../common/Nullable.ts";
-import ByteOrder from "../../memory/ByteOrder.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
-import DriverRegistry from "../../interop/DriverRegistry.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
+import DriverRegistry from "../../interop/DriverRegistry.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
 import ErrorInspect from "../../error/ErrorInspect.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
-import MappedBuffer from "../buffer/MappedByteBufferBuffer.ts";
-import BufferAccessor from "../buffer/BufferAccessor.ts";
-import ByteBufferReader from "../buffer/ByteBufferReader.ts";
+import MappedByteBuffer from "../buffer/MappedByteBuffer.ts";
 import OpenMode from "./OpenMode.ts";
 
 @Disposable()
-export default class FileHandler extends BufferAccessor<MappedBuffer> implements Disposable.Target {
+export default class FileHandler implements Disposable.Target {
 
 	private handle: ResourceHandle;
+	private size: number;
 	private readonly mode: OpenMode;
-	private readonly chunkBuffer: ByteBuffer;
-	private readonly chunkBufferReader: ByteBufferReader;
 	private readonly driver: FileSystemDriver;
+	private readonly chunkBuffer: ByteBuffer;
 
 	public constructor(handle: ResourceHandle, size: number, openMode: OpenMode = OpenMode.READ_WRITE) {
-		super(new MappedBuffer(size));
-
 		this.handle = handle;
+		this.size = size;
 		this.mode = openMode;
-		this.chunkBuffer = ByteBuffer.ALLOCATE(4);
-		this.chunkBufferReader = new ByteBufferReader(this.chunkBuffer);
 		this.driver = DriverRegistry.get(FileSystemDriver);
+		this.chunkBuffer = ByteBuffer.ALLOCATE(4);
 	}
 
 	public getMode(): OpenMode {
 		return this.mode;
+	}
+
+	public isReadonly(): boolean {
+		return this.mode == OpenMode.READ;
 	}
 
 	public isValid(): boolean {
@@ -43,76 +41,30 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 	}
 
 	public getSize(): number {
-		return this.buffer.getCapacity();
+		return this.size;
 	}
 
-	public readUint8(position: Nullable<number> = null): number {
-		const resolvedPosition: number = this.resolvePositionForAccess(position, 1);
-
-		this.readIntoBuffer(resolvedPosition, 1, this.chunkBuffer);
-		const value: number = this.chunkBufferReader.readUint8(0);
-
-		this.advanceIfUnspecified(1, position);
-		return value;
+	public read(length: number, position: number = 0): ByteBuffer {
+		return this.readCreateBuffer(position, length);
 	}
 
-	public readUint16(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = ByteOrder.LITTLE_ENDIAN): number {
-		const resolvedPosition: number = this.resolvePositionForAccess(position, 2);
-
-		this.readIntoBuffer(resolvedPosition, 2, this.chunkBuffer);
-		const value: number = this.chunkBufferReader.readUint16(0, endianness);
-
-		this.advanceIfUnspecified(2, position);
-		return value;
-	}
-
-	public readUint24(position: Nullable<number> = null, endianness: ByteOrder = ByteOrder.LITTLE_ENDIAN): number {
-		const resolvedPosition: number = this.resolvePositionForAccess(position, 3);
-
-		this.readIntoBuffer(resolvedPosition, 3, this.chunkBuffer);
-		const value: number = this.chunkBufferReader.readUint24(0, endianness);
-
-		this.advanceIfUnspecified(3, position);
-		return value;
-	}
-
-	public readUint32(position: Nullable<number> = null, endianness: ByteOrder = ByteOrder.LITTLE_ENDIAN): number {
-		const resolvedPosition: number = this.resolvePositionForAccess(position, 4);
-
-		this.readIntoBuffer(resolvedPosition, 4, this.chunkBuffer);
-		const value: number = this.chunkBufferReader.readUint32(0, endianness);
-
-		this.advanceIfUnspecified(4, position);
-		return value;
-	}
-
-	public read(length: number, position: Nullable<number> = null): ByteBuffer {
-		const resolvedPosition: number = this.resolvePositionForAccess(position, length);
-		const byteBuffer: ByteBuffer = this.readCreateBuffer(resolvedPosition, length);
-
-		this.advanceIfUnspecified(length, position);
+	public readInto(length: number, byteBuffer: ByteBuffer, position: number = 0): ByteBuffer {
+		this.readIntoBuffer(position, length, byteBuffer);
 		return byteBuffer;
 	}
 
-	public readInto(length: number, byteBuffer: ByteBuffer, position: Nullable<number> = null): ByteBuffer {
-		const resolvedPosition: number = this.resolvePositionForAccess(position, length);
-		this.readIntoBuffer(resolvedPosition, length, byteBuffer);
-
-		this.advanceIfUnspecified(length, position);
-		return byteBuffer;
-	}
-
-	public write(length: number, byteBuffer: ByteBuffer, position: Nullable<number> = null): void {
-		const resolvedPosition: number = this.resolvePositionForCapacity(position, length);
-		const delta: number = resolvedPosition + length - this.buffer.getCapacity();
+	public write(length: number, byteBuffer: ByteBuffer, position: number = 0): void {
+		const delta: number = position + length - this.size;
 
 		if (delta > 0) {
-			this.buffer.grow(delta);
+			this.size += delta;
 		}
 
-		this.writeFromBuffer(resolvedPosition, length, byteBuffer);
+		this.writeFromBuffer(position, length, byteBuffer);
+	}
 
-		this.advanceIfUnspecified(length, position);
+	public map(position: number, length: number): MappedByteBuffer {
+		return new MappedByteBuffer(this);
 	}
 
 	public dispose(): void {
@@ -127,7 +79,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 
 	private readIntoBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
 		if (length > byteBuffer.getCapacity()) {
-			throw new Error("Cannot read into buffer: length must be at most equal to size value.");
+			throw new Error("Cannot read into buffer: length must be at most equal to buffer capacity.");
 		}
 
 		this.driver.readFD(this.handle, position, length, byteBuffer, 0);
@@ -142,7 +94,7 @@ export default class FileHandler extends BufferAccessor<MappedBuffer> implements
 
 	private writeFromBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
 		if (length > byteBuffer.getCapacity()) {
-			throw new Error("Cannot write from buffer: length must be at most equal to size value.");
+			throw new Error("Cannot write from buffer: length must be at most equal to buffer capacity.");
 		}
 
 		this.driver.writeFD(this.handle, position, length, byteBuffer, 0);

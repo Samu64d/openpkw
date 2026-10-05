@@ -10,7 +10,7 @@ import Disposable from "../../reflection/decorators/Disposable.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 
 @Disposable()
-class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
+export default class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
 	public static readonly ALLOCATE: Function<number, ByteBuffer> = (capacity: number): ByteBuffer => {
 		const uint8Array: Uint8Array = ByteBuffer.allocateUint8Array(capacity);
@@ -29,12 +29,16 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 		return new StringByteEncoder(textEncoding).encode(string);
 	};
 
-	private readonly viewSet: Set<ByteBuffer.View>;
+	private readonly source: Uint8Array;
 
-	public constructor(data: Uint8Array, capacity: number, readonly: boolean) {
-		super(data, capacity, readonly);
+	public constructor(source: Uint8Array, capacity: number, readonly: boolean) {
+		super(capacity, readonly);
 
-		this.viewSet = new Set<ByteBuffer.View>();
+		this.source = source;
+	}
+
+	public override unsafeGetSource(): Uint8Array {
+		return this.source.subarray(0, this.capacity);
 	}
 
 	public override get(position: number): number {
@@ -42,7 +46,7 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 			throw new Error("Out of bounds access: got " + position + ".");
 		}
 
-		return this.data[position];
+		return this.source[position];
 	}
 
 	public override set(position: number, value: number): void {
@@ -53,52 +57,89 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 			throw new Error("Out of bounds access: got " + position + ".");
 		}
 
-		this.data[position] = value;
+		this.source[position] = value;
 	}
 
-	public setArray(data: ArrayLike<number>, start: number): void {
+	public override fill(fillValue: number, startPosition: number = 0, endPosition: number = this.capacity): void {
 		if (this.isReadonly() == true) {
 			throw new Error("Cannot set value: buffer is readonly.");
 		}
-		if (this.isRangeWithinBounds(start, data.length) == false) {
+		if (this.isRangeWithinBounds(startPosition, endPosition - startPosition) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
-		this.data.set(data, start);
+		this.source.fill(fillValue, startPosition, endPosition);
 	}
 
-	public override view(start: number = 0, end: number = this.capacity): ByteBuffer.View {
-		if (this.isRangeWithinBounds(start, end - start) == false) {
+	public override copyTo(byteBuffer: ByteBuffer, sourceStartPosition: number = 0, sourceEndPosition: number = this.capacity, destinationStartPosition: number = 0): void {
+		const length: number = sourceEndPosition - sourceStartPosition;
+		if (this.isRangeWithinBounds(sourceStartPosition, length) == false || byteBuffer.isRangeWithinBounds(destinationStartPosition, length) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
-		const view: ByteBuffer.View = new ByteBuffer.View(this, start, end);
+		byteBuffer.source.set(this.source.subarray(sourceStartPosition, sourceEndPosition), destinationStartPosition);
+	}
+
+	public override toArray(startPosition: number = 0, endPosition: number = this.capacity): number[] {
+		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
+			throw new Error("Out of bounds access.");
+		}
+
+		return Array.from(this.source.subarray(startPosition, endPosition));
+	}
+
+	public override setArray(array: ArrayLike<number>, startPosition: number = 0): void {
+		if (this.isReadonly() == true) {
+			throw new Error("Cannot set value: buffer is readonly.");
+		}
+		if (this.isRangeWithinBounds(startPosition, array.length) == false) {
+			throw new Error("Out of bounds access.");
+		}
+
+		this.source.set(array, startPosition);
+	}
+
+	public override view(startPosition: number = 0, endPosition: number = this.capacity): ByteBufferView {
+		if (this.isRangeWithinBounds(startPosition, endPosition - startPosition) == false) {
+			throw new Error("Out of bounds access.");
+		}
+
+		const view: ByteBufferView = new ByteBufferView(this, startPosition, endPosition);
 
 		this.viewSet.add(view);
 		return view;
 	}
 
-	public override copyTo(byteBuffer: ByteBuffer, sourceStart: number = 0, sourceEnd: number = this.capacity, destinationStart: number = 0): void {
-		const length: number = sourceEnd - sourceStart;
-		if (this.isRangeWithinBounds(sourceStart, length) == false || byteBuffer.isRangeWithinBounds(destinationStart, length) == false) {
-			throw new Error("Out of bounds access.");
+	public override equals(byteBuffer: ByteBuffer): boolean {
+		if (this === byteBuffer) {
+			return true;
 		}
 
-		byteBuffer.data.set(this.data.subarray(sourceStart, sourceEnd), destinationStart);
+		if (this.capacity != byteBuffer.capacity) {
+			return false;
+		}
+
+		for (let i: number = 0; i < this.capacity; i++) {
+			if (this.source[i] != byteBuffer.source[i]) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public asReadonly(): ByteBuffer {
-		const data: Uint8Array = this.data.subarray(0, this.capacity);
+		const source: Uint8Array = this.source.subarray(0, this.capacity);
 
-		Object.freeze(data);
-		return new ByteBuffer(data, this.capacity, true);
+		Object.freeze(source);
+		return new ByteBuffer(source, this.capacity, true);
 	}
 
 	public clone(): ByteBuffer {
-		return ByteBuffer.FROM_ARRAY(this.data.subarray(0, this.capacity));
+		return ByteBuffer.FROM_ARRAY(this.source.subarray(0, this.capacity));
 	}
 
-	public removeView(view: ByteBuffer.View): void {
+	public removeView(view: ByteBufferView): void {
 		this.viewSet.delete(view);
 	}
 
@@ -109,36 +150,33 @@ class ByteBuffer extends BaseByteBuffer implements Disposable.Target {
 			}
 		}
 
-		if ((this instanceof ByteBuffer.View) == false) {
-			ByteBuffer.freeUint8Array(this.data);
+		if ((this instanceof ByteBufferView) == true) {
+			return;
 		}
+
+		ByteBuffer.freeUint8Array(this.source);
 	}
 
 }
 
-namespace ByteBuffer {
+@Disposable()
+export class ByteBufferView extends ByteBuffer implements Disposable.Target {
 
-	export class View extends ByteBuffer {
+	private readonly parent: ByteBuffer;
 
-		private readonly parent: ByteBuffer;
+	public constructor(source: ByteBuffer, start: number, end: number) {
+		super(source.unsafeGetSource().subarray(start, end), end - start, false);
 
-		public constructor(source: ByteBuffer, start: number, end: number) {
-			super(source.unsafeGetData().subarray(start, end), end - start, false);
+		this.parent = source;
+	}
 
-			this.parent = source;
-		}
+	public getParent(): ByteBuffer {
+		return this.parent;
+	}
 
-		public getParent(): ByteBuffer {
-			return this.parent;
-		}
-
-		public override dispose(): void {
-			super.dispose();
-			this.parent.removeView(this);
-		}
-
+	public override dispose(): void {
+		super.dispose();
+		this.parent.removeView(this);
 	}
 
 }
-
-export default ByteBuffer;

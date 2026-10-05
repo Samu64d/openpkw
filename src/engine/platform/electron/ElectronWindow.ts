@@ -4,7 +4,6 @@
 
 import * as Electron from "electron";
 
-import Function from "../../core/common/Function.ts";
 import EventListener from "../../core/common/EventListener.ts";
 import Disposable from "../../core/reflection/decorators/Disposable.ts";
 
@@ -15,7 +14,13 @@ class ElectronWindow implements Disposable.Target {
 
 	private static readonly DEFAULT_HEIGHT: number = 600;
 
-	private static readonly BUILD_OPTIONS: Function<Partial<ElectronWindow.BuildConfig>, Electron.BrowserWindowConstructorOptions> = (config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions => {
+	private static readonly DEFAULT_WEB_PREFERENCES: Electron.WebPreferences = {
+		nodeIntegration: true,
+		webSecurity: false,
+		contextIsolation: false
+	}
+
+	private static buildConstructorOptions(config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions {
 		const options: Electron.BrowserWindowConstructorOptions = {
 			width: config.width ?? ElectronWindow.DEFAULT_WIDTH,
 			height: config.height ?? ElectronWindow.DEFAULT_HEIGHT,
@@ -26,19 +31,18 @@ class ElectronWindow implements Disposable.Target {
 			fullscreen: config.fullscreen ?? false,
 			frame: !config.borderless,
 			fullscreenable: config.fullscreenable ?? false,
-			icon: config.icon
+			icon: config.icon,
+			webPreferences: ElectronWindow.DEFAULT_WEB_PREFERENCES
 		};
+
 		return options;
 	};
 
 	private readonly windowObject: Electron.BrowserWindow;
 
 	public constructor(config: Partial<ElectronWindow.BuildConfig>) {
-		const options: Electron.BrowserWindowConstructorOptions = ElectronWindow.BUILD_OPTIONS(config);
-		options.webPreferences = {};
-		options.webPreferences.nodeIntegration = true;
-		options.webPreferences.webSecurity = false;
-		options.webPreferences.contextIsolation = false;
+		const options: Electron.BrowserWindowConstructorOptions = ElectronWindow.buildConstructorOptions(config);
+
 		this.windowObject = new Electron.BrowserWindow(options);
 		this.windowObject.removeMenu();
 	}
@@ -171,20 +175,20 @@ class ElectronWindow implements Disposable.Target {
 		if (this.windowObject.isMinimized() == false) {
 			this.minimize();
 			return true;
-		} else {
-			this.restore();
-			return false;
 		}
+
+		this.restore();
+		return false;
 	}
 
 	public maximizeOrRestore(): boolean {
 		if (this.windowObject.isMaximized() == false) {
 			this.maximize();
 			return true;
-		} else {
-			this.restore();
-			return false;
 		}
+
+		this.restore();
+		return false;
 	}
 
 	public close(): void {

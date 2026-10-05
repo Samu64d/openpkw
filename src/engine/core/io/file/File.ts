@@ -4,8 +4,8 @@
 
 import TextEncoding from "../../codec/TextEncoding.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
-import DriverRegistry from "../../interop/DriverRegistry.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
+import DriverRegistry from "../../interop/DriverRegistry.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
 import AccessRight from "./AccessRight.ts";
 import OpenMode from "./OpenMode.ts";
@@ -29,15 +29,15 @@ export default class File {
 		return DriverRegistry.get(FileSystemDriver).readFile(path);
 	}
 
-	public static readText(path: string, textEncoding: TextEncoding): string {
+	public static readText(path: string, textEncoding: TextEncoding = TextEncoding.UTF_8): string {
 		return DriverRegistry.get(FileSystemDriver).readTextFile(path, textEncoding);
 	}
 
-	public static write(path: string, byteBuffer: ByteBuffer, create: boolean): void {
+	public static write(path: string, byteBuffer: ByteBuffer, create: boolean = false): void {
 		DriverRegistry.get(FileSystemDriver).writeFile(path, byteBuffer, create);
 	}
 
-	public static writeText(path: string, text: string, create: boolean, textEncoding: TextEncoding): void {
+	public static writeText(path: string, text: string, create: boolean = false, textEncoding: TextEncoding = TextEncoding.UTF_8): void {
 		DriverRegistry.get(FileSystemDriver).writeTextFile(path, text, create, textEncoding);
 	}
 

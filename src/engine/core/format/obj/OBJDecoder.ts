@@ -14,15 +14,12 @@ export default class OBJDecoder extends SingleValueDecoder<Mesh> {
 
 	//TODO: Basic implementation
 	public override decode(): Mesh {
-		const text: string = new TextDecoder().decode(this.source.unsafeGetData());
+		const text: string = new TextDecoder().decode(this.source.unsafeGetSource());
 		const lines: string[] = text.split("\n");
-
 		const rawPositions: number[][] = [[0, 0, 0]];
 		const rawUVs: number[][] = [[0, 0]];
-
 		const webGLVertices: number[] = [];
 		const webGLIndices: number[] = [];
-
 		const uniqueVertices = new Map<string, number>();
 		let nextIndex = 0;
 

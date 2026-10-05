@@ -34,6 +34,7 @@ export default class MainRenderer {
 
 	private updateCanvasSize(): void {
 		const canvasElement: Nullable<HTMLCanvasElement> = this.document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
+
 		if (canvasElement != null) {
 			canvasElement.width = Math.floor(this.document.body.clientWidth);
 			canvasElement.height = Math.floor(this.document.body.clientHeight);
@@ -51,7 +52,8 @@ export default class MainRenderer {
 	}
 
 	private onErrorListener(event: ErrorEvent): void {
-		const message = event.message;
+		const message: string = event.message;
+
 		void ElectronIPC.sendRequest(Main.IPC_ERROR_CHANNEL, message);
 	}
 
