@@ -8,19 +8,19 @@ import Buffer from "./Buffer.ts";
 export default abstract class BufferAccessor<T extends Buffer> {
 
 	protected readonly buffer: T;
-	private cursor: number;
+	private position: number;
 
 	public constructor(buffer: T) {
 		this.buffer = buffer;
-		this.cursor = 0;
+		this.position = 0;
 	}
 
 	public getBuffer(): T {
 		return this.buffer;
 	}
 
-	public getCursor(): number {
-		return this.cursor;
+	public getPosition(): number {
+		return this.position;
 	}
 
 	public seek(position: number): void {
@@ -28,7 +28,7 @@ export default abstract class BufferAccessor<T extends Buffer> {
 			throw new Error("Out of bounds access: " + position + ".");
 		}
 
-		this.cursor = position;
+		this.position = position;
 	}
 
 	public skip(length: number): void {
@@ -36,7 +36,7 @@ export default abstract class BufferAccessor<T extends Buffer> {
 			throw new Error("Cannot skip with a negative value: got " + length + ".");
 		}
 
-		this.seek(this.cursor + length);
+		this.seek(this.position + length);
 	}
 
 	public rewind(length: number): void {
@@ -44,15 +44,15 @@ export default abstract class BufferAccessor<T extends Buffer> {
 			throw new Error("Cannot rewind with a negative value: got " + length + ".");
 		}
 
-		this.seek(this.cursor - length);
+		this.seek(this.position - length);
 	}
 
-	public remainingLength(): number {
-		return Math.max(0, this.buffer.getCapacity() - this.cursor);
+	public remaining(): number {
+		return Math.max(0, this.buffer.getCapacity() - this.position);
 	}
 
 	public isEof(): boolean {
-		return this.cursor >= this.buffer.getCapacity();
+		return this.position >= this.buffer.getCapacity();
 	}
 
 	public reset(): void {
@@ -60,7 +60,7 @@ export default abstract class BufferAccessor<T extends Buffer> {
 	}
 
 	protected resolvePositionForAccess(position: Nullable<number>, length: number): number {
-		const resolvedPosition: number = position ?? this.cursor;
+		const resolvedPosition: number = position ?? this.position;
 		if (this.buffer.isRangeWithinBounds(resolvedPosition, length) == false) {
 			throw new Error("Cannot access position: out of bounds.");
 		}
@@ -69,7 +69,7 @@ export default abstract class BufferAccessor<T extends Buffer> {
 	}
 
 	protected resolvePositionForCapacity(position: Nullable<number>, length: number): number {
-		const resolvedPosition: number = position ?? this.cursor;
+		const resolvedPosition: number = position ?? this.position;
 		if (this.buffer.hasCapacityFor(resolvedPosition, length) == false) {
 			throw new Error("Cannot access position: out of capacity.");
 		}

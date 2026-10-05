@@ -3,6 +3,7 @@
 //
 
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
+import ByteBufferView from "../../../io/buffer/ByteBufferView.ts";
 import SingleValueDecoder from "../../../codec/SingleValueDecoder.ts";
 import FilterDecoder from "../filter/FilterDecoder.ts";
 
@@ -34,7 +35,7 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 
 	public override decode(): ByteBuffer {
 		const bytesPerPixel: number = Math.max(1, Math.ceil(this.bitsPerPixel / 8));
-		let cursor: number = 0;
+		let position: number = 0;
 
 		for (let pass: number = 0; pass < 7; pass++) {
 			const rowStart: number = InterlaceDecoder.ROW_START_PER_PASS_LIST[pass];
@@ -53,19 +54,19 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 			const scanlineSize: number = rowDataSize + 1;
 			const passDataSize: number = blockHeight * scanlineSize;
 
-			if (cursor + passDataSize > this.source.getCapacity()) {
-				throw new Error("Insufficient interlaced image data for pass " + pass + ": need " + passDataSize + " bytes got " + (this.source.getCapacity() - cursor) + ".");
+			if (position + passDataSize > this.source.getCapacity()) {
+				throw new Error("Insufficient interlaced image data for pass " + pass + ": need " + passDataSize + " bytes got " + (this.source.getCapacity() - position) + ".");
 			}
 
-			const view: ByteBuffer = this.source.view(cursor, passDataSize);
+			const view: ByteBufferView = this.source.view(position, passDataSize);
 			const unfilteredData: ByteBuffer = new FilterDecoder(view, blockHeight, scanlineSize, bytesPerPixel).decode();
 			this.distributePass(unfilteredData, pass, blockWidth, blockHeight);
 			unfilteredData.dispose();
-			cursor += passDataSize;
+			position += passDataSize;
 		}
 
-		if (cursor != this.source.getCapacity()) {
-			throw new Error("Unexpected trailing data after interlaced image: " + (this.source.getCapacity() - cursor) + " bytes.");
+		if (position != this.source.getCapacity()) {
+			throw new Error("Unexpected trailing data after interlaced image: " + (this.source.getCapacity() - position) + " bytes.");
 		}
 
 		return this.destination;

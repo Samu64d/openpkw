@@ -2,10 +2,10 @@
 // Encoder.ts
 //
 
-import ByteBuffer from "../io/buffer/ByteBuffer.ts";
+import BaseByteBuffer from "../io/buffer/BaseByteBuffer.ts";
 
 export default interface Encoder<T> {
 
-	encode(source: T): ByteBuffer;
+	encode(source: T): BaseByteBuffer;
 
 }

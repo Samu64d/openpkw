@@ -2,10 +2,10 @@
 // Decoder.ts
 //
 
-import ByteBuffer from "../io/buffer/ByteBuffer.ts";
+import BaseByteBuffer from "../io/buffer/BaseByteBuffer.ts";
 
 export default interface Decoder<T> {
 
-	decode(source: ByteBuffer): T;
+	decode(source: BaseByteBuffer): T;
 
 }

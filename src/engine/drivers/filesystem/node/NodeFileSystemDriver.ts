@@ -87,7 +87,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override writeFile(path: string, byteBuffer: ByteBuffer, create: boolean = true): void {
-		this.writeBinaryFile(path, byteBuffer.unsafeGetData(), create);
+		this.writeBinaryFile(path, byteBuffer.unsafeGetSource(), create);
 	}
 
 	public override writeTextFile(path: string, text: string, create: boolean = true, encoding: TextEncoding = TextEncoding.UTF_8): void {
@@ -120,7 +120,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override readFD(fileHandle: ResourceHandle, position: number, length: number, buffer: ByteBuffer, bufferPosition: number): void {
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
-			FS.readSync(fd, buffer.unsafeGetData(), bufferPosition, length, position);
+			FS.readSync(fd, buffer.unsafeGetSource(), bufferPosition, length, position);
 		} catch (e: unknown) {
 			throw new Error("Cannot read from file.");
 		}
@@ -129,7 +129,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override writeFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void {
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
-			FS.writeSync(fd, byteBuffer.unsafeGetData(), bufferPosition, length, position);
+			FS.writeSync(fd, byteBuffer.unsafeGetSource(), bufferPosition, length, position);
 		} catch (e: unknown) {
 			throw new Error("Cannot write to file.");
 		}

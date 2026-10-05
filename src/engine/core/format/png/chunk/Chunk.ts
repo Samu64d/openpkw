@@ -5,6 +5,7 @@
 import Function from "../../../common/Function.ts";
 import ByteOrder from "../../../memory/ByteOrder.ts";
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
+import ByteBufferView from "../../../io/buffer/ByteBufferView.ts";
 import ByteBufferReader from "../../../io/buffer/ByteBufferReader.ts";
 import Record from "../../../reflection/decorators/Record.ts";
 
@@ -14,7 +15,7 @@ export default class Chunk {
 	public static readonly READ_FROM: Function<ByteBufferReader, Chunk> = (reader: ByteBufferReader): Chunk => {
 		const size: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const name: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
-		const data: ByteBuffer.View = reader.getBuffer().view(reader.getCursor(), reader.getCursor() + size);
+		const data: ByteBufferView = reader.getBuffer().view(reader.getPosition(), reader.getPosition() + size);
 		reader.skip(size);
 		const crc: number = reader.readUint32();
 
@@ -50,6 +51,7 @@ export default class Chunk {
 			const chunk: Chunk = chunkList[i];
 			const data: ByteBuffer = chunk.getData();
 			const size: number = chunk.getSize();
+
 			data.copyTo(destination, 0, size, position);
 			position += size;
 		}

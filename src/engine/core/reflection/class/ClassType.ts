@@ -19,8 +19,6 @@ namespace ClassType {
 
 	export type Method<T extends object, K extends MethodName<T>> = T[K];
 
-	export const CONSTRUCTOR_NAME: string = "constructor";
-
 	export function hasMethod<T extends object>(classType: ClassType<T>, methodName: MethodName<T>): boolean {
 		return typeof classType.prototype[methodName] == "function";
 	}
@@ -46,9 +44,11 @@ namespace ClassType {
 
 		while (prototype != null && prototype != Object.prototype) {
 			const propertyNameList: string[] = Object.getOwnPropertyNames(prototype);
+
 			for (const key of propertyNameList) {
-				if (key != ClassType.CONSTRUCTOR_NAME) {
+				if (key != "constructor") {
 					const descriptor: PropertyDescriptor | undefined = Object.getOwnPropertyDescriptor(prototype, key);
+
 					if (descriptor != undefined && typeof descriptor.value == "function") {
 						methodNameSet.add(key as MethodName<T>);
 					}

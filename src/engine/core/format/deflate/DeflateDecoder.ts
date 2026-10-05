@@ -14,7 +14,8 @@ export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer> {
 	}
 
 	public override decode(): ByteBuffer {
-		const src: Uint8Array = this.source.unsafeGetData();
+		const src: Uint8Array = this.source.unsafeGetSource();
+
 		return ByteBuffer.FROM_ARRAY(NodeZlib.inflateSync(src));
 	}
 

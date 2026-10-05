@@ -4,20 +4,21 @@
 
 import Nullable from "../../common/Nullable.ts";
 import ByteOrder from "../../memory/ByteOrder.ts";
+import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
-import ByteBuffer from "./ByteBuffer.ts";
+import BaseByteBuffer from "./BaseByteBuffer.ts";
 import BufferAccessor from "./ByteBufferAccessor.ts";
 
 @Disposable()
-export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> implements Disposable.Target {
+export default class ByteBufferWriter extends BufferAccessor<BaseByteBuffer> implements Disposable.Target {
 
-	public constructor(byteBuffer: ByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
+	public constructor(byteBuffer: BaseByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
 		super(byteBuffer, defaultByteOrder);
 	}
 
 	public writeUint8(value: number, position: Nullable<number> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 1);
-		const dest: Uint8Array = this.buffer.unsafeGetData();
+		const dest: Spannable = this.buffer.unsafeGetSource();
 
 		dest[index] = value & 0xFF;
 		this.advanceIfUnspecified(1, position);
@@ -25,7 +26,7 @@ export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> impleme
 
 	public writeUint16(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 2);
-		const dest: Uint8Array = this.buffer.unsafeGetData();
+		const dest: Spannable = this.buffer.unsafeGetSource();
 
 		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
@@ -40,7 +41,7 @@ export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> impleme
 
 	public writeUint24(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 3);
-		const dest: Uint8Array = this.buffer.unsafeGetData();
+		const dest: Spannable = this.buffer.unsafeGetSource();
 
 		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
@@ -57,7 +58,7 @@ export default class ByteBufferWriter extends BufferAccessor<ByteBuffer> impleme
 
 	public writeUint32(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
 		const index: number = this.resolvePositionForCapacity(position, 4);
-		const dest: Uint8Array = this.buffer.unsafeGetData();
+		const dest: Spannable = this.buffer.unsafeGetSource();
 
 		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;

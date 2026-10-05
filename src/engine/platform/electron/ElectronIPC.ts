@@ -50,6 +50,10 @@ class ElectronIPC {
 					ElectronIPC.invoker = Electron.ipcRenderer.invoke.bind(Electron.ipcRenderer);
 					break;
 				}
+			default:
+				{
+					break;
+				}
 		}
 	}
 
