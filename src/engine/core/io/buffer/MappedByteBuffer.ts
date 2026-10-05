@@ -3,6 +3,7 @@
 //
 
 import MathHelper from "../../math/MathHelper.ts";
+import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
 import FileHandler from "../file/FileHandler.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
@@ -34,7 +35,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	}
 
 	public override unsafeGetSource(): Spannable {
-
+		return new Array();
 	}
 
 	public override get(position: number): number {
@@ -57,6 +58,10 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		this.syncReadChunk(position);
 		this.chunk[position - this.chunkPosition] = value;
 		this.writeChunk();
+	}
+
+	public override setArray(array: ArrayLike<number>, startPosition: number): void {
+
 	}
 
 	public override fill(value: number, startPosition: number = 0, endPosition: number = this.capacity): void {
@@ -89,23 +94,15 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		}
 	}
 
-	public override copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number, sourceEndPosition: number, destinationStartPosition: number): void {
+	public override copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number = 0, sourceEndPosition: number = this.capacity, destinationStartPosition: number = 0): void {
 
 	}
 
 	public override toArray(startPosition: number, endPosition: number): number[] {
-
-	}
-
-	public override setArray(data: ArrayLike<number>, start: number): void {
-
+		return Array();
 	}
 
 	public override view(startPosition: number, endPosition: number): ByteBufferView {
-
-	}
-
-	public override equals(byteBuffer: BaseByteBuffer): boolean {
 
 	}
 

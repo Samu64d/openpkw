@@ -3,7 +3,6 @@
 //
 
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
-import ByteBufferView from "../../../io/buffer/ByteBufferView.ts";
 import SingleValueDecoder from "../../../codec/SingleValueDecoder.ts";
 import FilterDecoder from "../filter/FilterDecoder.ts";
 
@@ -58,8 +57,9 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 				throw new Error("Insufficient interlaced image data for pass " + pass + ": need " + passDataSize + " bytes got " + (this.source.getCapacity() - position) + ".");
 			}
 
-			const view: ByteBufferView = this.source.view(position, passDataSize);
+			const view: ByteBuffer = this.source.slice(position, passDataSize);
 			const unfilteredData: ByteBuffer = new FilterDecoder(view, blockHeight, scanlineSize, bytesPerPixel).decode();
+
 			this.distributePass(unfilteredData, pass, blockWidth, blockHeight);
 			unfilteredData.dispose();
 			position += passDataSize;

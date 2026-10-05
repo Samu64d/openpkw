@@ -7,10 +7,10 @@ import ByteOrder from "../../memory/ByteOrder.ts";
 import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
-import BufferAccessor from "./ByteBufferAccessor.ts";
+import ByteBufferAccessor from "./ByteBufferAccessor.ts";
 
 @Disposable()
-export default class ByteBufferReader extends BufferAccessor<BaseByteBuffer> implements Disposable.Target {
+export default class ByteBufferReader extends ByteBufferAccessor implements Disposable.Target {
 
 	public constructor(byteBuffer: BaseByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
 		super(byteBuffer, defaultByteOrder);

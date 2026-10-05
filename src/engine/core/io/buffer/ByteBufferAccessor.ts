@@ -4,14 +4,14 @@
 
 import Nullable from "../../common/Nullable.ts";
 import ByteOrder from "../../memory/ByteOrder.ts";
+import BufferSeeker from "./BufferSeeker.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
-import BufferAccessor from "./BufferAccessor.ts";
 
-export default abstract class ByteBufferAccessor<T extends BaseByteBuffer> extends BufferAccessor<T> {
+export default abstract class ByteBufferAccessor extends BufferSeeker<BaseByteBuffer> {
 
 	protected readonly defaultByteOrder: ByteOrder;
 
-	public constructor(buffer: T, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
+	public constructor(buffer: BaseByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
 		super(buffer);
 
 		this.defaultByteOrder = defaultByteOrder;

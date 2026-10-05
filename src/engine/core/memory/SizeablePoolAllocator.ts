@@ -1,16 +1,15 @@
 //
-// SpannablePoolAllocator.ts
+// SizeablePoolAllocator.ts
 //
 
 import Nullable from "../common/Nullable.ts";
 import Function from "../common/Function.ts";
 import MathHelper from "../math/MathHelper.ts";
 import ClassType from "../reflection/class/ClassType.ts";
-import Spannable from "./Spannable.ts";
 import Pool from "./Pool.ts";
 import PoolAllocator from "./PoolAllocator.ts";
 
-class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
+class SizeablePoolAllocator<T extends object> extends PoolAllocator<T> {
 
 	public static readonly DEFAULT_MIN_POOL_CAPACITY: number = 32;
 
@@ -24,18 +23,18 @@ class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
 
 	private static readonly POOL_COUNT: number = 20;
 
-	private static readonly MAX_MALLOC_SIZE: number = 1 << (SpannablePoolAllocator.POOL_COUNT - 1);
+	private static readonly MAX_MALLOC_SIZE: number = 1 << (SizeablePoolAllocator.POOL_COUNT - 1);
 
 	private readonly itemFactory: Function<number, T>;
-	private readonly poolRegistry: Map<SpannablePoolAllocator.PoolId, Pool<T>>;
-	private readonly globalItemRegistry: Map<T, SpannablePoolAllocator.PoolId>;
+	private readonly poolRegistry: Map<SizeablePoolAllocator.PoolId, Pool<T>>;
+	private readonly globalItemRegistry: Map<T, SizeablePoolAllocator.PoolId>;
 
-	public constructor(itemFactory: Function<number, T>, minPoolCapacity: number = SpannablePoolAllocator.DEFAULT_MIN_POOL_CAPACITY, maxPoolCapacity: number = SpannablePoolAllocator.DEFAULT_MAX_POOL_CAPACITY) {
+	public constructor(itemFactory: Function<number, T>, minPoolCapacity: number = SizeablePoolAllocator.DEFAULT_MIN_POOL_CAPACITY, maxPoolCapacity: number = SizeablePoolAllocator.DEFAULT_MAX_POOL_CAPACITY) {
 		super(minPoolCapacity, maxPoolCapacity);
 
 		this.itemFactory = itemFactory;
-		this.poolRegistry = new Map<SpannablePoolAllocator.PoolId, Pool<T>>();
-		this.globalItemRegistry = new Map<T, SpannablePoolAllocator.PoolId>();
+		this.poolRegistry = new Map<SizeablePoolAllocator.PoolId, Pool<T>>();
+		this.globalItemRegistry = new Map<T, SizeablePoolAllocator.PoolId>();
 		this.initializeAndFillPools(minPoolCapacity);
 	}
 
@@ -43,11 +42,11 @@ class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
 		if (size < 1) {
 			throw new Error("Malloc size must be at least 1: got " + size + ".");
 		}
-		if (size > SpannablePoolAllocator.MAX_MALLOC_SIZE) {
-			throw new Error("Maximum malloc item size allowed is " + SpannablePoolAllocator.MAX_MALLOC_SIZE + ": got " + size + ".");
+		if (size > SizeablePoolAllocator.MAX_MALLOC_SIZE) {
+			throw new Error("Maximum malloc item size allowed is " + SizeablePoolAllocator.MAX_MALLOC_SIZE + ": got " + size + ".");
 		}
 
-		const poolId: SpannablePoolAllocator.PoolId = MathHelper.findNextPowerOfTwo(size);
+		const poolId: SizeablePoolAllocator.PoolId = MathHelper.findNextPowerOfTwo(size);
 
 		while (true) {
 			if (this.poolRegistry.has(poolId) == false) {
@@ -74,7 +73,7 @@ class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
 			throw new Error("Invalid item reference.");
 		}
 
-		const poolId: SpannablePoolAllocator.PoolId = this.globalItemRegistry.get(item) as SpannablePoolAllocator.PoolId;
+		const poolId: SizeablePoolAllocator.PoolId = this.globalItemRegistry.get(item) as SizeablePoolAllocator.PoolId;
 		const pool: Pool<T> = this.poolRegistry.get(poolId) as Pool<T>;
 
 		pool.releaseItem(item);
@@ -88,7 +87,7 @@ class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
 		return this.itemFactory(itemSize);
 	}
 
-	private fillPoolUpToCapacity(poolId: SpannablePoolAllocator.PoolId): void {
+	private fillPoolUpToCapacity(poolId: SizeablePoolAllocator.PoolId): void {
 		const pool: Pool<T> = this.poolRegistry.get(poolId) as Pool<T>;
 		const itemCount: number = pool.getRemainingCapacity();
 		const itemSize: number = poolId;
@@ -102,7 +101,7 @@ class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
 	}
 
 	private initializeAndFillPools(initialPoolCapacity: number): void {
-		for (let i: number = 0; i < SpannablePoolAllocator.POOL_COUNT; i++) {
+		for (let i: number = 0; i < SizeablePoolAllocator.POOL_COUNT; i++) {
 			const poolId: number = 1 << i;
 			const pool: Pool<T> = Pool.EMPTY(initialPoolCapacity);
 
@@ -113,10 +112,10 @@ class SpannablePoolAllocator<T extends Spannable> extends PoolAllocator<T> {
 
 }
 
-namespace SpannablePoolAllocator {
+namespace SizeablePoolAllocator {
 
 	export type PoolId = number;
 
 }
 
-export default SpannablePoolAllocator;
+export default SizeablePoolAllocator;
