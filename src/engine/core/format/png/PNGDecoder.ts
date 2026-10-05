@@ -4,7 +4,6 @@
 
 import Nullable from "../../common/Nullable.ts";
 import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
-import ByteBufferView from "../../io/buffer/ByteBufferView.ts";
 import ByteBufferReader from "../../io/buffer/ByteBufferReader.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Image from "../../resource/Image.ts";
@@ -64,7 +63,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 	}
 
 	private validateHeader(): void {
-		const headerValue: ByteBufferView = this.source.view(0, PNGDecoder.HEADER_SIZE);
+		const headerValue: ByteBuffer = this.source.slice(0, PNGDecoder.HEADER_SIZE);
 
 		if (headerValue.equals(PNGDecoder.HEADER_SIGNATURE) == false) {
 			throw new Error("Invalid PNG file header.");

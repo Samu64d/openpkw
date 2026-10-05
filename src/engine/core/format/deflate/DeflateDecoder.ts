@@ -4,6 +4,7 @@
 
 import NodeZlib from "node:zlib";
 
+import Spannable from "../../memory/Spannable.ts";
 import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 
@@ -14,7 +15,7 @@ export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer> {
 	}
 
 	public override decode(): ByteBuffer {
-		const src: Uint8Array = this.source.unsafeGetSource();
+		const src: Spannable = this.source.unsafeGetSource();
 
 		return ByteBuffer.FROM_ARRAY(NodeZlib.inflateSync(src));
 	}

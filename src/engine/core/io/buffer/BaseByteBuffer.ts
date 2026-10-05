@@ -2,45 +2,40 @@
 // BaseByteBuffer.ts
 //
 
-import Comparable from "../../common/Comparable.ts";
 import Nullable from "../../common/Nullable.ts";
 import Spannable from "../../memory/Spannable.ts";
-import SpannablePoolAllocator from "../../memory/SpannablePoolAllocator.ts";
+import SpannablePoolAllocator from "../../memory/SizeablePoolAllocator.ts";
 import Buffer from "./Buffer.ts";
 import ByteBuffer from "./ByteBuffer.ts";
-import ByteBufferView from "./ByteBufferView.ts";
 
-export default abstract class BaseByteBuffer extends Buffer implements Comparable<BaseByteBuffer> {
+export default abstract class BaseByteBuffer extends Buffer {
 
-	protected static allocateUint8Array(length: number, fillValue: number = 0): Uint8Array {
-		if (length < 0) {
-			throw new Error("Length value cannot be negative: got " + length + ".");
+	protected static allocateArrayBuffer(byteLength: number): ArrayBuffer {
+		if (byteLength < 0) {
+			throw new Error("Byte length value cannot be negative: got " + byteLength + ".");
 		}
 
-		const uint8Array: Nullable<Uint8Array> = BaseByteBuffer.ARRAY_ALLOCATOR.malloc(length);
+		const arrayBuffer: Nullable<ArrayBuffer> = BaseByteBuffer.ARRAY_BUFFER_ALLOCATOR.malloc(byteLength);
 
-		if (uint8Array == null) {
-			throw new Error("Cannot allocate new array of length: " + length + ".");
+		if (arrayBuffer == null) {
+			throw new Error("Cannot allocate new array buffer of byte length: " + byteLength + ".");
 		}
 
-		uint8Array.fill(fillValue, 0, length);
-		return uint8Array;
+		return arrayBuffer;
 	};
 
-	protected static freeUint8Array(uint8Array: Uint8Array): void {
-		ByteBuffer.ARRAY_ALLOCATOR.free(uint8Array);
+	protected static freeArrayBuffer(arrayBuffer: ArrayBuffer): void {
+		ByteBuffer.ARRAY_BUFFER_ALLOCATOR.free(arrayBuffer);
 	}
 
-	private static readonly ARRAY_ALLOCATOR: SpannablePoolAllocator<Uint8Array> = new SpannablePoolAllocator<Uint8Array>(SpannablePoolAllocator.createItemFactory(Uint8Array));
+	private static readonly ARRAY_BUFFER_ALLOCATOR: SpannablePoolAllocator<ArrayBuffer> = new SpannablePoolAllocator<ArrayBuffer>(SpannablePoolAllocator.createItemFactory(ArrayBuffer));
 
 	protected readonly readonly: boolean;
-	protected readonly viewSet: Set<ByteBufferView>;
 
 	protected constructor(capacity: number, readonly: boolean) {
 		super(capacity, false);
 
 		this.readonly = readonly;
-		this.viewSet = new Set<ByteBufferView>();
 	}
 
 	public isReadonly(): boolean {
@@ -53,16 +48,14 @@ export default abstract class BaseByteBuffer extends Buffer implements Comparabl
 
 	public abstract set(position: number, value: number): void;
 
+	public abstract setArray(array: ArrayLike<number>, startPosition: number): void;
+
 	public abstract fill(value: number, startPosition: number, endPosition: number): void;
 
 	public abstract copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number, sourceEndPosition: number, destinationStartPosition: number): void;
 
+	public abstract slice(startPosition: number, endPosition: number): BaseByteBuffer;
+
 	public abstract toArray(startPosition: number, endPosition: number): number[];
-
-	public abstract setArray(data: ArrayLike<number>, start: number): void;
-
-	public abstract view(startPosition: number, endPosition: number): ByteBufferView;
-
-	public abstract equals(byteBuffer: BaseByteBuffer): boolean;
 
 }

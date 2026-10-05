@@ -1,11 +1,11 @@
 //
-// BufferAccessor.ts
+// BufferSeeker.ts
 //
 
 import Nullable from "../../common/Nullable.ts";
 import Buffer from "./Buffer.ts";
 
-export default abstract class BufferAccessor<T extends Buffer> {
+export default abstract class BufferSeeker<T extends Buffer> {
 
 	protected readonly buffer: T;
 	private position: number;

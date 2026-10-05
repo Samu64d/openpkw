@@ -4,7 +4,7 @@
 
 import Nullable from "../../../common/Nullable.ts";
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
-import Error from "../../../error/ErrorInspect.ts";
+import ErrorInspect from "../../../error/ErrorInspect.ts";
 import DeflateDecoder from "../../deflate/DeflateDecoder.ts";
 import IHDRData from "../data/IHDRData.ts";
 import IDATData from "../data/IDATData.ts";

@@ -88,7 +88,7 @@ const test: string[][][] = [
  */
 export default class Renderer {
 
-	private static readonly CLEAR_COLOR: Color = [0, 0, 0, 0];
+	private static readonly CLEAR_COLOR: Color = [255, 255, 255, 255];
 
 	private readonly context: WebGL2RenderingContext;
 	private readonly contextManager: GLContextManager;
