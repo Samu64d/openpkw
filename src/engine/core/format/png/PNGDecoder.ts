@@ -20,7 +20,7 @@ import tRNSData from "./data/tRNSData.ts";
 import IDATData from "./data/IDATData.ts";
 import PNGImage from "./image/PNGImage.ts";
 
-export default class PNGDecoder extends SingleValueDecoder<Image> {
+export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private static readonly HEADER_SIZE: number = 8;
 
@@ -71,10 +71,11 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 	}
 
 	private discoverChunks(): void {
-		const reader: ByteBufferReader = new ByteBufferReader(this.source);
+		const reader: ByteBufferReader<ByteBuffer> = new ByteBufferReader<ByteBuffer>(this.source);
+
 		reader.seek(PNGDecoder.CHUNK_REGION_OFFSET);
 
-		const chunk: Chunk = Chunk.READ_FROM(reader);
+		const chunk: Chunk = Chunk.FROM_READER(reader);
 
 		if (chunk.getSignature() != IHDRChunkDecoder.CHUNK_SIGNATURE) {
 			throw new Error("First chunk must be IHDR: got " + chunk.getSignatureAsString() + ".");
@@ -86,7 +87,7 @@ export default class PNGDecoder extends SingleValueDecoder<Image> {
 		const idatChunkList: Chunk[] = new Array<Chunk>();
 
 		while (reader.isEof() == false) {
-			const chunk: Chunk = Chunk.READ_FROM(reader);
+			const chunk: Chunk = Chunk.FROM_READER(reader);
 			const signature: number = chunk.getSignature();
 
 			if (signature == PLTEChunkDecoder.CHUNK_SIGNATURE) {

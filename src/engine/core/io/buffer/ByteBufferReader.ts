@@ -10,9 +10,9 @@ import BaseByteBuffer from "./BaseByteBuffer.ts";
 import ByteBufferAccessor from "./ByteBufferAccessor.ts";
 
 @Disposable()
-export default class ByteBufferReader extends ByteBufferAccessor implements Disposable.Target {
+export default class ByteBufferReader<T extends BaseByteBuffer = BaseByteBuffer> extends ByteBufferAccessor<T> implements Disposable.Target {
 
-	public constructor(byteBuffer: BaseByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
+	public constructor(byteBuffer: T, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
 		super(byteBuffer, defaultByteOrder);
 	}
 

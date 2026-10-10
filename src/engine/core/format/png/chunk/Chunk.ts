@@ -11,11 +11,13 @@ import Record from "../../../reflection/decorators/Record.ts";
 @Record()
 export default class Chunk {
 
-	public static readonly READ_FROM: Function<ByteBufferReader, Chunk> = (reader: ByteBufferReader): Chunk => {
+	public static readonly FROM_READER: Function<ByteBufferReader<ByteBuffer>, Chunk> = (reader: ByteBufferReader<ByteBuffer>): Chunk => {
 		const size: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const name: number = reader.readUint32(null, ByteOrder.BIG_ENDIAN);
 		const data: ByteBuffer = reader.getBuffer().slice(reader.getPosition(), reader.getPosition() + size);
+
 		reader.skip(size);
+
 		const crc: number = reader.readUint32();
 
 		return new Chunk(size, name, data, crc);

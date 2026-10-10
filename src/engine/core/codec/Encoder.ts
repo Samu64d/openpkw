@@ -4,8 +4,8 @@
 
 import BaseByteBuffer from "../io/buffer/BaseByteBuffer.ts";
 
-export default interface Encoder<T> {
+export default interface Encoder<T, R extends BaseByteBuffer> {
 
-	encode(source: T): BaseByteBuffer;
+	encode(source: T): R;
 
 }

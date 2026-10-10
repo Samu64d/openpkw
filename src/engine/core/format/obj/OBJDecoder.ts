@@ -6,7 +6,7 @@ import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Mesh from "../../resource/Mesh.ts";
 
-export default class OBJDecoder extends SingleValueDecoder<Mesh> {
+export default class OBJDecoder extends SingleValueDecoder<ByteBuffer, Mesh> {
 
 	public constructor(source: ByteBuffer) {
 		super(source);

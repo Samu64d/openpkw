@@ -27,7 +27,7 @@ export default class IDATChunkDecoder extends ChunkDecoder<IDATData> {
 
 	public constructor(chunk: Chunk, ihdrData: IHDRData) {
 		super(chunk, IDATChunkDecoder.CHUNK_SIGNATURE);
-	
+
 		this.width = ihdrData.getWidth();
 		this.height = ihdrData.getHeight();
 		this.depth = ihdrData.getDepth();
@@ -42,6 +42,7 @@ export default class IDATChunkDecoder extends ChunkDecoder<IDATData> {
 
 		try {
 			uncompressedData = new DeflateDecoder(source).decode();
+
 			let decodedData: ByteBuffer;
 
 			if (this.interlaceMethod == InterlaceMethod.NONE) {

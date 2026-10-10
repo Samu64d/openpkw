@@ -15,9 +15,10 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	private static readonly DEFAULT_CHUNK_LENGTH: number = 128;
 
 	private readonly handler: FileHandler;
-	private chunkPosition: number;
 	private readonly chunkLength: number;
-	private readonly chunk: Uint8Array;
+	private readonly chunkBuffer: ArrayBuffer;
+	private readonly chunkView: Uint8Array;
+	private chunkPosition: number;
 
 	public constructor(handler: FileHandler) {
 		super(handler.getSize(), handler.isReadonly());
@@ -30,8 +31,9 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 		this.handler = handler;
 		this.chunkLength = chunkLength;
+		this.chunkBuffer = MappedByteBuffer.allocateArrayBuffer(chunkLength);
+		this.chunkView = new Uint8Array(this.chunkBuffer).subarray(0, chunkLength);
 		this.chunkPosition = -1;
-		this.chunk = MappedByteBuffer.allocateUint8Array(chunkLength);
 	}
 
 	public override unsafeGetSourceView(): Spannable {
@@ -44,7 +46,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		}
 
 		this.syncReadChunk(position);
-		return this.chunk[position - this.chunkPosition];
+		return this.chunkView[position - this.chunkPosition];
 	}
 
 	public override set(position: number, value: number): void {
@@ -56,12 +58,12 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		}
 
 		this.syncReadChunk(position);
-		this.chunk[position - this.chunkPosition] = value;
+		this.chunkView[position - this.chunkPosition] = value;
 		this.writeChunk();
 	}
 
 	public override setArray(position: number, array: ArrayLike<number>): void {
-
+		//TODO:
 	}
 
 	public override fill(value: number, startPosition: number = 0, endPosition: number = this.capacity): void {
@@ -86,8 +88,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 				this.syncReadChunk(currentPosition);
 			}
 
-			this.chunk.fill(value, writeOffset, writeOffset + writeLength);
-			alert(this.chunk.toString());
+			this.chunkView.fill(value, writeOffset, writeOffset + writeLength);
 			this.writeChunk();
 
 			currentPosition += writeLength;
@@ -95,19 +96,19 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	}
 
 	public override copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number = 0, sourceEndPosition: number = this.capacity, destinationStartPosition: number = 0): void {
-
+		//TODO:
 	}
 
 	public override slice(startPosition: number, endPosition: number): ByteBufferView {
-
+		//TODO:
 	}
 
 	public override toArray(startPosition: number, endPosition: number): number[] {
-		return Array();
+		//TODO:
 	}
 
 	public dispose(): void {
-		MappedByteBuffer.freeUint8Array(this.chunk);
+		MappedByteBuffer.freeArrayBuffer(this.chunkBuffer);
 	}
 
 	private getChunkPosition(position: number): number {
@@ -116,19 +117,21 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	private readChunk(chunkPosition: number): void {
 		const readLength: number = Math.min(this.chunkLength, this.capacity - chunkPosition);
+		const chunkByteBuffer: ByteBuffer = ByteBuffer.FROM_ARRAY(this.chunkView);
 
-		const x = ByteBuffer.FROM_ARRAY(this.chunk);
-		this.handler.readInto(readLength, x, chunkPosition);
-		this.chunk.set(x.toArray());
+		this.handler.readInto(readLength, chunkByteBuffer, chunkPosition);
+		this.chunkView.set(chunkByteBuffer.toArray());
 	}
 
 	private syncReadChunk(position: number): void {
 		const chunkPosition: number = this.getChunkPosition(position);
 
-		if (chunkPosition != this.chunkPosition) {
-			this.readChunk(chunkPosition);
-			this.chunkPosition = chunkPosition;
+		if (chunkPosition == this.chunkPosition) {
+			return;
 		}
+
+		this.readChunk(chunkPosition);
+		this.chunkPosition = chunkPosition;
 	}
 
 	private writeChunk(): void {
@@ -137,9 +140,9 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		}
 
 		const writeLength: number = Math.min(this.chunkLength, this.capacity - this.chunkPosition);
+		const chunkByteBuffer: ByteBuffer = ByteBuffer.FROM_ARRAY(this.chunkView);
 
-		const x = ByteBuffer.FROM_ARRAY(this.chunk);
-		this.handler.write(writeLength, x, this.chunkPosition);
+		this.handler.write(writeLength, chunkByteBuffer, this.chunkPosition);
 	}
 
 }

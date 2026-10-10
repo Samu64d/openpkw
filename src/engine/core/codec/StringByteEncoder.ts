@@ -7,7 +7,7 @@ import ByteBuffer from "../io/buffer/ByteBuffer.ts";
 import TextEncoding from "./TextEncoding.ts";
 import Encoder from "./Encoder.ts";
 
-export default class StringByteEncoder implements Encoder<string> {
+export default class StringByteEncoder implements Encoder<string, ByteBuffer> {
 
 	private static readonly ASCII_REPLACEMENT_BYTE: number = 0x3F;
 
