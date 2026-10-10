@@ -55,7 +55,7 @@ export default class Logger implements Disposable.Target {
 		const level: string = logLevel.toString();
 		const time: string = new Date().toISOString();
 
-		return "[" + id + "] [" + level + "] " + time + " " + text + "\n";
+		return "[" + id + "] [" + level + "] " + time + ": " + text + "\n";
 	}
 
 }

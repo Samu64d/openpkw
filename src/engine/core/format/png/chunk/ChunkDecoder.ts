@@ -15,7 +15,9 @@ export default abstract class ChunkDecoder<T> {
 		if (chunk.getSignature() != expectedSignature) {
 			throw new Error("Chunk signature is incorrect: expected " + expectedSignature + ", got " + chunk.getSignature() + ".)");
 		}
+		
 		const size: number = chunk.getSize();
+
 		if (size < expectedMinSize || size > expectedMaxSize) {
 			throw new Error(chunk.getSignatureAsString() + " chunk size must be between " + expectedMinSize + " and " + expectedMaxSize + " bytes: got " + size + ".");
 		}

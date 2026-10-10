@@ -8,7 +8,7 @@ import Spannable from "../../memory/Spannable.ts";
 import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 
-export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer> {
+export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer, ByteBuffer> {
 
 	public constructor(source: ByteBuffer) {
 		super(source);

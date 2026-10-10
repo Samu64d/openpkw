@@ -7,12 +7,12 @@ import ByteOrder from "../../memory/ByteOrder.ts";
 import BufferSeeker from "./BufferSeeker.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 
-export default abstract class ByteBufferAccessor extends BufferSeeker<BaseByteBuffer> {
+export default abstract class ByteBufferAccessor<T extends BaseByteBuffer = BaseByteBuffer> extends BufferSeeker<T> {
 
 	protected readonly defaultByteOrder: ByteOrder;
 
-	public constructor(buffer: BaseByteBuffer, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
-		super(buffer);
+	public constructor(byteBuffer: T, defaultByteOrder: ByteOrder = ByteOrder.LITTLE_ENDIAN) {
+		super(byteBuffer);
 
 		this.defaultByteOrder = defaultByteOrder;
 	}

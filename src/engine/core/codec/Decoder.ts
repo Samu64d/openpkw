@@ -4,8 +4,8 @@
 
 import BaseByteBuffer from "../io/buffer/BaseByteBuffer.ts";
 
-export default interface Decoder<T> {
+export default interface Decoder<T extends BaseByteBuffer, R> {
 
-	decode(source: BaseByteBuffer): T;
+	decode(source: T): R;
 
 }

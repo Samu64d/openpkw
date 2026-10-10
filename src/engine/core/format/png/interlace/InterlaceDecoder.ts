@@ -6,7 +6,7 @@ import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../../codec/SingleValueDecoder.ts";
 import FilterDecoder from "../filter/FilterDecoder.ts";
 
-export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
+export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer, ByteBuffer> {
 
 	private static readonly ROW_START_PER_PASS_LIST: number[] = [0, 0, 4, 0, 2, 0, 1];
 
@@ -41,7 +41,6 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 			const rowIncrement: number = InterlaceDecoder.ROW_INCREMENT_PER_PASS_LIST[pass];
 			const colStart: number = InterlaceDecoder.COL_START_PER_PASS_LIST[pass];
 			const colIncrement: number = InterlaceDecoder.COL_INCREMENT_PER_PASS_LIST[pass];
-
 			const blockWidth: number = this.width > colStart ? Math.ceil((this.width - colStart) / colIncrement) : 0;
 			const blockHeight: number = this.height > rowStart ? Math.ceil((this.height - rowStart) / rowIncrement) : 0;
 
@@ -77,7 +76,6 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 		const rowIncrement: number = InterlaceDecoder.ROW_INCREMENT_PER_PASS_LIST[pass];
 		const colStart: number = InterlaceDecoder.COL_START_PER_PASS_LIST[pass];
 		const colIncrement: number = InterlaceDecoder.COL_INCREMENT_PER_PASS_LIST[pass];
-
 		const srcRowSize: number = Math.ceil((blockWidth * this.bitsPerPixel) / 8);
 		let srcIndex: number = 0;
 
@@ -93,13 +91,11 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 					const srcShift: number = 8 - (srcBitOffset & 7) - this.bitsPerPixel;
 					const srcByte: number = source.get(srcByteOffset);
 					const byteValue: number = (srcByte >> srcShift) & mask;
-
 					const destCol: number = colStart + blockCol * colIncrement;
 					const destBitOffset: number = destCol * this.bitsPerPixel;
 					const destByteOffset: number = destRow * this.rowDataSize + (destBitOffset >> 3);
 					const destShift: number = 8 - (destBitOffset & 7) - this.bitsPerPixel;
 					const oldByteValue: number = this.destination.get(destByteOffset);
-
 					const clearMask: number = ~(mask << destShift) & 0xFF;
 					const newByteValue: number = (oldByteValue & clearMask) | (byteValue << destShift);
 
@@ -120,6 +116,7 @@ export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer> {
 
 					for (let b: number = 0; b < bytesPerPixel; b++) {
 						const value: number = source.get(sourceOffset + b);
+
 						this.destination.set(destOffset + b, value);
 					}
 				}

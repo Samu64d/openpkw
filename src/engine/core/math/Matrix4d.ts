@@ -237,7 +237,7 @@ export default class Matrix4d {
 
 }
 
-//TODO:
+//TODO: Remove
 
 export function identity(): number[] {
 	return [
