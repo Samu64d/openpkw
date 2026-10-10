@@ -35,9 +35,9 @@ export default abstract class FileSystemDriver implements Driver {
 
 	public abstract readFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void;
 
-	public abstract writeFD(ResourceHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void;
+	public abstract writeFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void;
 
-	public abstract closeFD(ResourceHandle: ResourceHandle): void;
+	public abstract closeFD(fileHandle: ResourceHandle): void;
 
 	public abstract moveFile(sourcePath: string, destinationPath: string): void;
 

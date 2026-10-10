@@ -36,7 +36,7 @@ class GLProgram implements Disposable.Target {
 
 	public attachShader(shader: GLShader): void {
 		if (this.linkingStatus != GLProgram.LinkingStatus.UNLINKED) {
-			throw new Error("Trying attach shader to a program that is already linked");
+			throw new Error("Trying attach shader to a program that is already linked.");
 		}
 
 		this.contextManager.getContext().attachShader(this.programObject, shader.getShaderObject());
@@ -63,6 +63,7 @@ class GLProgram implements Disposable.Target {
 
 		if (this.linkingError == null) {
 			const infoLog: Nullable<string> = this.contextManager.getContext().getProgramInfoLog(this.programObject);
+
 			if (infoLog != null && infoLog.length > 0) {
 				this.linkingError = infoLog.replaceAll("\0", "");
 			}
@@ -85,6 +86,7 @@ class GLProgram implements Disposable.Target {
 
 	private updateLinkingStatus(): void {
 		const linkingStatus: boolean = this.contextManager.getContext().getProgramParameter(this.programObject, this.contextManager.enum("LINK_STATUS"));
+
 		if (linkingStatus == true) {
 			this.linkingStatus = GLProgram.LinkingStatus.LINKED;
 		} else {

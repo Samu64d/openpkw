@@ -55,6 +55,7 @@ export default class Camera {
 		if (this.updated == false) {
 			this.updateMatrix();
 		}
+
 		return this.matrix;
 	}
 

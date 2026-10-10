@@ -13,13 +13,16 @@ class AfterFinallyAdvice<T extends Aspect, M extends AfterFinallyAdvice.Accept<T
 
 	public override wrap(method: M): M {
 		const aspect: T = this.aspect;
+
 		return function (this: ThisParameterType<M>, ...args: Parameters<T>): ReturnType<M> {
 			let returnValue: ReturnType<M>;
+
 			try {
 				returnValue = method.apply(this, args);
 			} finally {
 				aspect.apply(this, args);
 			}
+
 			return returnValue;
 		} as unknown as M;
 	}

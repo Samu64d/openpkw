@@ -227,9 +227,11 @@ class ElectronWindow implements Disposable.Target {
 	}
 
 	public dispose(): void {
-		if (this.windowObject.isDestroyed() == false) {
-			this.windowObject.destroy();
+		if (this.windowObject.isDestroyed() == true) {
+			return;
 		}
+
+		this.windowObject.destroy();
 	}
 
 }
