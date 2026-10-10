@@ -17,17 +17,17 @@ export default class ByteBufferReader extends ByteBufferAccessor implements Disp
 	}
 
 	public readUint8(position: Nullable<number> = null): number {
-		const src: Spannable = this.buffer.unsafeGetSource();
-		const index: number = this.resolvePositionForAccess(position, 1);
+		const src: Spannable = this.buffer.unsafeGetSourceView();
+		const index: number = this.resolveAccess(position, 1, true);
 		const value: number = src[index];
 
-		this.advanceIfUnspecified(1, position);
+		this.resolveAdvance(position, 1);
 		return value;
 	}
 
 	public readUint16(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
-		const src: Spannable = this.buffer.unsafeGetSource();
-		const index: number = this.resolvePositionForAccess(position, 2);
+		const src: Spannable = this.buffer.unsafeGetSourceView();
+		const index: number = this.resolveAccess(position, 2, true);
 		let value: number;
 
 		if (this.isLittleEndian(endianness) == true) {
@@ -40,13 +40,13 @@ export default class ByteBufferReader extends ByteBufferAccessor implements Disp
 			value = b0 | b1;
 		}
 
-		this.advanceIfUnspecified(2, position);
+		this.resolveAdvance(position, 2);
 		return value;
 	}
 
 	public readUint24(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
-		const src: Spannable = this.buffer.unsafeGetSource();
-		const index: number = this.resolvePositionForAccess(position, 3);
+		const src: Spannable = this.buffer.unsafeGetSourceView();
+		const index: number = this.resolveAccess(position, 3, true);
 		let value: number;
 
 		if (this.isLittleEndian(endianness) == true) {
@@ -61,13 +61,13 @@ export default class ByteBufferReader extends ByteBufferAccessor implements Disp
 			value = b0 | b1 | b2;
 		}
 
-		this.advanceIfUnspecified(3, position);
+		this.resolveAdvance(position, 3);
 		return value;
 	}
 
 	public readUint32(position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): number {
-		const src: Spannable = this.buffer.unsafeGetSource();
-		const index: number = this.resolvePositionForAccess(position, 4);
+		const src: Spannable = this.buffer.unsafeGetSourceView();
+		const index: number = this.resolveAccess(position, 4, true);
 		let value: number;
 
 		if (this.isLittleEndian(endianness) == true) {
@@ -84,7 +84,7 @@ export default class ByteBufferReader extends ByteBufferAccessor implements Disp
 			value = (b0 | b1 | b2 | b3) >>> 0;
 		}
 
-		this.advanceIfUnspecified(4, position);
+		this.resolveAdvance(position, 4);
 		return value;
 	}
 

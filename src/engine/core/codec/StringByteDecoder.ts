@@ -63,7 +63,7 @@ export default class StringByteDecoder implements Decoder<string> {
 	}
 
 	private decodeAscii(source: BaseByteBuffer): string {
-		const src: Spannable = source.unsafeGetSource();
+		const src: Spannable = source.unsafeGetSourceView();
 		const sizeInBytes: number = source.getCapacity();
 		let i: number = 0;
 		let chunkIndex: number = 0;
@@ -97,7 +97,7 @@ export default class StringByteDecoder implements Decoder<string> {
 	}
 
 	private decodeUtf8(source: BaseByteBuffer): string {
-		const src: Spannable = source.unsafeGetSource();
+		const src: Spannable = source.unsafeGetSourceView();
 		const sizeInBytes: number = source.getCapacity();
 		let srcIndex: number = 0;
 		let chunkIndex: number = 0;
@@ -181,7 +181,7 @@ export default class StringByteDecoder implements Decoder<string> {
 			throw new Error("Byte buffer to be decoded has incorrect size: " + source.getCapacity() + ".");
 		}
 
-		const src: Spannable = source.unsafeGetSource();
+		const src: Spannable = source.unsafeGetSourceView();
 		const sizeInBytes: number = source.getCapacity();
 		let srcIndex: number = 0;
 		let chunkIndex: number = 0;

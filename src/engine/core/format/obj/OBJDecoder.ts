@@ -14,7 +14,7 @@ export default class OBJDecoder extends SingleValueDecoder<Mesh> {
 
 	//TODO: Basic implementation
 	public override decode(): Mesh {
-		const text: string = new TextDecoder().decode(this.source.unsafeGetSource());
+		const text: string = new TextDecoder().decode(this.source.unsafeGetSourceView());
 		const lines: string[] = text.split("\n");
 		const rawPositions: number[][] = [[0, 0, 0]];
 		const rawUVs: number[][] = [[0, 0]];

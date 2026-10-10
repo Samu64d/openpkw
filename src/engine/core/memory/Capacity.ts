@@ -24,18 +24,6 @@ export default abstract class Capacity {
 		return this.resizable;
 	}
 
-	public isRangeWithinBounds(position: number, length: number): boolean {
-		return position >= 0 && length >= 0 && position + length <= this.capacity;
-	}
-
-	public hasCapacityFor(position: number, length: number): boolean {
-		if (this.resizable == false) {
-			return this.isRangeWithinBounds(position, length);
-		}
-
-		return position >= 0 && length >= 0 && position <= this.capacity;
-	}
-
 	public grow(length: number): void {
 		if (this.resizable == false) {
 			throw new Error("Cannot grow unresizable item.");

@@ -88,7 +88,7 @@ export default class StringByteEncoder implements Encoder<string> {
 	private encodeAscii(source: string): ByteBuffer {
 		const sizeInBytes: number = source.length;
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(sizeInBytes);
-		const dest: Spannable = byteBuffer.unsafeGetSource();
+		const dest: Spannable = byteBuffer.unsafeGetSourceView();
 		let i: number = 0;
 
 		while (i < source.length) {
@@ -114,7 +114,7 @@ export default class StringByteEncoder implements Encoder<string> {
 	private encodeUtf8(source: string): ByteBuffer {
 		const sizeInBytes: number = StringByteEncoder.calculateUtf8SizeInBytes(source);
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(sizeInBytes);
-		const dest: Spannable = byteBuffer.unsafeGetSource();
+		const dest: Spannable = byteBuffer.unsafeGetSourceView();
 		let srcIndex: number = 0;
 		let destIndex: number = 0;
 
@@ -176,7 +176,7 @@ export default class StringByteEncoder implements Encoder<string> {
 	private encodeUtf16LE(source: string): ByteBuffer {
 		const sizeInBytes: number = source.length * 2;
 		const byteBuffer: ByteBuffer = ByteBuffer.ALLOCATE(sizeInBytes);
-		const dest: Spannable = byteBuffer.unsafeGetSource();
+		const dest: Spannable = byteBuffer.unsafeGetSourceView();
 		let srcIndex: number = 0;
 		let destIndex: number = 0;
 
