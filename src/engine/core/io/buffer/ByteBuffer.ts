@@ -23,7 +23,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 		const arrayBuffer: ArrayBuffer = ByteBuffer.allocateArrayBuffer(array.length);
 		const byteBuffer: ByteBuffer = new ByteBuffer(arrayBuffer, 0, array.length, false);
 
-		byteBuffer.setArray(array);
+		byteBuffer.setArray(0, array);
 		return byteBuffer;
 	};
 
@@ -32,16 +32,18 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	};
 
 	private readonly sourceBuffer: ArrayBuffer;
+	private readonly sourceStartPosition: number;
 	private readonly sourceArray: Uint8Array;
 
 	public constructor(source: ArrayBuffer, sourceStartPosition: number, sourceEndPosition: number, readonly: boolean) {
 		super(sourceEndPosition - sourceStartPosition, readonly);
 
 		this.sourceBuffer = source;
+		this.sourceStartPosition = sourceStartPosition;
 		this.sourceArray = new Uint8Array(source).subarray(sourceStartPosition, sourceEndPosition);
 	}
 
-	public override unsafeGetSource(): Uint8Array {
+	public override unsafeGetSourceView(): Uint8Array {
 		return this.sourceArray;
 	}
 
@@ -64,22 +66,22 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 		this.sourceArray[position] = value;
 	}
 
-	public override setArray(array: ArrayLike<number>, startPosition: number = 0): void {
+	public override setArray(position: number, array: ArrayLike<number>): void {
 		if (this.isReadonly() == true) {
 			throw new Error("Cannot set value: buffer is readonly.");
 		}
-		if (this.isRangeWithinBounds(startPosition, array.length) == false) {
+		if (this.isRangeWithinBounds(position, position + array.length) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
-		this.sourceArray.set(array, startPosition);
+		this.sourceArray.set(array, position);
 	}
 
 	public override fill(fillValue: number, startPosition: number = 0, endPosition: number = this.capacity): void {
 		if (this.isReadonly() == true) {
 			throw new Error("Cannot set value: buffer is readonly.");
 		}
-		if (this.isRangeWithinBounds(startPosition, endPosition - startPosition) == false) {
+		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
@@ -87,28 +89,29 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	}
 
 	public override copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number = 0, sourceEndPosition: number = this.capacity, destinationStartPosition: number = 0): void {
-		const length: number = sourceEndPosition - sourceStartPosition;
-
-		if (this.isRangeWithinBounds(sourceStartPosition, length) == false || byteBuffer.isRangeWithinBounds(destinationStartPosition, length) == false) {
+		if (this.isRangeWithinBounds(sourceStartPosition, sourceEndPosition) == false) {
+			throw new Error("Out of bounds access.");
+		}
+		if (byteBuffer.isRangeWithinBounds(destinationStartPosition, destinationStartPosition + (sourceEndPosition - sourceStartPosition)) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
-		Spannable.memcopyUint8Array(this.sourceArray, byteBuffer.unsafeGetSource(), sourceStartPosition, sourceEndPosition, destinationStartPosition);
+		Spannable.memcopyUint8Array(this.sourceArray, byteBuffer.unsafeGetSourceView(), sourceStartPosition, sourceEndPosition, destinationStartPosition);
 	}
 
 	public override slice(startPosition: number = 0, endPosition: number = this.capacity): ByteBuffer {
-		if (this.isRangeWithinBounds(startPosition, endPosition - startPosition) == false) {
+		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
-		const sourceStartPosition: number = this.sourceArray.byteOffset + startPosition;
-		const sourceEndPosition: number = this.sourceArray.byteOffset + endPosition;
+		const sourceStartPosition: number = this.sourceStartPosition + startPosition;
+		const sourceEndPosition: number = this.sourceStartPosition + endPosition;
 
 		return new ByteBuffer(this.sourceBuffer, sourceStartPosition, sourceEndPosition, this.readonly);
 	}
 
 	public override toArray(startPosition: number = 0, endPosition: number = this.capacity): number[] {
-		if (this.isRangeWithinBounds(startPosition, endPosition - startPosition) == false) {
+		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
@@ -118,18 +121,16 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	}
 
 	public asReadonly(): ByteBuffer {
-		const sourceStartPosition: number = this.sourceArray.byteOffset;
-		const sourceEndPosition: number = this.sourceArray.byteOffset + this.capacity;
+		const sourceEndPosition: number = this.sourceStartPosition + this.capacity;
 
-		return new ByteBuffer(this.sourceBuffer, sourceStartPosition, sourceEndPosition, true);
+		return new ByteBuffer(this.sourceBuffer, this.sourceStartPosition, sourceEndPosition, true);
 	}
 
 	public clone(): ByteBuffer {
-		const sourceStartPosition: number = this.sourceArray.byteOffset;
-		const sourceEndPosition: number = this.sourceArray.byteOffset + this.capacity;
+		const sourceEndPosition: number = this.sourceStartPosition + this.capacity;
 		const arrayBuffer: ArrayBuffer = this.sourceBuffer.slice(); //TODO: malloc
 
-		return new ByteBuffer(arrayBuffer, sourceStartPosition, sourceEndPosition, this.readonly);
+		return new ByteBuffer(arrayBuffer, this.sourceStartPosition, sourceEndPosition, this.readonly);
 	}
 
 	public equals(byteBuffer: ByteBuffer): boolean {

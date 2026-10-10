@@ -34,7 +34,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		this.chunk = MappedByteBuffer.allocateUint8Array(chunkLength);
 	}
 
-	public override unsafeGetSource(): Spannable {
+	public override unsafeGetSourceView(): Spannable {
 		return new Array();
 	}
 
@@ -60,7 +60,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		this.writeChunk();
 	}
 
-	public override setArray(array: ArrayLike<number>, startPosition: number): void {
+	public override setArray(position: number, array: ArrayLike<number>): void {
 
 	}
 
@@ -68,7 +68,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		if (this.isReadonly() == true) {
 			throw new Error("Cannot set value: buffer is readonly.");
 		}
-		if (this.isRangeWithinBounds(startPosition, endPosition - startPosition) == false) {
+		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
 			throw new Error("Out of bounds access.");
 		}
 
@@ -98,12 +98,12 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	}
 
-	public override toArray(startPosition: number, endPosition: number): number[] {
-		return Array();
+	public override slice(startPosition: number, endPosition: number): ByteBufferView {
+
 	}
 
-	public override view(startPosition: number, endPosition: number): ByteBufferView {
-
+	public override toArray(startPosition: number, endPosition: number): number[] {
+		return Array();
 	}
 
 	public dispose(): void {

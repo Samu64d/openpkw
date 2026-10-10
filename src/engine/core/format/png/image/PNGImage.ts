@@ -105,7 +105,7 @@ export default class PNGImage {
 					buffer[1] = g;
 					buffer[2] = g;
 					buffer[3] = value == (trnsGrayValue & mask) ? 0 : 255;
-					this.destination.setArray(buffer, (y * this.width + x) * 4);
+					this.destination.setArray((y * this.width + x) * 4, buffer);
 				}
 			}
 			return;
@@ -117,7 +117,7 @@ export default class PNGImage {
 				buffer[1] = buffer[0];
 				buffer[2] = buffer[0];
 				buffer[3] = buffer[0] == trnsGrayValue ? 0 : 255;
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 			return;
 		}
@@ -128,7 +128,7 @@ export default class PNGImage {
 				buffer[1] = buffer[0];
 				buffer[2] = buffer[0];
 				buffer[3] = ((buffer[0] << 8) | src.get(i * 2 + 1)) == trnsGrayValue ? 0 : 255;
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 		}
 	}
@@ -143,7 +143,7 @@ export default class PNGImage {
 				buffer[1] = src.get(i * 3 + 1);
 				buffer[2] = src.get(i * 3 + 2);
 				buffer[3] = 255;
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 			return;
 		}
@@ -154,7 +154,7 @@ export default class PNGImage {
 				buffer[1] = src.get(i * 6 + 2);
 				buffer[2] = src.get(i * 6 + 4);
 				buffer[3] = 255;
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 		}
 	}
@@ -185,7 +185,7 @@ export default class PNGImage {
 					buffer[1] = this.paletteData.get(value * 3 + 1);
 					buffer[2] = this.paletteData.get(value * 3 + 2);
 					buffer[3] = value < trnsSize ? this.transparencyData!.get(value) : 255;
-					this.destination.setArray(buffer, (y * this.width + x) * 4);
+					this.destination.setArray((y * this.width + x) * 4, buffer);
 				}
 			}
 			return;
@@ -198,7 +198,7 @@ export default class PNGImage {
 			buffer[1] = this.paletteData.get(indexValue * 3 + 1);
 			buffer[2] = this.paletteData.get(indexValue * 3 + 2);
 			buffer[3] = indexValue < trnsSize ? this.transparencyData!.get(indexValue) : 255;
-			this.destination.setArray(buffer, i * 4);
+			this.destination.setArray(i * 4, buffer);
 		}
 	}
 
@@ -212,7 +212,7 @@ export default class PNGImage {
 				buffer[1] = buffer[0];
 				buffer[2] = buffer[0];
 				buffer[3] = src.get(i * 2 + 1);
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 			return;
 		}
@@ -223,7 +223,7 @@ export default class PNGImage {
 				buffer[1] = buffer[0];
 				buffer[2] = buffer[0];
 				buffer[3] = src.get(i * 4 + 2);
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 		}
 	}
@@ -244,7 +244,7 @@ export default class PNGImage {
 				buffer[1] = src.get(i * 8 + 2);
 				buffer[2] = src.get(i * 8 + 4);
 				buffer[3] = src.get(i * 8 + 6);
-				this.destination.setArray(buffer, i * 4);
+				this.destination.setArray(i * 4, buffer);
 			}
 		}
 	}

@@ -17,16 +17,16 @@ export default class ByteBufferWriter extends ByteBufferAccessor implements Disp
 	}
 
 	public writeUint8(value: number, position: Nullable<number> = null): void {
-		const index: number = this.resolvePositionForCapacity(position, 1);
-		const dest: Spannable = this.buffer.unsafeGetSource();
+		const index: number = this.resolveAccess(position, 1, false);
+		const dest: Spannable = this.buffer.unsafeGetSourceView();
 
 		dest[index] = value & 0xFF;
-		this.advanceIfUnspecified(1, position);
+		this.resolveAdvance(position, 1);
 	}
 
 	public writeUint16(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
-		const index: number = this.resolvePositionForCapacity(position, 2);
-		const dest: Spannable = this.buffer.unsafeGetSource();
+		const index: number = this.resolveAccess(position, 2, false);
+		const dest: Spannable = this.buffer.unsafeGetSourceView();
 
 		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
@@ -36,12 +36,12 @@ export default class ByteBufferWriter extends ByteBufferAccessor implements Disp
 			dest[index + 1] = value & 0xFF;
 		}
 
-		this.advanceIfUnspecified(2, position);
+		this.resolveAdvance(position, 2);
 	}
 
 	public writeUint24(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
-		const index: number = this.resolvePositionForCapacity(position, 3);
-		const dest: Spannable = this.buffer.unsafeGetSource();
+		const index: number = this.resolveAccess(position, 3, false);
+		const dest: Spannable = this.buffer.unsafeGetSourceView();
 
 		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
@@ -53,12 +53,12 @@ export default class ByteBufferWriter extends ByteBufferAccessor implements Disp
 			dest[index + 2] = value & 0xFF;
 		}
 
-		this.advanceIfUnspecified(3, position);
+		this.resolveAdvance(position, 3);
 	}
 
 	public writeUint32(value: number, position: Nullable<number> = null, endianness: Nullable<ByteOrder> = null): void {
-		const index: number = this.resolvePositionForCapacity(position, 4);
-		const dest: Spannable = this.buffer.unsafeGetSource();
+		const index: number = this.resolveAccess(position, 4, false);
+		const dest: Spannable = this.buffer.unsafeGetSourceView();
 
 		if (this.isLittleEndian(endianness) == true) {
 			dest[index] = value & 0xFF;
@@ -72,7 +72,7 @@ export default class ByteBufferWriter extends ByteBufferAccessor implements Disp
 			dest[index + 3] = value & 0xFF;
 		}
 
-		this.advanceIfUnspecified(4, position);
+		this.resolveAdvance(position, 4);
 	}
 
 	public dispose(): void {

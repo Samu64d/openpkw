@@ -42,13 +42,13 @@ export default abstract class BaseByteBuffer extends Buffer {
 		return this.readonly;
 	}
 
-	public abstract unsafeGetSource(): Spannable;
+	public abstract unsafeGetSourceView(): Spannable;
 
 	public abstract get(position: number): number;
 
 	public abstract set(position: number, value: number): void;
 
-	public abstract setArray(array: ArrayLike<number>, startPosition: number): void;
+	public abstract setArray(position: number, array: ArrayLike<number>): void;
 
 	public abstract fill(value: number, startPosition: number, endPosition: number): void;
 

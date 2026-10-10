@@ -59,28 +59,33 @@ export default abstract class BufferSeeker<T extends Buffer> {
 		this.seek(0);
 	}
 
-	protected resolvePositionForAccess(position: Nullable<number>, length: number): number {
-		const resolvedPosition: number = position ?? this.position;
-		if (this.buffer.isRangeWithinBounds(resolvedPosition, length) == false) {
-			throw new Error("Cannot access position: out of bounds.");
+	protected resolveAccess(position: Nullable<number>, length: number, readonly: boolean = false): number {
+		if (length <= 0) {
+			throw new Error("Length value must be greater than 0: got " + length + ".");
 		}
 
-		return resolvedPosition;
-	}
+		const startPosition: number = position ?? this.position;
+		const endPosition: number = startPosition + length;
+		const capacity: number = this.buffer.getCapacity();
+		let flag: boolean = startPosition >= 0 && startPosition <= capacity;
 
-	protected resolvePositionForCapacity(position: Nullable<number>, length: number): number {
-		const resolvedPosition: number = position ?? this.position;
-		if (this.buffer.hasCapacityFor(resolvedPosition, length) == false) {
+		if (readonly || this.buffer.isResizable() == false) {
+			flag &&= endPosition <= capacity;
+		}
+
+		if (flag == false) {
 			throw new Error("Cannot access position: out of capacity.");
 		}
 
-		return resolvedPosition;
+		return startPosition;
 	}
 
-	protected advanceIfUnspecified(length: number, position: Nullable<number> = null): void {
-		if (position == null) {
-			this.skip(length);
+	protected resolveAdvance(position: Nullable<number>, length: number): void {
+		if (position != null) {
+			return;
 		}
+
+		this.skip(length);
 	}
 
 }
