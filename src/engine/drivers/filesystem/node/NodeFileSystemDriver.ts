@@ -71,6 +71,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	public override getFileSize(path: string): number {
 		const stats: FS.Stats = this.getStat(path);
+
 		if (stats.isFile() == false) {
 			throw new Error("Element at path exists but is not a file.");
 		}
@@ -87,7 +88,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override writeFile(path: string, byteBuffer: ByteBuffer, create: boolean = true): void {
-		this.writeBinaryFile(path, byteBuffer.unsafeGetSource(), create);
+		this.writeBinaryFile(path, byteBuffer.unsafeGetSourceView(), create);
 	}
 
 	public override writeTextFile(path: string, text: string, create: boolean = true, encoding: TextEncoding = TextEncoding.UTF_8): void {
@@ -96,6 +97,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	public override isValidFD(fileHandle: ResourceHandle): boolean {
 		const fd: number = this.accessFileHandle(fileHandle);
+
 		if (fd == -1) {
 			return false;
 		}
@@ -111,6 +113,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override openFD(path: string, openMode: OpenMode): ResourceHandle {
 		try {
 			const fd: number = FS.openSync(path, this.mapOpenMode(openMode));
+
 			return this.registerFileHandle(fd);
 		} catch (e: unknown) {
 			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));
@@ -120,7 +123,8 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override readFD(fileHandle: ResourceHandle, position: number, length: number, buffer: ByteBuffer, bufferPosition: number): void {
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
-			FS.readSync(fd, buffer.unsafeGetSource(), bufferPosition, length, position);
+
+			FS.readSync(fd, buffer.unsafeGetSourceView(), bufferPosition, length, position);
 		} catch (e: unknown) {
 			throw new Error("Cannot read from file.");
 		}
@@ -129,7 +133,8 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override writeFD(fileHandle: ResourceHandle, position: number, length: number, byteBuffer: ByteBuffer, bufferPosition: number): void {
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
-			FS.writeSync(fd, byteBuffer.unsafeGetSource(), bufferPosition, length, position);
+
+			FS.writeSync(fd, byteBuffer.unsafeGetSourceView(), bufferPosition, length, position);
 		} catch (e: unknown) {
 			throw new Error("Cannot write to file.");
 		}
@@ -138,6 +143,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	public override closeFD(fileHandle: ResourceHandle): void {
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
+
 			FS.closeSync(fd);
 		} catch (e: unknown) {
 			throw new Error("Cannot close file.");
@@ -208,6 +214,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 				});
 			} else {
 				const fd: number = FS.openSync(path, "r+");
+
 				try {
 					FS.ftruncateSync(fd, 0);
 					FS.writeFileSync(fd, target, {
@@ -224,6 +231,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	private registerFileHandle(fd: number): ResourceHandle {
 		const fileHandle: number = this.fileHandleNextId++;
+
 		this.fileHandleMap.set(fileHandle, fd);
 		return fileHandle;
 	}

@@ -13,8 +13,10 @@ class ReturnValueAdvice<T extends ReturnValueAdvice.Signature<T>, M extends Retu
 
 	public override wrap(method: M): M {
 		const aspect: T = this.aspect;
+
 		return function (this: ThisParameterType<M>, ...args: Parameters<M>): ReturnType<T> {
 			const returnValue: ReturnType<T> = method.apply(this, args);
+
 			return aspect.call(this, returnValue);
 		} as unknown as M;
 	}

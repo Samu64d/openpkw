@@ -67,6 +67,7 @@ abstract class GLShader implements Disposable.Target {
 
 		if (this.compilationError == null) {
 			const infoLog: Nullable<string> = this.contextManager.getContext().getShaderInfoLog(this.shaderObject);
+
 			if (infoLog != null && infoLog.length > 0) {
 				this.compilationError = infoLog.replaceAll("\0", "");
 			}
@@ -81,6 +82,7 @@ abstract class GLShader implements Disposable.Target {
 
 	private updateCompilationStatus(): void {
 		const compileStatus: boolean = this.contextManager.getContext().getShaderParameter(this.shaderObject, this.contextManager.enum("COMPILE_STATUS"));
+
 		if (compileStatus == true) {
 			this.compilationStatus = GLShader.CompilationStatus.COMPILED;
 		} else {

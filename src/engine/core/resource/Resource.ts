@@ -34,10 +34,12 @@ export default class Resource<L, R> implements Disposable.Target {
 	}
 
 	public load(): void {
-		if (this.loaded == false) {
-			this.resource = this.loader.load(this.locator);
-			this.loaded = true;
+		if (this.loaded == true) {
+			return;
+
 		}
+		this.resource = this.loader.load(this.locator);
+		this.loaded = true;
 	}
 
 	public get(): R {

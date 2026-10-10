@@ -13,6 +13,7 @@ class BeforeAdvice<T extends Aspect, M extends BeforeAdvice.Accept<T>> extends A
 
 	public override wrap(method: M): M {
 		const aspect: T = this.aspect;
+
 		return function (this: ThisParameterType<M>, ...args: Parameters<T>): ReturnType<M> {
 			aspect.apply(this, args);
 			return method.apply(this, args);

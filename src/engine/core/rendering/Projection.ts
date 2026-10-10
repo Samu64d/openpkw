@@ -87,6 +87,7 @@ export default class Projection {
 		if (this.updated == false) {
 			this.updateMatrix();
 		}
+
 		return this.matrix;
 	}
 

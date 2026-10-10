@@ -22,11 +22,13 @@ export default class ClassAdviceApplier<T extends object> {
 	public applyToMethod<K extends ClassType.MethodName<T>, A extends Aspect, M extends ClassType.Method<T, K> & Callable>(methodName: K, advice: Advice<A, M>): void {
 		const method: M = ClassType.getMethod(this.target, methodName) as M;
 		const wrappedMethod: M = advice.wrap(method);
+
 		ClassType.setMethod(this.target, methodName, wrappedMethod);
 	}
 
 	public applyToAllMethods<A extends Aspect>(advice: Advice<A, any>): void {
 		const methodNameList: ClassType.MethodName<T>[] = ClassType.getMethodNameList(this.target);
+
 		for (const methodName of methodNameList) {
 			this.applyToMethod(methodName, advice);
 		}
