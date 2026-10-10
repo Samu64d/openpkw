@@ -42,7 +42,7 @@ export default class Logger implements Disposable.Target {
 		const logLine: string = this.buildLogLine(logLevel, text);
 		const byteBuffer: ByteBuffer = this.encoder.encode(logLine);
 
-		this.handler.write(byteBuffer.getCapacity(), byteBuffer);
+		this.handler.write(byteBuffer.getCapacity(), byteBuffer, this.handler.getSize());
 	}
 
 	public dispose(): void {
