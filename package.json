@@ -16,7 +16,7 @@
 	"author": "Samu64d",
 	"license": "CC0-1.0",
 	"dependencies": {
-		"electron": "44.4.5",
+		"electron": "44.7.0",
 		"reflect-metadata": "0.2.2"
 	},
 	"devDependencies": {
