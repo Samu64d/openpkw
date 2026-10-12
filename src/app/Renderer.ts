@@ -82,29 +82,34 @@ export default class Renderer {
 
 		for (let y: number = 0; y < data.length; y++) {
 			const layer: string[][] = data[y];
+
 			for (let z: number = 0; z < layer.length; z++) {
 				const row: string[] = layer[z];
+
 				for (let x: number = 0; x < row.length; x++) {
 					const tileConfig: string = row[x];
+					const elementConfigList: string[] = tileConfig.split(";");
 					const xPos: number = x * step;
 					const yPos: number = y * step;
 					const zPos: number = z * step;
-					let model: number[] = translate(xPos, yPos, zPos);
+					let modelView: number[] = translate(xPos, yPos, zPos);
 
-					const elementConfigList: string[] = tileConfig.split(";");
 					for (const elementConfig of elementConfigList) {
-						const name: string = elementConfig.split(":").at(0) ?? "air";
-						if (name == "air") {
+						const modelName: string = elementConfig.split(":").at(0) ?? "air";
+
+						if (modelName == "air") {
 							continue;
 						}
 
-						const rx: number = Number(elementConfig.split(":").at(1) ?? 0);
-						if (rx != 0) {
-							const rxs: number = rx / 180 * Math.PI;
-							model = multiplyAll(model, rot(rxs, 0.0, 0.0));
+						const modelRotationX: number = Number(elementConfig.split(":").at(1) ?? 0);
+
+						if (modelRotationX != 0) {
+							const rxs: number = modelRotationX / 180 * Math.PI;
+
+							modelView = multiplyAll(modelView, rot(rxs, 0.0, 0.0));
 						}
 
-						this.drawModel(name, model);
+						this.drawModel(modelName, modelView);
 					}
 
 				}
@@ -116,7 +121,7 @@ export default class Renderer {
 	private drawObject(modelName: string, x: number, y: number, z: number): void {
 		const step: number = 0.25;
 		const xPos: number = (x - 0.5) * step;
-		const yPos: number = y * step + 0.1;
+		const yPos: number = y * step;
 		const zPos: number = (z - 0.5) * step;
 		const modelView: number[] = translate(xPos, yPos, zPos);
 
@@ -124,34 +129,31 @@ export default class Renderer {
 	}
 
 	private drawObjects(): void {
-		this.drawObject("tree_0", 2, 0, 9);
-		this.drawObject("tree_0", 2, 0, 11);
-		this.drawObject("tree_0", 2, 0, 13);
-		this.drawObject("tree_0", 2, 0, 15);
+		this.drawObject("tree_0", 2.0, 0.0, 9.0);
+		this.drawObject("tree_0", 2.0, 0.0, 11.0);
+		this.drawObject("tree_0", 2.0, 0.0, 13.0);
+		this.drawObject("tree_0", 2.0, 0.0, 15.0);
+		this.drawObject("tree_0", 4.0, 0.0, 9.0);
+		this.drawObject("tree_0", 4.0, 0.0, 11.0);
+		this.drawObject("tree_0", 4.0, 0.0, 13.0);
+		this.drawObject("tree_0", 4.0, 0.0, 15.0);
+		this.drawObject("tree_0", 6.0, 0.0, 9.0);
+		this.drawObject("tree_0", 6.0, 0.0, 11.0);
+		this.drawObject("tree_0", 6.0, 0.0, 13.0);
+		this.drawObject("tree_0", 6.0, 0.0, 15.0);
+		this.drawObject("tree_0", 8.0, 0.0, 9.0);
+		this.drawObject("tree_0", 8.0, 0.0, 11.0);
+		this.drawObject("tree_0", 8.0, 0.0, 13.0);
+		this.drawObject("tree_0", 8.0, 0.0, 15.0);
 
-		this.drawObject("tree_0", 4, 0, 9);
-		this.drawObject("tree_0", 4, 0, 11);
-		this.drawObject("tree_0", 4, 0, 13);
-		this.drawObject("tree_0", 4, 0, 15);
+		this.drawObject("tree_0", 4.0, 0.85, 19.0);
+		this.drawObject("tree_2", 6.5, 0.85, 18.5);
 
-		this.drawObject("tree_0", 6, 0, 9);
-		this.drawObject("tree_0", 6, 0, 11);
-		this.drawObject("tree_0", 6, 0, 13);
-		this.drawObject("tree_0", 6, 0, 15);
+		this.drawObject("tree_2", 7.5, 0.0, 22.5);
 
-		this.drawObject("tree_0", 8, 0, 9);
-		this.drawObject("tree_0", 8, 0, 11);
-		this.drawObject("tree_0", 8, 0, 13);
-		this.drawObject("tree_0", 8, 0, 15);
+		this.drawObject("sign_0", 10.0, 0.0, 9.0);
 
-		this.drawObject("tree_0", 4, 0.5, 19);
-		this.drawObject("tree_2", 6.5, 0.5, 18.5);
-
-		this.drawObject("tree_2", 7.5, 0, 22.5);
-
-		this.drawObject("sign_0", 10, -0.3, 9);
-
-		this.drawObject("house_0", 15, -0.3, 9);
+		this.drawObject("house_0", 15.0, 0.0, 9.0);
 	}
 
 	public update(time: number): void {
@@ -271,7 +273,7 @@ export default class Renderer {
 
 		// Projection
 		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
-		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 0.6, 0.1, 1000.0);
+		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 0.5, 0.1, 1000.0);
 
 		this.context.uniformMatrix4fv(projectionLocation, false, project.getMatrix());
 
