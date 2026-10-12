@@ -38,7 +38,6 @@ export default class Renderer {
 	private readonly modelMap: Map<string, GLVertexArray>;
 	private readonly textureMap: Map<string, GLTexture>;
 	private readonly modelProgramMap: Map<string, string>;
-
 	private readonly camera: Camera;
 	private time: number;
 
@@ -74,6 +73,136 @@ export default class Renderer {
 		this.loadModel("house_0");
 
 		this.camera.lookAt(new Vector3d(3, 2.85, 3), new Vector3d(3, 0, 0));
+	}
+
+	public update(time: number): void {
+		this.time = time;
+		this.contextManager.setViewport(this.context.canvas.width, this.context.canvas.height);
+		this.contextManager.clear(Renderer.CLEAR_COLOR);
+		this.drawMap();
+		this.drawObjects();
+	}
+
+	public moveCamera(x: number, y: number, z: number): void {
+		this.camera.lookAt(this.camera.getPosition().add(x, y, z), this.camera.getTarget().add(x, y, z));
+	}
+
+	private createShader(path: string, type: number): GLShader {
+		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
+		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
+		const text: string = new StringByteDecoder().decode(byteBuffer);
+		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text) : new GLVertexShader(this.contextManager, text);
+
+		shader.compile();
+
+		if (shader.getCompilationStatus() == GLShader.CompilationStatus.FAILED) {
+			throw new Error(shader.getCompilationError() ?? "Failed to compile shader.");
+		}
+
+		return shader;
+	}
+
+	private createProgram(path: string): GLProgram {
+		const vertexShader: GLShader = this.createShader(path + ".vert", 0);
+		const fragmentShader: GLShader = this.createShader(path + ".frag", 1);
+		const program: GLProgram = new GLProgram(this.contextManager);
+
+		program.attachShaders([vertexShader, fragmentShader]);
+		program.link();
+
+		if (program.getLinkingStatus() == GLProgram.LinkingStatus.FAILED) {
+			throw new Error(program.getLinkingError() ?? "Failed to compile program.");
+		}
+
+		vertexShader.dispose();
+		fragmentShader.dispose();
+		return program;
+	}
+
+	private loadProgram(programName: string): void {
+		this.programMap.set(programName, this.createProgram("./resources/shader/" + programName));
+	}
+
+	private createModel(path: string): GLVertexArray {
+		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
+		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
+		const mesh: Mesh = new OBJDecoder(byteBuffer).decode();
+		const vao: GLVertexArray = new GLVertexArray(this.contextManager);
+		const vbo: GLVertexBuffer = new GLVertexBuffer(this.contextManager);
+		const ebo: GLElementBuffer = new GLElementBuffer(this.contextManager);
+
+		vao.bind();
+		vbo.bind();
+		vbo.loadData(mesh.getVertexList());
+		this.context.vertexAttribPointer(0, 3, this.context.FLOAT, false, 5 * 4, 0);
+		this.context.enableVertexAttribArray(0);
+		this.context.vertexAttribPointer(1, 2, this.context.FLOAT, false, 5 * 4, 3 * 4);
+		this.context.enableVertexAttribArray(1);
+		ebo.bind();
+		ebo.loadData(mesh.getIndiciesList());
+		vao.ebo = mesh.getIndiciesList().length;
+		vao.unbind();
+		vbo.unbind();
+		ebo.unbind();
+		return vao;
+	}
+
+	private createTexture(path: string): GLTexture {
+		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
+		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
+		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
+		const image: Image = pngDecoder.decode();
+		const texture: GLTexture = new GLTexture(this.contextManager, this.context.TEXTURE_2D);
+
+		texture.bind();
+		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetSourceView());
+		texture.unbind();
+		return texture;
+	}
+
+	private loadModel(modelName: string, programName: string = "terrain"): void {
+		this.modelMap.set(modelName, this.createModel("./resources/model/" + modelName + "/" + modelName + ".obj"));
+		this.textureMap.set(modelName, this.createTexture("./resources/model/" + modelName + "/" + modelName + ".png"));
+		this.modelProgramMap.set(modelName, programName);
+	}
+
+	private drawModel(modelName: string, modelView: number[]): void {
+		const programName: string = this.modelProgramMap.get(modelName) as string;
+		const program: GLProgram = this.programMap.get(programName) as GLProgram;
+
+		program.use();
+
+		// Viewport size
+		const viewportSizeLocation = this.context.getUniformLocation(program.getProgramObject(), "viewportSize");
+		const viewportSize: number[] = [this.context.canvas.width, this.context.canvas.height];
+
+		this.context.uniform2iv(viewportSizeLocation, viewportSize);
+
+		// Projection
+		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
+		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 0.5, 0.1, 1000.0);
+
+		this.context.uniformMatrix4fv(projectionLocation, false, project.getMatrix());
+
+		// Time
+		const timeLocation = this.context.getUniformLocation(program.getProgramObject(), "time");
+
+		this.context.uniform1f(timeLocation, this.time / 100);
+
+		const vao: GLVertexArray = this.modelMap.get(modelName) as GLVertexArray;
+		const texture: GLTexture = this.textureMap.get(modelName) as GLTexture;
+		const modelViewLocation = this.context.getUniformLocation(program.getProgramObject(), "modelView");
+
+		this.context.uniformMatrix4fv(modelViewLocation, false, multiplyAll(this.camera.getMatrix(), modelView));
+
+		vao.bind();
+		texture.bind();
+		this.context.drawElements(this.context.TRIANGLES, vao.ebo, this.context.UNSIGNED_INT, 0);
+		vao.unbind();
 	}
 
 	private drawMap(): void {
@@ -154,144 +283,6 @@ export default class Renderer {
 		this.drawObject("sign_0", 10.0, 0.0, 9.0);
 
 		this.drawObject("house_0", 15.0, 0.0, 9.0);
-	}
-
-	public update(time: number): void {
-		this.time = time;
-		this.contextManager.setViewport(this.context.canvas.width, this.context.canvas.height);
-		this.contextManager.clear(Renderer.CLEAR_COLOR);
-		this.drawMap();
-		this.drawObjects();
-	}
-
-	public moveCamera(x: number, y: number, z: number): void {
-		this.camera.lookAt(this.camera.getPosition().add(x, y, z), this.camera.getTarget().add(x, y, z));
-	}
-
-	private createMesh(path: string): Mesh {
-		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
-		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
-		return new OBJDecoder(byteBuffer).decode();
-	}
-
-	private createVao(path: string): GLVertexArray {
-		const mesh: Mesh = this.createMesh(path);
-		const vao = new GLVertexArray(this.contextManager);
-		vao.bind();
-
-		const vbo = new GLVertexBuffer(this.contextManager);
-		vbo.bind();
-		vbo.loadData(mesh.getVertexList());
-		this.context.vertexAttribPointer(0, 3, this.context.FLOAT, false, 5 * 4, 0);
-		this.context.enableVertexAttribArray(0);
-		this.context.vertexAttribPointer(1, 2, this.context.FLOAT, false, 5 * 4, 3 * 4);
-		this.context.enableVertexAttribArray(1);
-
-		const ebo = new GLElementBuffer(this.contextManager);
-		ebo.bind();
-		ebo.loadData(mesh.getIndiciesList());
-		vao.ebo = mesh.getIndiciesList().length;
-
-		vao.unbind();
-		vbo.unbind();
-		ebo.unbind();
-		return vao;
-	}
-
-	private createTexture(path: string): GLTexture {
-		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
-		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
-		const pngDecoder: PNGDecoder = new PNGDecoder(byteBuffer);
-		const image: Image = pngDecoder.decode();
-		const texture = new GLTexture(this.contextManager, this.context.TEXTURE_2D);
-
-		texture.bind();
-		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
-		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
-		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
-		this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
-		texture.loadImageData(image.getWidth(), image.getHeight(), image.getData().unsafeGetSourceView());
-		texture.unbind();
-
-		return texture;
-	}
-
-	private createShader(path: string, type: number): GLShader {
-		const fileHandler: FileHandler = File.open(path, OpenMode.READ);
-		const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
-		const text: string = new StringByteDecoder().decode(byteBuffer);
-		const shader: GLFragmentShader = type ? new GLFragmentShader(this.contextManager, text) : new GLVertexShader(this.contextManager, text);
-
-		shader.compile();
-
-		if (shader.getCompilationStatus() == GLShader.CompilationStatus.FAILED) {
-			throw new Error(shader.getCompilationError() ?? "Failed to compile shader.");
-		}
-
-		return shader;
-	}
-
-	private createProgram(path: string): GLProgram {
-		const vertexShader: GLShader = this.createShader(path + ".vert", 0);
-		const fragmentShader: GLShader = this.createShader(path + ".frag", 1);
-		const program: GLProgram = new GLProgram(this.contextManager);
-
-		program.attachShaders([vertexShader, fragmentShader]);
-		program.link();
-
-		if (program.getLinkingStatus() == GLProgram.LinkingStatus.FAILED) {
-			throw new Error(program.getLinkingError() ?? "Failed to compile program.");
-		}
-
-		vertexShader.dispose();
-		fragmentShader.dispose();
-
-		return program;
-	}
-
-	private loadProgram(programName: string): void {
-		this.programMap.set(programName, this.createProgram("./resources/shader/" + programName));
-	}
-
-	private loadModel(modelName: string, programName: string = "terrain"): void {
-		this.modelMap.set(modelName, this.createVao("./resources/model/" + modelName + "/" + modelName + ".obj"));
-		this.textureMap.set(modelName, this.createTexture("./resources/model/" + modelName + "/" + modelName + ".png"));
-		this.modelProgramMap.set(modelName, programName);
-	}
-
-	private drawModel(modelName: string, modelView: number[]): void {
-		const programName: string = this.modelProgramMap.get(modelName) as string;
-		const program: GLProgram = this.programMap.get(programName) as GLProgram;
-
-		program.use();
-
-		// Viewport size
-		const viewportSizeLocation = this.context.getUniformLocation(program.getProgramObject(), "viewportSize");
-		const viewportSize: number[] = [this.context.canvas.width, this.context.canvas.height];
-
-		this.context.uniform2iv(viewportSizeLocation, viewportSize);
-
-		// Projection
-		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
-		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 0.5, 0.1, 1000.0);
-
-		this.context.uniformMatrix4fv(projectionLocation, false, project.getMatrix());
-
-		// Time
-		const timeLocation = this.context.getUniformLocation(program.getProgramObject(), "time");
-
-		this.context.uniform1f(timeLocation, this.time / 100);
-
-		const vao: GLVertexArray = this.modelMap.get(modelName) as GLVertexArray;
-		const texture: GLTexture = this.textureMap.get(modelName) as GLTexture;
-		const modelViewLocation = this.context.getUniformLocation(program.getProgramObject(), "modelView");
-
-		this.context.uniformMatrix4fv(modelViewLocation, false, multiplyAll(this.camera.getMatrix(), modelView));
-
-		vao.bind();
-		texture.bind();
-		this.context.drawElements(this.context.TRIANGLES, vao.ebo, this.context.UNSIGNED_INT, 0);
-		vao.unbind();
 	}
 
 }
