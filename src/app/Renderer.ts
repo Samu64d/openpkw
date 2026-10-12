@@ -67,7 +67,9 @@ export default class Renderer {
 		this.loadModel("grass_3");
 		this.loadModel("cliff_straight");
 		this.loadModel("cliff_corner_outer");
-		this.loadModel("tree", "tree");
+		this.loadModel("tree_0", "tree");
+		this.loadModel("tree_1", "tree");
+		this.loadModel("tree_2", "tree");
 		this.loadModel("sign_0");
 		this.loadModel("house_0");
 
@@ -122,27 +124,30 @@ export default class Renderer {
 	}
 
 	private drawObjects(): void {
-		this.drawObject("tree", 2, 0, 9);
-		this.drawObject("tree", 2, 0, 11);
-		this.drawObject("tree", 2, 0, 13);
-		this.drawObject("tree", 2, 0, 15);
+		this.drawObject("tree_0", 2, 0, 9);
+		this.drawObject("tree_0", 2, 0, 11);
+		this.drawObject("tree_0", 2, 0, 13);
+		this.drawObject("tree_0", 2, 0, 15);
 
-		this.drawObject("tree", 4, 0, 9);
-		this.drawObject("tree", 4, 0, 11);
-		this.drawObject("tree", 4, 0, 13);
-		this.drawObject("tree", 4, 0, 15);
+		this.drawObject("tree_0", 4, 0, 9);
+		this.drawObject("tree_0", 4, 0, 11);
+		this.drawObject("tree_0", 4, 0, 13);
+		this.drawObject("tree_0", 4, 0, 15);
 
-		this.drawObject("tree", 6, 0, 9);
-		this.drawObject("tree", 6, 0, 11);
-		this.drawObject("tree", 6, 0, 13);
-		this.drawObject("tree", 6, 0, 15);
+		this.drawObject("tree_0", 6, 0, 9);
+		this.drawObject("tree_0", 6, 0, 11);
+		this.drawObject("tree_0", 6, 0, 13);
+		this.drawObject("tree_0", 6, 0, 15);
 
-		this.drawObject("tree", 8, 0, 9);
-		this.drawObject("tree", 8, 0, 11);
-		this.drawObject("tree", 8, 0, 13);
-		this.drawObject("tree", 8, 0, 15);
+		this.drawObject("tree_0", 8, 0, 9);
+		this.drawObject("tree_0", 8, 0, 11);
+		this.drawObject("tree_0", 8, 0, 13);
+		this.drawObject("tree_0", 8, 0, 15);
 
-		this.drawObject("tree", 6, 0.5, 19);
+		this.drawObject("tree_0", 4, 0.5, 19);
+		this.drawObject("tree_2", 6.5, 0.5, 18.5);
+
+		this.drawObject("tree_2", 7.5, 0, 22.5);
 
 		this.drawObject("sign_0", 10, -0.3, 9);
 
