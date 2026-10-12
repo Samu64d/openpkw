@@ -37,7 +37,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	}
 
 	public override unsafeGetSourceView(): Spannable {
-		return new Array();
+		throw new Error("Cannot get a source view of a mapped byte buffer.");
 	}
 
 	public override get(position: number): number {
@@ -79,10 +79,32 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		while (currentPosition < endPosition) {
 			const chunkPosition: number = this.getChunkPosition(currentPosition);
 			const writeOffset: number = currentPosition - chunkPosition;
-			const length: number = Math.min(this.chunkLength, this.capacity - chunkPosition);
-			const writeLength: number = Math.min(endPosition - currentPosition, length - writeOffset);
+			const chunkLength: number = Math.min(this.chunkLength, this.capacity - chunkPosition);
+			const writeLength: number = Math.min(endPosition - currentPosition, chunkLength - writeOffset);
 
-			if (writeOffset == 0 && length == writeLength) {
+			if (writeOffset == 0 && chunkLength == writeLength) {
+				this.chunkPosition = chunkPosition;
+			} else {
+				this.syncReadChunk(currentPosition);
+			}
+
+			this.chunkView.fill(value, writeOffset, writeOffset + writeLength);
+			this.writeChunk();
+
+			currentPosition += writeLength;
+		}
+	}
+
+	private _(startPosition: number = 0, endPosition: number = this.capacity): void {
+		let currentPosition: number = startPosition;
+
+		while (currentPosition < endPosition) {
+			const chunkPosition: number = this.getChunkPosition(currentPosition);
+			const writeOffset: number = currentPosition - chunkPosition;
+			const chunkLength: number = Math.min(this.chunkLength, this.capacity - chunkPosition);
+			const writeLength: number = Math.min(endPosition - currentPosition, chunkLength - writeOffset);
+
+			if (writeOffset == 0 && chunkLength == writeLength) {
 				this.chunkPosition = chunkPosition;
 			} else {
 				this.syncReadChunk(currentPosition);
@@ -99,7 +121,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		//TODO:
 	}
 
-	public override slice(startPosition: number, endPosition: number): ByteBufferView {
+	public override slice(startPosition: number, endPosition: number): MappedByteBuffer {
 		//TODO:
 	}
 

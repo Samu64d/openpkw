@@ -10,7 +10,7 @@ export default abstract class Buffer extends Capacity {
 		super(capacity, resizable);
 	}
 
-	protected isRangeWithinBounds(startPosition: number, endPosition: number): boolean {
+	public isRangeWithinBounds(startPosition: number, endPosition: number): boolean {
 		return startPosition >= 0 && startPosition <= endPosition && endPosition <= this.capacity;
 	}
 

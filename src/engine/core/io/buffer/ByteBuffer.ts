@@ -16,12 +16,12 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	public static readonly ALLOCATE: Function<number, ByteBuffer> = (capacity: number): ByteBuffer => {
 		const arrayBuffer: ArrayBuffer = ByteBuffer.allocateArrayBuffer(capacity);
 
-		return new ByteBuffer(arrayBuffer, 0, capacity, false);
+		return new ByteBuffer(arrayBuffer, 0, capacity, false, true);
 	};
 
 	public static readonly FROM_ARRAY: Function<ArrayLike<number>, ByteBuffer> = (array: ArrayLike<number>): ByteBuffer => {
 		const arrayBuffer: ArrayBuffer = ByteBuffer.allocateArrayBuffer(array.length);
-		const byteBuffer: ByteBuffer = new ByteBuffer(arrayBuffer, 0, array.length, false);
+		const byteBuffer: ByteBuffer = new ByteBuffer(arrayBuffer, 0, array.length, false, true);
 
 		byteBuffer.setArray(0, array);
 		return byteBuffer;
@@ -34,13 +34,15 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	private readonly sourceBuffer: ArrayBuffer;
 	private readonly sourceStartPosition: number;
 	private readonly sourceArray: Uint8Array;
+	private readonly owner: boolean;
 
-	public constructor(source: ArrayBuffer, sourceStartPosition: number, sourceEndPosition: number, readonly: boolean) {
+	public constructor(source: ArrayBuffer, sourceStartPosition: number, sourceEndPosition: number, readonly: boolean, owner: boolean) {
 		super(sourceEndPosition - sourceStartPosition, readonly);
 
 		this.sourceBuffer = source;
 		this.sourceStartPosition = sourceStartPosition;
 		this.sourceArray = new Uint8Array(source).subarray(sourceStartPosition, sourceEndPosition);
+		this.owner = owner;
 	}
 
 	public override unsafeGetSourceView(): Uint8Array {
@@ -96,7 +98,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 			throw new Error("Out of bounds access.");
 		}
 
-		Spannable.memcopyUint8Array(this.sourceArray, byteBuffer.unsafeGetSourceView(), sourceStartPosition, sourceEndPosition, destinationStartPosition);
+		Spannable.copyTo(this.sourceArray, byteBuffer.unsafeGetSourceView(), sourceStartPosition, sourceEndPosition, destinationStartPosition);
 	}
 
 	public override slice(startPosition: number = 0, endPosition: number = this.capacity): ByteBuffer {
@@ -107,7 +109,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 		const sourceStartPosition: number = this.sourceStartPosition + startPosition;
 		const sourceEndPosition: number = this.sourceStartPosition + endPosition;
 
-		return new ByteBuffer(this.sourceBuffer, sourceStartPosition, sourceEndPosition, this.readonly);
+		return new ByteBuffer(this.sourceBuffer, sourceStartPosition, sourceEndPosition, this.readonly, false);
 	}
 
 	public override toArray(startPosition: number = 0, endPosition: number = this.capacity): number[] {
@@ -123,14 +125,16 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	public asReadonly(): ByteBuffer {
 		const sourceEndPosition: number = this.sourceStartPosition + this.capacity;
 
-		return new ByteBuffer(this.sourceBuffer, this.sourceStartPosition, sourceEndPosition, true);
+		return new ByteBuffer(this.sourceBuffer, this.sourceStartPosition, sourceEndPosition, true, false);
 	}
 
 	public clone(): ByteBuffer {
-		const sourceEndPosition: number = this.sourceStartPosition + this.capacity;
-		const arrayBuffer: ArrayBuffer = this.sourceBuffer.slice(); //TODO: malloc
+		const sourceBuffer: ArrayBuffer = ByteBuffer.allocateArrayBuffer(this.capacity);
+		const sourceView: Uint8Array = new Uint8Array(sourceBuffer).subarray(0, this.capacity);
 
-		return new ByteBuffer(arrayBuffer, this.sourceStartPosition, sourceEndPosition, this.readonly);
+		Spannable.copyTo(this.sourceArray, sourceView);
+
+		return new ByteBuffer(sourceBuffer, 0, this.capacity, this.readonly, true);
 	}
 
 	public equals(byteBuffer: ByteBuffer): boolean {
@@ -152,7 +156,11 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 	}
 
 	public dispose(): void {
-		//ByteBuffer.freeArrayBuffer(this.sourceBuffer);
+		if (this.owner == false) {
+			return;
+		}
+
+		ByteBuffer.freeArrayBuffer(this.sourceBuffer);
 	}
 
 }
