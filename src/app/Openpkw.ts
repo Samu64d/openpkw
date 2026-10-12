@@ -26,32 +26,34 @@ export default class Openpkw {
 
 	private static readonly LOG_FILE_NAME: string = "./openpkw.log";
 
+
+	private readonly logger: Logger;
+	private readonly keyMap: Map<string, boolean>;
+	private renderer: Nullable<Renderer>;
 	private time: number;
 	private lastUpdateTime: number;
-	private readonly logger: Logger;
-	private keyMap: Map<string, boolean>;
-	private renderer: Nullable<Renderer>;
 
 	private constructor() {
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
-		this.time = 0;
-		this.lastUpdateTime = -1;
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
 		this.keyMap = new Map<string, boolean>();
 		this.renderer = null;
+		this.time = 0;
+		this.lastUpdateTime = -1;
 	}
 
 	public init(): void {
 		this.logger.log(LogLevel.INFO, "Run init");
-
 		this.initRenderer();
 		this.initTest();
 	}
 
 	public forceUpdateRenderer(): void {
-		if (this.renderer != null) {
-			this.renderer.update(this.time);
+		if (this.renderer == null) {
+			return;
 		}
+
+		this.renderer.update(this.time);
 	}
 
 	private updateRenderer(): void {
@@ -96,20 +98,23 @@ export default class Openpkw {
 		this.logger.log(LogLevel.INFO, "Run init renderer");
 
 		document.addEventListener("keydown", (event: KeyboardEvent) => {
-			const code: string = event.code;
-			if (code != null) {
-				this.keyMap.set(code, true);
+			if (event.code == null) {
+				return;
 			}
+
+			this.keyMap.set(event.code, true);
 		});
 
 		document.addEventListener("keyup", (event: KeyboardEvent) => {
-			const code: string = event.code;
-			if (code != null) {
-				this.keyMap.set(code, false);
+			if (event.code == null) {
+				return;
 			}
+
+			this.keyMap.set(event.code, false);
 		});
 
 		const canvasElement: Nullable<HTMLCanvasElement> = document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
+
 		if (canvasElement == null) {
 			return;
 		}
@@ -133,7 +138,6 @@ export default class Openpkw {
 
 	private initTest(): void {
 		this.logger.log(LogLevel.INFO, "Run init test");
-
 	}
 
 }
