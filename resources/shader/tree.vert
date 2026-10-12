@@ -13,11 +13,10 @@ layout (location = 1) in vec2 uv;
 centroid out vec2 outUv;
 
 void main() {
-	float waveX = sin(position.x + time) * 0.04 * position.y;
-	float waveZ = sin(position.z + time) * 0.04 * position.y;
+	float waveX = sin(position.x + time * 1.5) * 0.03 * position.y;
+	float waveZ = cos(position.z + time * 1.5) * 0.03 * position.y;
+	vec3 wavedPosition = vec3(position.x + waveX, position.y, position.z + waveZ);
 
-	vec3 position2 = vec3(position.x + waveX, position.y, position.z + waveZ);
-
-    gl_Position = projection * modelView * vec4(position2, 1.0);
+    gl_Position = projection * modelView * vec4(wavedPosition, 1.0);
 	outUv = uv;
 }

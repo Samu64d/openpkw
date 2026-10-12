@@ -2,8 +2,8 @@
 // Renderer.ts
 //
 
-import { multiplyAll, rot, translate } from "../engine/core/math/Matrix4d.ts";
 import Vector3d from "../engine/core/math/Vector3d.ts";
+import { multiplyAll, rot, translate } from "../engine/core/math/Matrix4d.ts";
 import ByteBuffer from "../engine/core/io/buffer/ByteBuffer.ts";
 import OpenMode from "../engine/core/io/file/OpenMode.ts";
 import File from "../engine/core/io/file/File.ts";
@@ -25,135 +25,29 @@ import GLVertexShader from "../engine/drivers/graphic/gl/GLVertexShader.ts";
 import GLFragmentShader from "../engine/drivers/graphic/gl/GLFragmentShader.ts";
 import GLProgram from "../engine/drivers/graphic/gl/GLProgram.ts";
 import GLContextManager from "../engine/drivers/graphic/gl/GLContextManager.ts";
+import MapData from "./MapData.ts";
 
-const test: string[][][] = [
-	[
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1;cliff_straight:270", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3;cliff_straight:270", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1;cliff_straight:270", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3;cliff_straight:270", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_corner_outer", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0;cliff_straight:180", "grass_1;cliff_straight:180", "grass_0;cliff_straight:180", "grass_1;cliff_straight:180", "grass_0;cliff_straight:180", "grass_1;cliff_straight:180", "grass_0;cliff_straight:180", "grass_1;cliff_straight:180", "grass_0;cliff_straight:180", "grass_1;cliff_corner_outer:270", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3;cliff_straight:270", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1;cliff_straight:270", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3;cliff_straight:270", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_corner_outer", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3"]
-	],
-	[
-		["air", "air", "air", "air", "air", "air", "air", "air", "grass_3;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "grass_1;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "grass_3;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
-		["grass_1;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_1;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "air", "air", "air"],
-		["grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "grass_3", "grass_2", "air", "air", "air", "air"],
-		["grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "grass_1", "grass_0", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
-	],
-	[
-		["air", "air", "air", "air", "air", "air", "air", "grass_3;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "grass_1;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_0;cliff_straight", "grass_1;cliff_straight", "grass_1;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-		["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
-	]
-]
-
-/**
- * Playground renderer
- */
+/** Playground renderer */
 export default class Renderer {
 
 	private static readonly CLEAR_COLOR: Color = [255, 255, 255, 255];
 
 	private readonly context: WebGL2RenderingContext;
 	private readonly contextManager: GLContextManager;
-	private readonly vaoMap: Map<string, GLVertexArray>;
-	private readonly textureMap: Map<string, GLTexture>;
 	private readonly programMap: Map<string, GLProgram>;
+	private readonly modelMap: Map<string, GLVertexArray>;
+	private readonly textureMap: Map<string, GLTexture>;
 	private readonly modelProgramMap: Map<string, string>;
+
 	private readonly camera: Camera;
 	private time: number;
 
 	public constructor(context: WebGL2RenderingContext) {
 		this.context = context;
 		this.contextManager = new GLContextManager(context);
-		this.vaoMap = new Map<string, GLVertexArray>();
-		this.textureMap = new Map<string, GLTexture>();
 		this.programMap = new Map<string, GLProgram>();
+		this.modelMap = new Map<string, GLVertexArray>();
+		this.textureMap = new Map<string, GLTexture>();
 		this.modelProgramMap = new Map<string, string>();
 		this.camera = new Camera();
 		this.time = 0;
@@ -163,6 +57,9 @@ export default class Renderer {
 		this.contextManager.enableDepthTest();
 		this.contextManager.enableBlend();
 		this.contextManager.setAlphaBlend();
+
+		this.loadProgram("terrain");
+		this.loadProgram("tree");
 
 		this.loadModel("grass_0");
 		this.loadModel("grass_1");
@@ -174,15 +71,12 @@ export default class Renderer {
 		this.loadModel("sign_0");
 		this.loadModel("house_0");
 
-		this.loadProgram("dummy");
-		this.loadProgram("tree");
-
 		this.camera.lookAt(new Vector3d(3, 2.85, 3), new Vector3d(3, 0, 0));
 	}
 
 	private drawMap(): void {
 		const step: number = 0.25;
-		const data: string[][][] = test;
+		const data: string[][][] = MapData;
 
 		for (let y: number = 0; y < data.length; y++) {
 			const layer: string[][] = data[y];
@@ -352,8 +246,8 @@ export default class Renderer {
 		this.programMap.set(programName, this.createProgram("./resources/shader/" + programName));
 	}
 
-	private loadModel(modelName: string, programName: string = "dummy"): void {
-		this.vaoMap.set(modelName, this.createVao("./resources/model/" + modelName + "/" + modelName + ".obj"));
+	private loadModel(modelName: string, programName: string = "terrain"): void {
+		this.modelMap.set(modelName, this.createVao("./resources/model/" + modelName + "/" + modelName + ".obj"));
 		this.textureMap.set(modelName, this.createTexture("./resources/model/" + modelName + "/" + modelName + ".png"));
 		this.modelProgramMap.set(modelName, programName);
 	}
@@ -381,7 +275,7 @@ export default class Renderer {
 
 		this.context.uniform1f(timeLocation, this.time / 100);
 
-		const vao: GLVertexArray = this.vaoMap.get(modelName) as GLVertexArray;
+		const vao: GLVertexArray = this.modelMap.get(modelName) as GLVertexArray;
 		const texture: GLTexture = this.textureMap.get(modelName) as GLTexture;
 		const modelViewLocation = this.context.getUniformLocation(program.getProgramObject(), "modelView");
 
