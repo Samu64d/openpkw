@@ -12,16 +12,17 @@ interface Spannable {
 
 namespace Spannable {
 
-	export function memcopyUint8Array(source: Uint8Array, destination: Spannable, sourceStartIndex: number = 0, sourceEndIndex: number = source.length, destinationStartIndex: number = 0): void {
-		const src: Uint8Array = source.subarray(sourceStartIndex, sourceEndIndex);
+	export function copyTo(source: Spannable, destination: Spannable, sourceStartIndex: number = 0, sourceEndIndex: number = source.length, destinationStartIndex: number = 0): void {
 
-		if (destination instanceof Uint8Array) {
+		if (source instanceof Uint8Array && destination instanceof Uint8Array) {
+			const src: Uint8Array = source.subarray(sourceStartIndex, sourceEndIndex);
+
 			destination.set(src, destinationStartIndex);
 			return;
 		}
 
-		for (let i: number = 0; i < src.length; i++) {
-			destination[destinationStartIndex + i] = src[i];
+		for (let i: number = 0; i < source.length; i++) {
+			destination[destinationStartIndex + i] = source[i];
 		}
 	}
 
