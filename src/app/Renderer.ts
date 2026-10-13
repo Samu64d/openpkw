@@ -66,6 +66,10 @@ export default class Renderer {
 		this.loadModel("grass_3");
 		this.loadModel("cliff_straight");
 		this.loadModel("cliff_corner_outer");
+		this.loadModel("wall_cliff_base_straight");
+		this.loadModel("wall_cliff_base_corner_outer");
+		this.loadModel("wall_cliff_top_straight");
+		this.loadModel("wall_cliff_top_corner_outer");
 		this.loadModel("tree_0", "tree");
 		this.loadModel("tree_1", "tree");
 		this.loadModel("tree_2", "tree");
