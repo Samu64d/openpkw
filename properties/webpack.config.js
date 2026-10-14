@@ -7,7 +7,7 @@ import path from "path";
 /** @type {import("webpack").Configuration} **/
 export default [
 	{
-		entry: "..\\src\\Main.ts",
+		entry: "..\\src\\Bootstrap.ts",
 		mode: "development",
 		module: {
 			rules: [
@@ -29,7 +29,7 @@ export default [
 		target: "electron-main"
 	},
 	{
-		entry: "..\\src\\MainRenderer.ts",
+		entry: "..\\src\\Openpkw.ts",
 		mode: "development",
 		module: {
 			rules: [

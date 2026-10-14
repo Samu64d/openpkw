@@ -2,19 +2,21 @@
 // Openpkw.ts
 //
 
-import Nullable from "../engine/core/common/Nullable.ts";
-import FileSystemDriver from "../engine/core/interop/FileSystemDriver.ts";
-import DriverRegistry from "../engine/core/interop/DriverRegistry.ts";
-import LogLevel from "../engine/core/util/logger/LogLevel.ts";
-import Logger from "../engine/core/util/logger/Logger.ts";
-import NodeFileSystemDriver from "../engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
-import Renderer from "./Renderer.ts";
+import Nullable from "./engine/core/common/Nullable.ts";
+import FileSystemDriver from "./engine/core/interop/FileSystemDriver.ts";
+import DriverRegistry from "./engine/core/interop/DriverRegistry.ts";
+import LogLevel from "./engine/core/util/logger/LogLevel.ts";
+import Logger from "./engine/core/util/logger/Logger.ts";
+import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
+import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
+import Application from "./engine/application/Application.ts";
+import Renderer from "./app/Renderer.ts";
 
-export default class Openpkw {
+export default class Openpkw extends Application {
 
 	public static getInstance(): Openpkw {
 		if (Openpkw.instance == null) {
-			Openpkw.instance = new Openpkw();
+			throw new Error("Accessing uninitialized class instance.");
 		}
 
 		return Openpkw.instance;
@@ -26,14 +28,15 @@ export default class Openpkw {
 
 	private static readonly LOG_FILE_NAME: string = "./openpkw.log";
 
-
 	private readonly logger: Logger;
 	private readonly keyMap: Map<string, boolean>;
 	private renderer: Nullable<Renderer>;
 	private time: number;
 	private lastUpdateTime: number;
 
-	private constructor() {
+	protected constructor() {
+		super();
+
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
 		this.keyMap = new Map<string, boolean>();
@@ -42,10 +45,16 @@ export default class Openpkw {
 		this.lastUpdateTime = -1;
 	}
 
-	public init(): void {
+	public override init(): void {
 		this.logger.log(LogLevel.INFO, "Run init");
 		this.initRenderer();
 		this.initTest();
+	}
+
+	public override onResizeWindow(): void {
+	}
+
+	public override onError(): void {
 	}
 
 	public forceUpdateRenderer(): void {
@@ -138,6 +147,12 @@ export default class Openpkw {
 
 	private initTest(): void {
 		this.logger.log(LogLevel.INFO, "Run init test");
+	}
+
+	static {
+		if (ElectronProcess.getType() == ElectronProcess.Type.RENDERER) {
+			Openpkw.instance = new Openpkw();
+		}
 	}
 
 }
