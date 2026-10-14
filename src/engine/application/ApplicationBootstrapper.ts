@@ -1,46 +1,29 @@
 //
-// Main.ts
+// ApplicationBootstrapper.ts
 //
 
-import Nullable from "./engine/core/common/Nullable.ts";
-import NodeOS from "./engine/platform/node/NodeOS.ts";
-import NodeChildProcess from "./engine/platform/node/NodeChildProcess.ts";
-import ElectronApp from "./engine/platform/electron/ElectronApp.ts";
-import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
-import ElectronIPC from "./engine/platform/electron/ElectronIPC.ts";
-import ElectronWindow from "./engine/platform/electron/ElectronWindow.ts";
+import Nullable from "../core/common/Nullable.ts";
+import NodeOS from "../platform/node/NodeOS.ts";
+import NodeChildProcess from "../platform/node/NodeChildProcess.ts";
+import ElectronProcess from "../platform/electron/ElectronProcess.ts";
+import ElectronIPC from "../platform/electron/ElectronIPC.ts";
+import ElectronWindow from "../platform/electron/ElectronWindow.ts";
+import ElectronApp from "../platform/electron/ElectronApp.ts";
 
-export default class Main {
+export default abstract class ApplicationBootstrapper {
 
 	public static readonly IPC_ERROR_CHANNEL: ElectronIPC.Channel = "ERROR_CHANNEL";
 
-	public static getInstance(): Main {
-		if (Main.instance == null) {
-			throw new Error("Accessing uninitialized class instance.");
-		}
-
-		return Main.instance;
-	}
-
 	public static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
-
-	private static readonly MAIN_WINDOW_ICON_PATH: string = "../resources/icon/AppIcon.ico";
 
 	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
 
-	private static readonly MAIN_WINDOW_CONFIG: Partial<ElectronWindow.BuildConfig> = {
-		width: 800,
-		height: 600,
-		minWidth: 800,
-		minHeight: 600
-	};
-
-	private static instance: Nullable<Main> = null;
-
+	private readonly mainWindowConfig: Partial<ElectronWindow.BuildConfig>;
 	private mainWindow: Nullable<ElectronWindow> = null;
 	private mainWindowError: boolean = false;
 
-	private constructor() {
+	protected constructor(mainWindowConfig: Partial<ElectronWindow.BuildConfig>) {
+		this.mainWindowConfig = mainWindowConfig;
 		this.setupElectron();
 		this.registerAppEventListeners();
 		this.registerIpcEventListeners();
@@ -62,7 +45,7 @@ export default class Main {
 		ElectronApp.setSwitch("force-color-profile", "srgb");
 
 		// Paths
-		ElectronApp.setWebCachePath(NodeOS.getHomeDir() + Main.APP_WEB_CACHE_FOLDER);
+		ElectronApp.setWebCachePath(NodeOS.getHomeDir() + ApplicationBootstrapper.APP_WEB_CACHE_FOLDER);
 	}
 
 	private onWindowAllClosedListener(): void {
@@ -71,6 +54,7 @@ export default class Main {
 
 	private onSecondInstanceListener(): void {
 		const mainWindow: Nullable<ElectronWindow> = this.getMainWindow();
+
 		if (mainWindow != null) {
 			mainWindow.makeVisible();
 		}
@@ -82,10 +66,9 @@ export default class Main {
 			return;
 		}
 
-		this.mainWindow = new ElectronWindow(Main.MAIN_WINDOW_CONFIG);
-		this.mainWindow.setIcon(Main.MAIN_WINDOW_ICON_PATH);
+		this.mainWindow = new ElectronWindow(this.mainWindowConfig);
 		this.mainWindow.center();
-		this.mainWindow.loadWebContents(Main.MAIN_WINDOW_CONTENTS_PATH);
+		this.mainWindow.loadWebContents(ApplicationBootstrapper.MAIN_WINDOW_CONTENTS_PATH);
 	}
 
 	private registerAppEventListeners(): void {
@@ -107,13 +90,7 @@ export default class Main {
 	}
 
 	private registerIpcEventListeners(): void {
-		ElectronIPC.registerRequestListener(Main.IPC_ERROR_CHANNEL, this.onWindowErrorListener.bind(this));
-	}
-
-	static {
-		if (ElectronProcess.getType() == ElectronProcess.Type.MAIN) {
-			Main.instance = new Main();
-		}
+		ElectronIPC.registerRequestListener(ApplicationBootstrapper.IPC_ERROR_CHANNEL, this.onWindowErrorListener.bind(this));
 	}
 
 }
