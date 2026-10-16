@@ -7,6 +7,7 @@ import FileSystemDriver from "./engine/core/interop/FileSystemDriver.ts";
 import DriverRegistry from "./engine/core/interop/DriverRegistry.ts";
 import LogLevel from "./engine/core/util/logger/LogLevel.ts";
 import Logger from "./engine/core/util/logger/Logger.ts";
+import Exception from "./engine/core/error/Exception.ts";
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
 import Application from "./engine/application/Application.ts";
@@ -16,7 +17,7 @@ export default class Openpkw extends Application {
 
 	public static getInstance(): Openpkw {
 		if (Openpkw.instance == null) {
-			throw new Error("Accessing uninitialized class instance.");
+			throw new Exception("Accessing uninitialized class instance");
 		}
 
 		return Openpkw.instance;
@@ -45,13 +46,13 @@ export default class Openpkw extends Application {
 		this.lastUpdateTime = -1;
 	}
 
-	public override init(): void {
+	public override onInit(): void {
 		this.logger.log(LogLevel.INFO, "Run init");
 		this.initRenderer();
 		this.initTest();
 	}
 
-	public override onResizeWindow(): void {
+	public override onWindowResize(): void {
 	}
 
 	public override onError(): void {

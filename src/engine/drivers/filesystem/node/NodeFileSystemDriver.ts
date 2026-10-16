@@ -12,7 +12,7 @@ import TextEncoding from "../../../core/codec/TextEncoding.ts";
 import FileSystemDriver from "../../../core/interop/FileSystemDriver.ts";
 import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
-import ErrorInspect from "../../../core/error/ErrorInspect.ts";
+import IOException from "../../../core/error/IOException.ts";
 
 @Disposable()
 export default class NodeFileSystemDriver extends FileSystemDriver implements Disposable.Target {
@@ -62,18 +62,18 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override existsDirectory(path: string): boolean {
-		return this.getStat(path).isDirectory();
+		return this.getStats(path).isDirectory();
 	}
 
 	public override existsFile(path: string): boolean {
-		return this.getStat(path).isFile();
+		return this.getStats(path).isFile();
 	}
 
 	public override getFileSize(path: string): number {
-		const stats: FS.Stats = this.getStat(path);
+		const stats: FS.Stats = this.getStats(path);
 
 		if (stats.isFile() == false) {
-			throw new Error("Element at path exists but is not a file.");
+			throw new IOException("Element at path exists but is not a file");
 		}
 
 		return stats.size;
@@ -116,7 +116,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 			return this.registerFileHandle(fd);
 		} catch (e: unknown) {
-			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));
+			throw new IOException("Cannot open file", e);
 		}
 	}
 
@@ -126,7 +126,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 			FS.readSync(fd, buffer.unsafeGetSourceView(), bufferPosition, length, position);
 		} catch (e: unknown) {
-			throw new Error("Cannot read from file.");
+			throw new IOException("Cannot read from file", e);
 		}
 	}
 
@@ -136,7 +136,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 			FS.writeSync(fd, byteBuffer.unsafeGetSourceView(), bufferPosition, length, position);
 		} catch (e: unknown) {
-			throw new Error("Cannot write to file.");
+			throw new IOException("Cannot write to file", e);
 		}
 	}
 
@@ -146,7 +146,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 			FS.closeSync(fd);
 		} catch (e: unknown) {
-			throw new Error("Cannot close file.");
+			throw new IOException("Cannot close file", e);
 		} finally {
 			this.unregisterFileHandle(fileHandle);
 		}
@@ -156,13 +156,13 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		try {
 			FS.renameSync(sourcePath, destinationPath);
 		} catch (e: unknown) {
-			if (ErrorInspect.castToErrnoException(e) && e.code == "EXDEV") {
+			if (e instanceof Error && e.code == "EXDEV") {
 				FS.copyFileSync(sourcePath, destinationPath);
 				FS.unlinkSync(sourcePath);
 				return;
 			}
 
-			throw new Error("Cannot move file.");
+			throw new IOException("Cannot move file", e);
 		}
 	}
 
@@ -177,11 +177,11 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		return NodeFileSystemDriver.OPEN_MODE_MAP[openMode];
 	}
 
-	private getStat(path: string): FS.Stats {
+	private getStats(path: string): FS.Stats {
 		try {
 			return FS.statSync(path);
 		} catch (e: unknown) {
-			throw new Error("Cannot access stats.");
+			throw new IOException("Cannot access stats", e);
 		}
 	}
 
@@ -191,7 +191,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 				encoding: null
 			});
 		} catch (e: unknown) {
-			throw new Error("Cannot read from file.");
+			throw new IOException("Cannot read from file", e);
 		}
 	}
 
@@ -201,7 +201,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 				encoding: encoding
 			});
 		} catch (e: unknown) {
-			throw new Error("Cannot read from file.");
+			throw new IOException("Cannot read from file", e);
 		}
 	}
 
@@ -225,7 +225,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 				}
 			}
 		} catch (e: unknown) {
-			throw new Error("Cannot write to file.");
+			throw new IOException("Cannot write to file", e);
 		}
 	}
 

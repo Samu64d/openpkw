@@ -1,4 +1,4 @@
-// 
+//
 // MathHelper.ts
 //
 

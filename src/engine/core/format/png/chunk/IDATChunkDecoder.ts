@@ -4,7 +4,7 @@
 
 import Nullable from "../../../common/Nullable.ts";
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
-import ErrorInspect from "../../../error/ErrorInspect.ts";
+import Exception from "../../../error/Exception.ts";
 import DeflateDecoder from "../../deflate/DeflateDecoder.ts";
 import IHDRData from "../data/IHDRData.ts";
 import IDATData from "../data/IDATData.ts";
@@ -57,7 +57,7 @@ export default class IDATChunkDecoder extends ChunkDecoder<IDATData> {
 
 			return new IDATData(decodedData);
 		} catch (e: unknown) {
-			throw new Error("Cannot decode IDAT data: " + (ErrorInspect.castToErrnoException(e) ? e.message : "Unknown error."));
+			throw new Exception("Cannot decode IDAT data", e);
 		} finally {
 			if (uncompressedData != null) {
 				uncompressedData.dispose();

@@ -1,6 +1,8 @@
-// 
+//
 // Projection.ts
 //
+
+import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
 
 export default class Projection {
 
@@ -12,15 +14,12 @@ export default class Projection {
 	private updated: boolean;
 
 	public constructor(aspectRatio: number, fieldOfView: number, nearDistance: number, farDistance: number) {
-		if (aspectRatio <= 0) {
-			throw new Error("Aspect ratio value must be greater than 0: got " + aspectRatio + ".");
-		}
-		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
-			throw new Error("Field of view value must be between greater than 0 and PI: got " + fieldOfView + ".");
-		}
-		if (nearDistance <= 0 || farDistance <= 0 || farDistance <= nearDistance) {
-			throw new Error("Invalid distance range values: near " + nearDistance + ", far " + farDistance + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(aspectRatio, 0, "aspectRatio");
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(fieldOfView, 0, "fieldOfView");
+		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(fieldOfView, Math.PI, "fieldOfView");
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(nearDistance, 0, "nearDistance");
+		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(nearDistance, farDistance, "nearDistance");
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(farDistance, 0, "farDistance");
 
 		this.aspectRatio = aspectRatio;
 		this.fieldOfView = fieldOfView;
@@ -36,9 +35,7 @@ export default class Projection {
 	}
 
 	public setAspectRatio(aspectRatio: number): void {
-		if (aspectRatio <= 0) {
-			throw new Error("Aspect ratio value must be greater than 0: got " + aspectRatio + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(aspectRatio, 0, "aspectRatio");
 
 		this.aspectRatio = aspectRatio;
 		this.invalidate();
@@ -49,9 +46,8 @@ export default class Projection {
 	}
 
 	public setFieldOfView(fieldOfView: number): void {
-		if (fieldOfView <= 0 || fieldOfView >= Math.PI) {
-			throw new Error("Field of view value must be between greater than 0 and PI: got " + fieldOfView + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(fieldOfView, 0, "fieldOfView");
+		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(fieldOfView, Math.PI, "fieldOfView");
 
 		this.fieldOfView = fieldOfView;
 		this.invalidate();
@@ -62,9 +58,8 @@ export default class Projection {
 	}
 
 	public setNearDistance(nearDistance: number): void {
-		if (nearDistance <= 0 || nearDistance >= this.farDistance) {
-			throw new Error("Invalid distance range values: near " + nearDistance + ", far " + this.farDistance + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(nearDistance, 0, "nearDistance");
+		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(nearDistance, this.farDistance, "nearDistance");
 
 		this.nearDistance = nearDistance;
 		this.invalidate();
@@ -75,9 +70,8 @@ export default class Projection {
 	}
 
 	public setFarDistance(farDistance: number): void {
-		if (farDistance <= 0 || farDistance <= this.nearDistance) {
-			throw new Error("Invalid distance range values: near " + this.nearDistance + ", far " + farDistance + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(farDistance, 0, "farDistance");
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(farDistance, this.nearDistance, "farDistance");
 
 		this.farDistance = farDistance;
 		this.invalidate();

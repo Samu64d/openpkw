@@ -6,6 +6,7 @@ import TextEncoding from "../../codec/TextEncoding.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
+import IOException from "../../error/IOException.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
 import AccessRight from "./AccessRight.ts";
 import OpenMode from "./OpenMode.ts";
@@ -49,7 +50,7 @@ export default class File {
 
 			return new FileHandler(fileHandle, size, openMode);
 		} catch (e: unknown) {
-			throw new Error("Cannot open file: " + (e instanceof Error ? e.message : ""));
+			throw new IOException("Cannot open file", e);
 		}
 	}
 

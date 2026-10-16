@@ -5,6 +5,8 @@
 import MathHelper from "../../math/MathHelper.ts";
 import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../../error/InvalidOperationException.ts";
+import IOException from "../../error/IOException.ts";
 import FileHandler from "../file/FileHandler.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 import ByteBuffer from "./ByteBuffer.ts";
@@ -37,12 +39,12 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	}
 
 	public override unsafeGetSourceView(): Spannable {
-		throw new Error("Cannot get a source view of a mapped byte buffer.");
+		throw new InvalidOperationException("Cannot get a source view of a mapped byte buffer");
 	}
 
 	public override get(position: number): number {
 		if (position < 0 || position >= this.capacity) {
-			throw new Error("Out of file bounds access: got " + position + ".");
+			throw new IOException("Out of file bounds access: got " + position);
 		}
 
 		this.syncReadChunk(position);
@@ -51,10 +53,10 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	public override set(position: number, value: number): void {
 		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
+			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (position < 0 || position >= this.capacity) {
-			throw new Error("Out of file bounds access: got " + position + ".");
+			throw new IOException("Out of file bounds access: got " + position);
 		}
 
 		this.syncReadChunk(position);
@@ -68,10 +70,10 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	public override fill(value: number, startPosition: number = 0, endPosition: number = this.capacity): void {
 		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
+			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 
 		let currentPosition: number = startPosition;
@@ -158,7 +160,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	private writeChunk(): void {
 		if (this.chunkPosition == -1) {
-			throw new Error("Cannot write chunk at invalid position.");
+			throw new IOException("Cannot write chunk at invalid position");
 		}
 
 		const writeLength: number = Math.min(this.chunkLength, this.capacity - this.chunkPosition);

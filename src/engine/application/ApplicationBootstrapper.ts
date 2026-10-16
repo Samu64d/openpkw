@@ -14,7 +14,7 @@ export default abstract class ApplicationBootstrapper {
 
 	public static readonly IPC_ERROR_CHANNEL: ElectronIPC.Channel = "ERROR_CHANNEL";
 
-	public static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
+	private static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
 
 	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
 
@@ -55,9 +55,11 @@ export default abstract class ApplicationBootstrapper {
 	private onSecondInstanceListener(): void {
 		const mainWindow: Nullable<ElectronWindow> = this.getMainWindow();
 
-		if (mainWindow != null) {
-			mainWindow.makeVisible();
+		if (mainWindow == null) {
+			return;
 		}
+
+		mainWindow.makeVisible();
 	}
 
 	private onReadyListener(): void {
@@ -86,6 +88,7 @@ export default abstract class ApplicationBootstrapper {
 		this.mainWindow.unloadWebContents();
 
 		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + errorMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
+
 		this.exit();
 	}
 

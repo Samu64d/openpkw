@@ -4,6 +4,7 @@
 
 import Nullable from "../../../core/common/Nullable.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../../../core/error/InvalidOperationException.ts";
 import GLBuffer from "./GLBuffer.ts";
 import GLContextManager from "./GLContextManager.ts";
 
@@ -39,7 +40,7 @@ export default class GLVertexArray implements Disposable.Target {
 
 	public bindBuffer(buffer: GLBuffer): void {
 		if (this.isBound() == false) {
-			throw new Error("Try binding buffer to a vertex array that was not bound.");
+			throw new InvalidOperationException("Try binding buffer to a vertex array that was not bound");
 		}
 
 		buffer.unbind();
@@ -49,7 +50,7 @@ export default class GLVertexArray implements Disposable.Target {
 
 	public unbindBuffer(buffer: GLBuffer): void {
 		if (this.isBound() == false) {
-			throw new Error("Try binding buffer to a vertex array that was not bound.");
+			throw new InvalidOperationException("Try binding buffer to a vertex array that was not bound");
 		}
 
 		buffer.bind();
@@ -63,7 +64,7 @@ export default class GLVertexArray implements Disposable.Target {
 
 	public setAndEnableVertexAttribute(location: number, size: number,): void {
 		if (this.isBound() == false) {
-			throw new Error("Try set vertex attribute on buffer that was not bound.");
+			throw new InvalidOperationException("Try set vertex attribute on buffer that was not bound");
 		}
 
 		this.contextManager.getContext().vertexAttribPointer(location, size, this.contextManager.enum("FLOAT"), false, 6 * 4, 0);

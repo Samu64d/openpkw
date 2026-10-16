@@ -1,4 +1,4 @@
-// 
+//
 // Application.ts
 //
 
@@ -16,9 +16,9 @@ export default abstract class Application {
 		this.registerWindowEventListeners();
 	}
 
-	public abstract init(): void;
+	public abstract onInit(): void;
 
-	public abstract onResizeWindow(): void;
+	public abstract onWindowResize(): void;
 
 	public abstract onError(): void;
 
@@ -29,20 +29,22 @@ export default abstract class Application {
 	private updateCanvasSize(): void {
 		const canvasElement: Nullable<HTMLCanvasElement> = this.document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
 
-		if (canvasElement != null) {
-			canvasElement.width = Math.floor(this.document.body.clientWidth);
-			canvasElement.height = Math.floor(this.document.body.clientHeight);
+		if (canvasElement == null) {
+			return;
 		}
+
+		canvasElement.width = Math.floor(this.document.body.clientWidth);
+		canvasElement.height = Math.floor(this.document.body.clientHeight);
 	}
 
 	private onLoadListener(): void {
 		this.updateCanvasSize();
-		this.init();
+		this.onInit();
 	}
 
 	private onResizeListener(): void {
 		this.updateCanvasSize();
-		this.onResizeWindow();
+		this.onWindowResize();
 	}
 
 	private onErrorListener(event: ErrorEvent): void {

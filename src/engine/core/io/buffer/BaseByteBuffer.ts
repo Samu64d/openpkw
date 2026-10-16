@@ -5,20 +5,20 @@
 import Nullable from "../../common/Nullable.ts";
 import Spannable from "../../memory/Spannable.ts";
 import SpannablePoolAllocator from "../../memory/SizeablePoolAllocator.ts";
+import Exception from "../../error/Exception.ts";
+import ArgumentOutOfRangeException from "../../error/ArgumentOutOfRangeException.ts";
 import Buffer from "./Buffer.ts";
 import ByteBuffer from "./ByteBuffer.ts";
 
 export default abstract class BaseByteBuffer extends Buffer {
 
 	protected static allocateArrayBuffer(byteLength: number): ArrayBuffer {
-		if (byteLength < 0) {
-			throw new Error("Byte length value cannot be negative: got " + byteLength + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(byteLength, 0, "byteLength");
 
 		const arrayBuffer: Nullable<ArrayBuffer> = BaseByteBuffer.ARRAY_BUFFER_ALLOCATOR.malloc(byteLength);
 
 		if (arrayBuffer == null) {
-			throw new Error("Cannot allocate new array buffer of byte length: " + byteLength + ".");
+			throw new Exception("Cannot allocate new array buffer of byte length: " + byteLength);
 		}
 
 		return arrayBuffer;

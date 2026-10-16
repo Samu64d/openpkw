@@ -4,6 +4,7 @@
 
 import Nullable from "../../../core/common/Nullable.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../../../core/error/InvalidOperationException.ts";
 import GLShader from "./GLShader.ts";
 import GLContextManager from "./GLContextManager.ts";
 
@@ -36,7 +37,7 @@ class GLProgram implements Disposable.Target {
 
 	public attachShader(shader: GLShader): void {
 		if (this.linkingStatus != GLProgram.LinkingStatus.UNLINKED) {
-			throw new Error("Trying attach shader to a program that is already linked.");
+			throw new InvalidOperationException("Trying attach shader to a program that is already linked");
 		}
 
 		this.contextManager.getContext().attachShader(this.programObject, shader.getShaderObject());

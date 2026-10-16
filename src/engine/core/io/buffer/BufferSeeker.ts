@@ -3,6 +3,8 @@
 //
 
 import Nullable from "../../common/Nullable.ts";
+import ArgumentOutOfRangeException from "../../error/ArgumentOutOfRangeException.ts";
+import IOException from "../../error/IOException.ts";
 import Buffer from "./Buffer.ts";
 
 export default abstract class BufferSeeker<T extends Buffer> {
@@ -25,24 +27,20 @@ export default abstract class BufferSeeker<T extends Buffer> {
 
 	public seek(position: number): void {
 		if (position < 0 || position > this.buffer.getCapacity()) {
-			throw new Error("Out of bounds access: " + position + ".");
+			throw new IOException("Cannot access position: out of bounds access: " + position);
 		}
 
 		this.position = position;
 	}
 
 	public skip(length: number): void {
-		if (length < 0) {
-			throw new Error("Cannot skip with a negative value: got " + length + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(length, 0, "length");
 
 		this.seek(this.position + length);
 	}
 
 	public rewind(length: number): void {
-		if (length < 0) {
-			throw new Error("Cannot rewind with a negative value: got " + length + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(length, 0, "length");
 
 		this.seek(this.position - length);
 	}
@@ -60,9 +58,7 @@ export default abstract class BufferSeeker<T extends Buffer> {
 	}
 
 	protected resolveAccess(position: Nullable<number>, length: number, readonly: boolean = false): number {
-		if (length <= 0) {
-			throw new Error("Length value must be greater than 0: got " + length + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(length, 0, "length");
 
 		const startPosition: number = position ?? this.position;
 		const endPosition: number = startPosition + length;
@@ -74,7 +70,7 @@ export default abstract class BufferSeeker<T extends Buffer> {
 		}
 
 		if (flag == false) {
-			throw new Error("Cannot access position: out of capacity.");
+			throw new IOException("Cannot access position: out of capacity");
 		}
 
 		return startPosition;

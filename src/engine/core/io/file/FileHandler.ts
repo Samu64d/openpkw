@@ -6,7 +6,7 @@ import ResourceHandle from "../../interop/ResourceHandle.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
-import ErrorInspect from "../../error/ErrorInspect.ts";
+import IOException from "../../error/IOException.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
 import MappedByteBuffer from "../buffer/MappedByteBuffer.ts";
 import OpenMode from "./OpenMode.ts";
@@ -71,7 +71,7 @@ export default class FileHandler implements Disposable.Target {
 		try {
 			this.driver.closeFD(this.handle);
 		} catch (e: unknown) {
-			throw new Error("Cannot close file: " + (ErrorInspect.castToErrnoException(e) ? e.message : "Unknown error."));
+			throw new IOException("Cannot close file", e);
 		} finally {
 			this.chunkBuffer.dispose();
 		}
@@ -79,7 +79,7 @@ export default class FileHandler implements Disposable.Target {
 
 	private readIntoBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
 		if (length > byteBuffer.getCapacity()) {
-			throw new Error("Cannot read into buffer: length must be at most equal to buffer capacity.");
+			throw new IOException("Cannot read into buffer: length must be at most equal to buffer capacity");
 		}
 
 		this.driver.readFD(this.handle, position, length, byteBuffer, 0);
@@ -94,7 +94,7 @@ export default class FileHandler implements Disposable.Target {
 
 	private writeFromBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
 		if (length > byteBuffer.getCapacity()) {
-			throw new Error("Cannot write from buffer: length must be at most equal to buffer capacity.");
+			throw new IOException("Cannot write from buffer: length must be at most equal to buffer capacity");
 		}
 
 		this.driver.writeFD(this.handle, position, length, byteBuffer, 0);

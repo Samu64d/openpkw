@@ -1,9 +1,10 @@
-// 
+//
 // Vector2d.ts
 //
 
 import Nullable from "../common/Nullable.ts";
 import Supplier from "../common/Supplier.ts";
+import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
 
 export default class Vector2d {
 
@@ -89,9 +90,7 @@ export default class Vector2d {
 	}
 
 	public div(value: number): Vector2d {
-		if (value == 0) {
-			throw new Error("Cannot divide vector components by 0.");
-		}
+		ArgumentOutOfRangeException.throwIfZero(value, "value");
 
 		return this.set(this.x / value, this.y / value);
 	}

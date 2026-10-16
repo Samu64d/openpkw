@@ -3,6 +3,7 @@
 //
 
 import Consumer from "../../common/Consumer.ts";
+import InvalidOperationException from "../../error/InvalidOperationException.ts";
 import ClassType from "../class/ClassType.ts";
 import Aspect from "../aop/Aspect.ts";
 import BeforeAdvice from "../aop/BeforeAdvice.ts";
@@ -40,7 +41,7 @@ namespace Disposable {
 	export const DISPOSE_GUARD_ASPECT = (): Aspect => {
 		return function <T extends Target>(this: T, ...args: unknown[]): void {
 			if (this[DISPOSED] == true) {
-				throw new Error("Trying to access a disposed object.");
+				throw new InvalidOperationException("Trying to access a disposed object");
 			}
 		};
 	};
