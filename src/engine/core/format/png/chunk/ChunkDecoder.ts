@@ -3,6 +3,7 @@
 //
 
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
+import Exception from "../../../error/Exception.ts";
 import Chunk from "./Chunk.ts";
 
 export default abstract class ChunkDecoder<T> {
@@ -13,13 +14,13 @@ export default abstract class ChunkDecoder<T> {
 
 	public constructor(chunk: Chunk, expectedSignature: number, expectedMinSize: number = 0, expectedMaxSize: number = ChunkDecoder.MAX_CHUNK_SIZE) {
 		if (chunk.getSignature() != expectedSignature) {
-			throw new Error("Chunk signature is incorrect: expected " + expectedSignature + ", got " + chunk.getSignature() + ".)");
+			throw new Exception("Chunk signature is incorrect: expected " + expectedSignature + ", got " + chunk.getSignature() + ".)");
 		}
-		
+
 		const size: number = chunk.getSize();
 
 		if (size < expectedMinSize || size > expectedMaxSize) {
-			throw new Error(chunk.getSignatureAsString() + " chunk size must be between " + expectedMinSize + " and " + expectedMaxSize + " bytes: got " + size + ".");
+			throw new Exception(chunk.getSignatureAsString() + " chunk size must be between " + expectedMinSize + " and " + expectedMaxSize + " bytes: got " + size);
 		}
 
 		this.chunk = chunk;

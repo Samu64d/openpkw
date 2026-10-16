@@ -1,4 +1,4 @@
-// 
+//
 // PerlinNoise.ts
 //
 
@@ -83,7 +83,7 @@ export default class PerlinNoise {
 		const yu: number = Math.floor(y);
 		const zu: number = Math.floor(z);
 
-		// Get relative xyz coordinates of 
+		// Get relative xyz coordinates inside cell
 		const xr: number = x - xu;
 		const yr: number = y - yu;
 		const zr: number = z - zu;

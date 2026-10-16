@@ -1,9 +1,10 @@
-// 
+//
 // Vector3d.ts
 //
 
 import Nullable from "../common/Nullable.ts";
 import Supplier from "../common/Supplier.ts";
+import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
 
 export default class Vector3d {
 
@@ -108,9 +109,7 @@ export default class Vector3d {
 	}
 
 	public div(value: number): Vector3d {
-		if (value == 0) {
-			throw new Error("Cannot divide vector components by 0.");
-		}
+		ArgumentOutOfRangeException.throwIfZero(value, "value");
 
 		return this.set(this.x / value, this.y / value, this.z / value);
 	}

@@ -4,6 +4,7 @@
 
 import Nullable from "../../../core/common/Nullable.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import Exception from "../../../core/error/Exception.ts";
 import GLContextManager from "./GLContextManager.ts";
 
 @Disposable()
@@ -22,7 +23,7 @@ abstract class GLShader implements Disposable.Target {
 		const shaderObject: Nullable<WebGLShader> = contextManager.getContext().createShader(type);
 
 		if (shaderObject == null) {
-			throw new Error("Unable to create shader.");
+			throw new Exception("Unable to create shader");
 		}
 
 		this.shaderObject = shaderObject;

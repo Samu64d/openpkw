@@ -7,6 +7,7 @@ import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import ByteBufferReader from "../../io/buffer/ByteBufferReader.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Image from "../../resource/Image.ts";
+import Exception from "../../error/Exception.ts";
 import Chunk from "./chunk/Chunk.ts";
 import IHDRChunkDecoder from "./chunk/IHDRChunkDecoder.ts";
 import PLTEChunkDecoder from "./chunk/PLTEChunkDecoder.ts";
@@ -66,7 +67,7 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 		const headerValue: ByteBuffer = this.source.slice(0, PNGDecoder.HEADER_SIZE);
 
 		if (headerValue.equals(PNGDecoder.HEADER_SIGNATURE) == false) {
-			throw new Error("Invalid PNG file header.");
+			throw new Exception("Invalid PNG file header");
 		}
 	}
 
@@ -78,7 +79,7 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 		const chunk: Chunk = Chunk.FROM_READER(reader);
 
 		if (chunk.getSignature() != IHDRChunkDecoder.CHUNK_SIGNATURE) {
-			throw new Error("First chunk must be IHDR: got " + chunk.getSignatureAsString() + ".");
+			throw new Exception("First chunk must be IHDR: got " + chunk.getSignatureAsString());
 		}
 
 		this.ihdrChunk = chunk;
@@ -92,26 +93,26 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 			if (signature == PLTEChunkDecoder.CHUNK_SIGNATURE) {
 				if (idatAccum != 0) {
-					throw new Error("PLTE chunk must appear before IDAT chunks.");
+					throw new Exception("PLTE chunk must appear before IDAT chunks");
 				}
 
 				this.plteChunk = chunk;
 			} else if (signature == tRNSChunkDecoder.CHUNK_SIGNATURE) {
 				if (idatAccum != 0) {
-					throw new Error("tRNS chunk must appear before IDAT chunks.");
+					throw new Exception("tRNS chunk must appear before IDAT chunks");
 				}
 
 				this.trnsChunk = chunk;
 			} else if (signature == IDATChunkDecoder.CHUNK_SIGNATURE) {
 				if (idatAccum == -1) {
-					throw new Error("Multiple IDAT chunks must be consecutive.");
+					throw new Exception("Multiple IDAT chunks must be consecutive");
 				}
 
 				idatChunkList.push(chunk);
 				idatAccum += 1;
 			} else if (chunk.getSignature() == IENDChunkDecoder.CHUNK_SIGNATURE) {
 				if (reader.isEof() == false) {
-					throw new Error("IEND chunk must be the final chunk in the stream.");
+					throw new Exception("IEND chunk must be the final chunk in the stream");
 				}
 
 				this.iendChunk = chunk;
@@ -130,13 +131,13 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private decodeChunks(): void {
 		if (this.ihdrChunk == null) {
-			throw new Error("Missing IHDR chunk.");
+			throw new Exception("Missing IHDR chunk");
 		}
 		if (this.idatChunk == null) {
-			throw new Error("Missing IDAT chunk.");
+			throw new Exception("Missing IDAT chunk");
 		}
 		if (this.iendChunk == null) {
-			throw new Error("Missing IEND chunk.");
+			throw new Exception("Missing IEND chunk");
 		}
 
 		this.ihdrData = new IHDRChunkDecoder(this.ihdrChunk).decode();
@@ -160,7 +161,7 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private composeImage(): Image {
 		if (this.ihdrData == null || this.idatData == null) {
-			throw new Error("Cannot retrieve all critical chunk data.");
+			throw new Exception("Some critical chunk were missing");
 		}
 
 		const width: number = this.ihdrData.getWidth();

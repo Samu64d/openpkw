@@ -4,6 +4,7 @@
 
 import ByteOrder from "../../../memory/ByteOrder.ts";
 import ByteBufferReader from "../../../io/buffer/ByteBufferReader.ts";
+import Exception from "../../../error/Exception.ts";
 import IHDRData from "../data/IHDRData.ts";
 import InterlaceMethod from "../interlace/InterlaceMethod.ts";
 import ColorType from "../image/ColorType.ts";
@@ -34,27 +35,27 @@ export default class IHDRChunkDecoder extends ChunkDecoder<IHDRData> {
 		reader.dispose();
 
 		if (width == 0 || height == 0 || width > IHDRChunkDecoder.MAX_IMAGE_DIMENSION || height > IHDRChunkDecoder.MAX_IMAGE_DIMENSION) {
-			throw new Error("Invalid image size values: " + width + "x" + height + ".");
+			throw new Exception("Invalid image size values: " + width + "x" + height);
 		}
 
 		if (ColorType.is(colorType) == false) {
-			throw new Error("Unknown color type value: " + colorType + ".");
+			throw new Exception("Unknown color type value: " + colorType);
 		}
 
 		if (ColorType.allowDepth(colorType, depth) == false) {
-			throw new Error("Invalid depth value for used color type: " + depth + ".");
+			throw new Exception("Invalid depth value for used color type: " + depth);
 		}
 
 		if (compressionMethod != 0) {
-			throw new Error("Compression method value must be 0: got " + compressionMethod + ".");
+			throw new Exception("Compression method value must be 0: got " + compressionMethod);
 		}
 
 		if (filterMethod != 0) {
-			throw new Error("Filter method value must be 0: got " + filterMethod + ".");
+			throw new Exception("Filter method value must be 0: got " + filterMethod);
 		}
 
 		if (InterlaceMethod.is(interlaceMethod) == false) {
-			throw new Error("Unknown interlace method value: " + interlaceMethod + ".");
+			throw new Exception("Unknown interlace method value: " + interlaceMethod);
 		}
 
 		return new IHDRData(width, height, depth, colorType, compressionMethod, filterMethod, interlaceMethod);

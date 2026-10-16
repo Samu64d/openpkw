@@ -3,6 +3,7 @@
 //
 
 import ClassType from "../reflection/class/ClassType.ts";
+import InvalidOperationException from "../error/InvalidOperationException.ts";
 import Driver from "./Driver.ts";
 
 export default class DriverRegistry {
@@ -20,7 +21,7 @@ export default class DriverRegistry {
 
 	public static get<T extends Driver>(type: ClassType<T>): T {
 		if (this.isRegistered(type) == false) {
-			throw new Error("Trying access a driver class that is not registered.");
+			throw new InvalidOperationException("Trying access a driver class that is not registered");
 		}
 
 		return this.driverMap.get(type) as T;

@@ -4,6 +4,7 @@
 
 import Spannable from "../memory/Spannable.ts";
 import ByteBuffer from "../io/buffer/ByteBuffer.ts";
+import Exception from "../error/Exception.ts";
 import TextEncoding from "./TextEncoding.ts";
 import Encoder from "./Encoder.ts";
 
@@ -80,7 +81,7 @@ export default class StringByteEncoder implements Encoder<string, ByteBuffer> {
 				}
 			default:
 				{
-					throw new Error("Unknown text encoding.");
+					throw new Exception("Unknown text encoding");
 				}
 		}
 	}
@@ -99,7 +100,7 @@ export default class StringByteEncoder implements Encoder<string, ByteBuffer> {
 			} else {
 				if (this.strict == true) {
 					byteBuffer.dispose();
-					throw new Error("Malformed string for ASCII: encountered incorrect char value at index: " + i + ".");
+					throw new Exception("Malformed string for ASCII: encountered incorrect char value at index: " + i);
 				}
 
 				dest[i] = StringByteEncoder.ASCII_REPLACEMENT_BYTE;
@@ -159,7 +160,7 @@ export default class StringByteEncoder implements Encoder<string, ByteBuffer> {
 			if (valid == false) {
 				if (this.strict == true) {
 					byteBuffer.dispose();
-					throw new Error("Malformed string for UTF-8: encountered invalid character at index " + srcIndex + ".");
+					throw new Exception("Malformed string for UTF-8: encountered invalid character at index " + srcIndex);
 				}
 
 				dest[destIndex] = StringByteEncoder.UTF_8_REPLACEMENT_BYTES[0];
@@ -207,7 +208,7 @@ export default class StringByteEncoder implements Encoder<string, ByteBuffer> {
 			if (valid == false) {
 				if (this.strict == true) {
 					byteBuffer.dispose();
-					throw new Error("Malformed string for UTF-16LE: encountered invalid character at index " + srcIndex + ".");
+					throw new Exception("Malformed string for UTF-16LE: encountered invalid character at index " + srcIndex);
 				}
 
 				dest[destIndex] = StringByteEncoder.UTF_16LE_REPLACEMENT_BYTES[0];

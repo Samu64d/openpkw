@@ -7,6 +7,7 @@ import ByteOrder from "../../../memory/ByteOrder.ts";
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import ByteBufferReader from "../../../io/buffer/ByteBufferReader.ts";
 import Record from "../../../reflection/decorators/Record.ts";
+import Exception from "../../../error/Exception.ts";
 
 @Record()
 export default class Chunk {
@@ -25,7 +26,7 @@ export default class Chunk {
 
 	public static readonly FROM_CHUNK_LIST: Function<Chunk[], Chunk> = (chunkList: Chunk[]): Chunk => {
 		if (chunkList.length == 0) {
-			throw new Error("Chunk list must contain at least one element.");
+			throw new Exception("Chunk list must contain at least one element");
 		}
 
 		if (chunkList.length == 1) {
@@ -39,7 +40,7 @@ export default class Chunk {
 			const chunk: Chunk = chunkList[i];
 
 			if (signature != chunk.getSignature()) {
-				throw new Error("Chunk list must contain chunks with homogeneous signature values.");
+				throw new Exception("Chunk list must contain chunks with homogeneous signature values");
 			}
 
 			resultSize += chunk.getSize();

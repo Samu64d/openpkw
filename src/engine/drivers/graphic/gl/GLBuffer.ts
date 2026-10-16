@@ -3,6 +3,7 @@
 //
 
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../../../core/error/InvalidOperationException.ts";
 import GLContextManager from "./GLContextManager.ts";
 
 @Disposable()
@@ -40,7 +41,7 @@ export default abstract class GLBuffer implements Disposable.Target {
 
 	public loadData(data: AllowSharedBufferSource, usage: string = "STATIC_DRAW"): void {
 		if (this.isBound() == false) {
-			throw new Error("Cannot load data into an unbound buffer.");
+			throw new InvalidOperationException("Cannot load data into an unbound buffer");
 		}
 
 		this.contextManager.getContext().bufferData(this.type, data, this.contextManager.enum(usage));

@@ -7,13 +7,14 @@ import * as Electron from "electron";
 import Nullable from "../../core/common/Nullable.ts";
 import BiConsumer from "../../core/common/BiConsumer.ts";
 import EventListener from "../../core/common/EventListener.ts";
+import InvalidOperationException from "../../core/error/InvalidOperationException.ts";
 import ElectronProcess from "./ElectronProcess.ts";
 
 class ElectronIPC {
 
 	public static registerRequestListener(channel: ElectronIPC.Channel, listener: EventListener<ElectronIPC.Channel>): void {
 		if (ElectronIPC.register == null) {
-			throw new Error("Unsupported operation for this context.");
+			throw new InvalidOperationException("Cannot register an IPC listener for current context");
 		}
 
 		ElectronIPC.register(channel, (event: any, ...args: any[]) => {
@@ -23,7 +24,7 @@ class ElectronIPC {
 
 	public static sendRequest(channel: ElectronIPC.Channel, ...args: any[]): any {
 		if (ElectronIPC.invoker == null) {
-			throw new Error("Unsupported operation for this context.");
+			throw new InvalidOperationException("Cannot send an IPC message for current context");
 		}
 
 		return ElectronIPC.invoker(channel, ...args);

@@ -4,6 +4,7 @@
 
 import Nullable from "../../common/Nullable.ts";
 import Callable from "../../common/Callable.ts";
+import Exception from "../../error/Exception.ts";
 
 type ClassType<T extends object = object> = ClassType.NoAbstract<T> | ClassType.Abstract<T>;
 
@@ -28,7 +29,7 @@ namespace ClassType {
 		const method: T[K] = prototype[methodName];
 
 		if (typeof method != "function") {
-			throw new Error("Method not found.");
+			throw new Exception("Method not found");
 		}
 
 		return method as Method<T, K>;

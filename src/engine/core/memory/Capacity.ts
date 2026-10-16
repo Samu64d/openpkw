@@ -2,15 +2,16 @@
 // Capacity.ts
 //
 
+import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
+import InvalidOperationException from "../error/InvalidOperationException.ts";
+
 export default abstract class Capacity {
 
 	protected capacity: number;
 	protected readonly resizable: boolean;
 
 	public constructor(capacity: number, resizable: boolean = false) {
-		if (capacity < 0) {
-			throw new Error("Capacity value cannot be negative: got " + capacity + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(capacity, 0, "capacity")
 
 		this.capacity = capacity;
 		this.resizable = resizable;
@@ -26,22 +27,19 @@ export default abstract class Capacity {
 
 	public grow(length: number): void {
 		if (this.resizable == false) {
-			throw new Error("Cannot grow unresizable item.");
+			throw new InvalidOperationException("Cannot grow unresizable item");
 		}
-		if (length < 0) {
-			throw new Error("Cannot grow with negative values: got " + length + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(length, 0, "length");
 
 		this.capacity += length;
 	}
 
 	public shrink(length: number): void {
 		if (this.resizable == false) {
-			throw new Error("Cannot shrink unresizable item.");
+			throw new InvalidOperationException("Cannot shrink unresizable item");
 		}
-		if (length < 0 || length > this.capacity) {
-			throw new Error("Cannot shrink with negative or outbounds values: got capacity " + this.capacity + ", length " + length + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(length, 0, "length");
+		ArgumentOutOfRangeException.throwIfGreaterThan(length, 0, "capacity");
 
 		this.capacity -= length;
 	}

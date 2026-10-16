@@ -4,6 +4,7 @@
 
 import Nullable from "../common/Nullable.ts";
 import Disposable from "../reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../error/InvalidOperationException.ts";
 import Loader from "./Loader.ts";
 
 @Disposable()
@@ -44,7 +45,7 @@ export default class Resource<L, R> implements Disposable.Target {
 
 	public get(): R {
 		if (this.loaded == false) {
-			throw new Error("Try getting a resource that is not load.");
+			throw new InvalidOperationException("Try getting a resource that is not load");
 		}
 
 		return this.resource as R;

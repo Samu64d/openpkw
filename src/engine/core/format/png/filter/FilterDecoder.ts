@@ -4,6 +4,7 @@
 
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../../codec/SingleValueDecoder.ts";
+import Exception from "../../../error/Exception.ts";
 import FilterType from "./FilterType.ts";
 
 export default class FilterDecoder extends SingleValueDecoder<ByteBuffer, ByteBuffer> {
@@ -33,13 +34,13 @@ export default class FilterDecoder extends SingleValueDecoder<ByteBuffer, ByteBu
 
 		const bufferSize: number = source.getCapacity();
 		const expectedSize: number = scanlineCount * scanlineSize;
-		const rowSize: number = scanlineSize - 1; // We need to exclude the leading filter type byte to get the actual data size.
+		const rowSize: number = scanlineSize - 1; // Need to exclude the leading filter type byte to get the actual data size.
 
 		if (bufferSize != expectedSize) {
-			throw new Error("Filter buffer size must be equal to scanlineCount * scanlineSize: got " + bufferSize + " =/= " + expectedSize + ".");
+			throw new Exception("Filter buffer size must be equal to scanlineCount * scanlineSize: got " + bufferSize + " =/= " + expectedSize);
 		}
 		if (rowSize % scanlinePixelSize != 0) {
-			throw new Error("Scanline data size must be a multiple of scanline pixel size value: got " + rowSize + " % " + scanlinePixelSize + " =/= 0.");
+			throw new Exception("Scanline data size must be a multiple of scanline pixel size value: got " + rowSize + " % " + scanlinePixelSize + " =/= 0");
 		}
 
 		this.scanlineCount = scanlineCount;
@@ -139,7 +140,7 @@ export default class FilterDecoder extends SingleValueDecoder<ByteBuffer, ByteBu
 					}
 				default:
 					{
-						throw new Error("Unknown filter type value: " + filterType + ".");
+						throw new Exception("Unknown filter type value: " + filterType);
 					}
 			}
 		}

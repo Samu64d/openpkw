@@ -6,6 +6,8 @@ import Nullable from "../common/Nullable.ts";
 import Function from "../common/Function.ts";
 import MathHelper from "../math/MathHelper.ts";
 import ClassType from "../reflection/class/ClassType.ts";
+import Exception from "../error/Exception.ts";
+import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
 import Pool from "./Pool.ts";
 import PoolAllocator from "./PoolAllocator.ts";
 
@@ -39,18 +41,14 @@ class SizeablePoolAllocator<T extends object> extends PoolAllocator<T> {
 	}
 
 	public override malloc(size: number): Nullable<T> {
-		if (size < 1) {
-			throw new Error("Malloc size must be at least 1: got " + size + ".");
-		}
-		if (size > SizeablePoolAllocator.MAX_MALLOC_SIZE) {
-			throw new Error("Maximum malloc item size allowed is " + SizeablePoolAllocator.MAX_MALLOC_SIZE + ": got " + size + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThan(size, 1, "size");
+		ArgumentOutOfRangeException.throwIfGreaterThan(size, SizeablePoolAllocator.MAX_MALLOC_SIZE, "size");
 
 		const poolId: SizeablePoolAllocator.PoolId = MathHelper.findNextPowerOfTwo(size);
 
 		while (true) {
 			if (this.poolRegistry.has(poolId) == false) {
-				throw new Error("Invalid pool id: got " + poolId + ".");
+				throw new Exception("Invalid pool id: got " + poolId);
 			}
 
 			const pool: Pool<T> = this.poolRegistry.get(poolId) as Pool<T>;
@@ -70,7 +68,7 @@ class SizeablePoolAllocator<T extends object> extends PoolAllocator<T> {
 
 	public override free(item: T): void {
 		if (this.globalItemRegistry.has(item) == false) {
-			throw new Error("Invalid item reference.");
+			throw new Exception("Invalid item reference");
 		}
 
 		const poolId: SizeablePoolAllocator.PoolId = this.globalItemRegistry.get(item) as SizeablePoolAllocator.PoolId;

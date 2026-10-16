@@ -8,6 +8,8 @@ import Spannable from "../../memory/Spannable.ts";
 import TextEncoding from "../../codec/TextEncoding.ts";
 import StringByteEncoder from "../../codec/StringByteEncoder.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../../error/InvalidOperationException.ts";
+import IOException from "../../error/IOException.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 
 @Disposable()
@@ -51,7 +53,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override get(position: number): number {
 		if (position < 0 || position >= this.capacity) {
-			throw new Error("Out of bounds access: got " + position + ".");
+			throw new IOException("Out of bounds access: got " + position);
 		}
 
 		return this.sourceArray[position];
@@ -59,10 +61,10 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override set(position: number, value: number): void {
 		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
+			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (position < 0 || position >= this.capacity) {
-			throw new Error("Out of bounds access: got " + position + ".");
+			throw new IOException("Out of bounds access at " + position);
 		}
 
 		this.sourceArray[position] = value;
@@ -70,10 +72,10 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override setArray(position: number, array: ArrayLike<number>): void {
 		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
+			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (this.isRangeWithinBounds(position, position + array.length) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 
 		this.sourceArray.set(array, position);
@@ -81,10 +83,10 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override fill(fillValue: number, startPosition: number = 0, endPosition: number = this.capacity): void {
 		if (this.isReadonly() == true) {
-			throw new Error("Cannot set value: buffer is readonly.");
+			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 
 		this.sourceArray.fill(fillValue, startPosition, endPosition);
@@ -92,10 +94,10 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number = 0, sourceEndPosition: number = this.capacity, destinationStartPosition: number = 0): void {
 		if (this.isRangeWithinBounds(sourceStartPosition, sourceEndPosition) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 		if (byteBuffer.isRangeWithinBounds(destinationStartPosition, destinationStartPosition + (sourceEndPosition - sourceStartPosition)) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 
 		Spannable.copyTo(this.sourceArray, byteBuffer.unsafeGetSourceView(), sourceStartPosition, sourceEndPosition, destinationStartPosition);
@@ -103,7 +105,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override slice(startPosition: number = 0, endPosition: number = this.capacity): ByteBuffer {
 		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 
 		const sourceStartPosition: number = this.sourceStartPosition + startPosition;
@@ -114,7 +116,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override toArray(startPosition: number = 0, endPosition: number = this.capacity): number[] {
 		if (this.isRangeWithinBounds(startPosition, endPosition) == false) {
-			throw new Error("Out of bounds access.");
+			throw new IOException("Out of bounds access");
 		}
 
 		const array: Uint8Array = this.sourceArray.subarray(startPosition, endPosition);

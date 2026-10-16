@@ -1,8 +1,9 @@
-// 
+//
 // Area.ts
 //
 
 import Record from "../../reflection/decorators/Record.ts";
+import ArgumentOutOfRangeException from "../../error/ArgumentOutOfRangeException.ts";
 
 @Record()
 export default class Area {
@@ -12,9 +13,8 @@ export default class Area {
 	private readonly size: number;
 
 	public constructor(width: number, height: number) {
-		if (width < 1 || height < 1) {
-			throw new Error("Width and height values must be at least 1: got width " + width + ", height " + height + ".");
-		}
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(width, 0, "width");
+		ArgumentOutOfRangeException.throwIfLessThanOrEqual(height, 0, "height");
 
 		this.width = width;
 		this.height = height;

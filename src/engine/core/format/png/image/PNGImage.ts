@@ -4,6 +4,7 @@
 
 import Nullable from "../../../common/Nullable.ts";
 import ByteBuffer from "../../../io/buffer/ByteBuffer.ts";
+import Exception from "../../../error/Exception.ts";
 import IHDRData from "../data/IHDRData.ts";
 import PLTEData from "../data/PLTEData.ts";
 import tRNSData from "../data/tRNSData.ts";
@@ -29,7 +30,7 @@ export default class PNGImage {
 		this.colorType = ihdrData.getColorType();
 
 		if (this.colorType == ColorType.INDEXED && plteData == null) {
-			throw new Error("PLTE chunk missing but required for color type 3.");
+			throw new Exception("PLTE chunk missing but required for color type 3");
 		}
 
 		this.paletteData = plteData != null ? plteData.getPaletteData() : null;
@@ -68,7 +69,7 @@ export default class PNGImage {
 				}
 			default:
 				{
-					throw new Error("Unknown color type value: " + this.colorType + ".");
+					throw new Exception("Unknown color type value: " + this.colorType);
 				}
 		}
 

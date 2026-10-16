@@ -3,6 +3,7 @@
 //
 
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import InvalidOperationException from "../../../core/error/InvalidOperationException.ts";
 import GLContextManager from "./GLContextManager.ts";
 
 @Disposable()
@@ -40,7 +41,7 @@ export default class GLTexture implements Disposable.Target {
 
 	public loadImageData(width: number, height: number, data: ArrayBufferView<ArrayBufferLike>): void {
 		if (this.isBound() == false) {
-			throw new Error("Try loading image data on a texture that was not bound.");
+			throw new InvalidOperationException("Try loading image data for a texture that was not bound");
 		}
 
 		this.contextManager.getContext().texImage2D(this.type, 0, this.contextManager.enum("RGBA"), width, height, 0, this.contextManager.enum("RGBA"), this.contextManager.enum("UNSIGNED_BYTE"), data);
@@ -48,7 +49,7 @@ export default class GLTexture implements Disposable.Target {
 
 	public generateMipmap(): void {
 		if (this.isBound() == false) {
-			throw new Error("Try generating mipmap of a texture that was not bound.");
+			throw new InvalidOperationException("Try generating mipmap of a texture that was not bound");
 		}
 
 		this.contextManager.getContext().generateMipmap(this.type);

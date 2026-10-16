@@ -16,6 +16,7 @@ import Mesh from "../engine/core/resource/Mesh.ts";
 import Color from "../engine/core/rendering/Color.ts";
 import Projection from "../engine/core/rendering/Projection.ts";
 import Camera from "../engine/core/rendering/Camera.ts";
+import Exception from "../engine/core/error/Exception.ts";
 import GLVertexBuffer from "../engine/drivers/graphic/gl/GLVertexBuffer.ts";
 import GLElementBuffer from "../engine/drivers/graphic/gl/GLElementBuffer.ts";
 import GLVertexArray from "../engine/drivers/graphic/gl/GLVertexArray.ts";
@@ -103,7 +104,7 @@ export default class Renderer {
 		shader.compile();
 
 		if (shader.getCompilationStatus() == GLShader.CompilationStatus.FAILED) {
-			throw new Error(shader.getCompilationError() ?? "Failed to compile shader.");
+			throw new Exception(shader.getCompilationError() ?? "Failed to compile shader");
 		}
 
 		return shader;
@@ -118,7 +119,7 @@ export default class Renderer {
 		program.link();
 
 		if (program.getLinkingStatus() == GLProgram.LinkingStatus.FAILED) {
-			throw new Error(program.getLinkingError() ?? "Failed to compile program.");
+			throw new Exception(program.getLinkingError() ?? "Failed to compile program.");
 		}
 
 		vertexShader.dispose();
