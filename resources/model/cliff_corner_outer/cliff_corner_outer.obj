@@ -1,6 +1,6 @@
 mtllib cliff_corner_outer.mtl
 
-o main
+o cliff_corner_outer
 v -0.125000 0.187500 0.000000
 v 0.000000 0.187500 -0.125000
 v -0.125000 0.250000 -0.125000

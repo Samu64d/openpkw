@@ -1,6 +1,6 @@
 mtllib cliff_straight.mtl
 
-o main
+o cliff_straight
 v -0.125000 0.187500 0.000000
 v -0.125000 0.250000 -0.125000
 v 0.125000 0.187500 0.000000

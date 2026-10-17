@@ -78,7 +78,10 @@ export default class Renderer {
 		this.loadModel("tree_1", "tree");
 		this.loadModel("tree_2", "tree");
 		this.loadModel("sign_0");
+		this.loadModel("cart");
 		this.loadModel("house_0");
+		this.loadModel("house_1");
+		this.loadModel("house_2");
 
 		this.camera.lookAt(new Vector3d(3, 2.85, 3), new Vector3d(3, 0, 0));
 	}
@@ -291,6 +294,9 @@ export default class Renderer {
 		this.drawObject("sign_0", 10.0, 0.0, 9.0);
 
 		this.drawObject("house_0", 15.0, 0.0, 9.0);
+		this.drawObject("house_1", 16.0, 0.0, 15.0);
+		this.drawObject("house_2", 12.0, 0.0, 15.0);
+		this.drawObject("cart", 9.0, 0.0, 24.0);
 	}
 
 }

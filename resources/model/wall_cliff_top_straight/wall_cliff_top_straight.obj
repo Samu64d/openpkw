@@ -1,6 +1,6 @@
 mtllib wall_cliff_top_straight.mtl
 
-o main
+o wall_cliff_top_straight
 v -0.125000 0.218750 0.000000
 v -0.125000 0.250000 -0.125000
 v 0.125000 0.218750 0.000000
