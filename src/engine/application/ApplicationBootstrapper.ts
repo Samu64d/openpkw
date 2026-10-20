@@ -9,6 +9,7 @@ import ElectronProcess from "../platform/electron/ElectronProcess.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import ElectronWindow from "../platform/electron/ElectronWindow.ts";
 import ElectronApp from "../platform/electron/ElectronApp.ts";
+import IPCErrorPacket from "./IPCErrorPacket.ts";
 
 export default abstract class ApplicationBootstrapper {
 
@@ -81,14 +82,16 @@ export default abstract class ApplicationBootstrapper {
 		ElectronApp.registerEventListener("ready", this.onReadyListener.bind(this));
 	}
 
-	private onWindowErrorListener(channel: ElectronIPC.Channel, errorMessage: Nullable<string> = null): void {
-		if (this.mainWindowError == true || this.mainWindow == null || errorMessage == null) {
+	private onWindowErrorListener(channel: ElectronIPC.Channel, errorPacket: Nullable<IPCErrorPacket> = null): void {
+		if (this.mainWindowError == true || this.mainWindow == null || errorPacket == null) {
 			return;
 		}
 
+		const messageBoxMessage: string = errorPacket.name + ": " + errorPacket.message;
+
 		this.mainWindowError = true;
 		this.mainWindow.unloadWebContents();
-		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + errorMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
+		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + messageBoxMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
 		this.exit();
 	}
 

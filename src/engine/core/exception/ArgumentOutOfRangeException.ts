@@ -51,6 +51,8 @@ export default class ArgumentOutOfRangeException<T> extends ArgumentException<T>
 
 	public constructor(message: string, parameterName: string, argumentValue: Nullable<T> = null) {
 		super(message, parameterName, argumentValue);
+
+		this.name = "ArgumentOutOfRangeException";
 	}
 
 }

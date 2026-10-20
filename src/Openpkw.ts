@@ -50,15 +50,14 @@ export default class Openpkw extends Application {
 	}
 
 	public override onInit(): void {
-		this.logger.log(LogLevel.INFO, "Run init");
+		this.logger.log(LogLevel.INFO, "Start initializing application");
 		this.initRenderer();
-		this.initTest();
 	}
 
 	public override onWindowResize(): void {
 	}
 
-	public override onError(): void {
+	public override onError(error: Error): void {
 	}
 
 	public forceUpdateRenderer(): void {
@@ -108,7 +107,6 @@ export default class Openpkw extends Application {
 	}
 
 	private initRenderer(): void {
-		this.logger.log(LogLevel.INFO, "Run init renderer");
 
 		document.addEventListener("keydown", (event: KeyboardEvent) => {
 			if (event.code == null) {
@@ -147,10 +145,8 @@ export default class Openpkw extends Application {
 		this.renderer.init();
 		this.lastUpdateTime = performance.now();
 		window.requestAnimationFrame(this.updateRenderer.bind(this));
-	}
 
-	private initTest(): void {
-		this.logger.log(LogLevel.INFO, "Run init test");
+		this.logger.log(LogLevel.INFO, "Requesting update frame completed");
 	}
 
 	static {

@@ -9,6 +9,8 @@ export default class IOException extends Exception {
 
 	public constructor(message: string, maybeError: Nullable<unknown> = null) {
 		super(message, maybeError);
+
+		this.name = "IOException";
 	}
 
 }

@@ -5,6 +5,7 @@
 import Nullable from "../core/common/Nullable.ts";
 import EventListener from "../core/common/EventListener.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
+import IPCErrorPacket from "./IPCErrorPacket.ts";
 import ApplicationBootstrapper from "./ApplicationBootstrapper.ts";
 
 export default abstract class Application {
@@ -20,7 +21,7 @@ export default abstract class Application {
 
 	public abstract onWindowResize(): void;
 
-	public abstract onError(): void;
+	public abstract onError(error: Error): void;
 
 	private registerWindowEventListener<T>(eventName: any, listener: EventListener<T>): void {
 		window.addEventListener(eventName, listener);
@@ -48,10 +49,11 @@ export default abstract class Application {
 	}
 
 	private onErrorListener(event: ErrorEvent): void {
-		const message: string = event.message;
+		const error: Error = event.error;
+		const errorPacket: IPCErrorPacket = IPCErrorPacket.FROM_ERROR(error);
 
-		this.onError();
-		void ElectronIPC.sendRequest(ApplicationBootstrapper.IPC_ERROR_CHANNEL, message);
+		this.onError(error);
+		void ElectronIPC.sendRequest(ApplicationBootstrapper.IPC_ERROR_CHANNEL, errorPacket);
 	}
 
 	private registerWindowEventListeners(): void {

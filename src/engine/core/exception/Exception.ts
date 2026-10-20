@@ -24,6 +24,8 @@ export default class Exception extends Error {
 
 	public constructor(message: string, maybeError: Nullable<unknown> = null) {
 		super(Exception.buildFullMessage(message, maybeError));
+
+		this.name = "Exception";
 	}
 
 }

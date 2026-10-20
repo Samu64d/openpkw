@@ -8,6 +8,8 @@ export default class ArithmeticException extends Exception {
 
 	public constructor(message: string) {
 		super(message);
+
+		this.name = "ArithmeticException";
 	}
 
 }

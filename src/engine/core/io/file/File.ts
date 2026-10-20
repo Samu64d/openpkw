@@ -50,7 +50,7 @@ export default class File {
 
 			return new FileHandler(fileHandle, size, openMode);
 		} catch (e: unknown) {
-			throw new IOException("Cannot open file", e);
+			throw new IOException("Cannot create file handler", e);
 		}
 	}
 
