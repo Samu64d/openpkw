@@ -2,7 +2,7 @@
 // PLTEChunkDecoder.ts
 //
 
-import Exception from "../../../error/Exception.ts";
+import CodecException from "../../../exception/CodecException.ts";
 import PLTEData from "../data/PLTEData.ts";
 import Chunk from "./Chunk.ts";
 import ChunkDecoder from "./ChunkDecoder.ts";
@@ -19,7 +19,7 @@ export default class PLTEChunkDecoder extends ChunkDecoder<PLTEData> {
 		const size: number = this.chunk.getSize();
 
 		if (size % 3 != 0) {
-			throw new Exception("PLTE chunk size must be a multiple of 3: got " + size);
+			throw new CodecException("PLTE chunk size must be a multiple of 3 but got " + size.toString());
 		}
 
 		return new PLTEData(this.getChunkData().clone());

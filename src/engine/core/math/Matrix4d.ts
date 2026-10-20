@@ -3,6 +3,8 @@
 //
 
 import Supplier from "../common/Supplier.ts";
+import MemoryDriver from "../interop/MemoryDriver.ts";
+import DriverRegistry from "../interop/DriverRegistry.ts";
 
 export default class Matrix4d {
 
@@ -15,15 +17,13 @@ export default class Matrix4d {
 		);
 	};
 
+	private readonly sourceBuffer: ArrayBuffer;
 	private readonly values: Uint8Array;
 
 	public constructor(a00: number = 0, a01: number = 0, a02: number = 0, a03: number = 0, a10: number = 0, a11: number = 0, a12: number = 0, a13: number = 0, a20: number = 0, a21: number = 0, a22: number = 0, a23: number = 0, a30: number = 0, a31: number = 0, a32: number = 0, a33: number = 0) {
-		this.values = new Uint8Array([
-			a00, a10, a20, a30,
-			a01, a11, a21, a31,
-			a02, a12, a22, a32,
-			a03, a13, a23, a33
-		]);
+		this.sourceBuffer = DriverRegistry.get(MemoryDriver).allocateArrayBuffer(16);
+		this.values = new Uint8Array(this.sourceBuffer);
+		this.set(a00, a10, a20, a30, a01, a11, a21, a31, a02, a12, a22, a32, a03, a13, a23, a33);
 	}
 
 	public set(a00: number, a01: number, a02: number, a03: number, a10: number, a11: number, a12: number, a13: number, a20: number, a21: number, a22: number, a23: number, a30: number, a31: number, a32: number, a33: number): Matrix4d {

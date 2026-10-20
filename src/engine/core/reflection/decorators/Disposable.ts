@@ -3,7 +3,7 @@
 //
 
 import Consumer from "../../common/Consumer.ts";
-import InvalidOperationException from "../../error/InvalidOperationException.ts";
+import InvalidOperationException from "../../exception/InvalidOperationException.ts";
 import ClassType from "../class/ClassType.ts";
 import Aspect from "../aop/Aspect.ts";
 import BeforeAdvice from "../aop/BeforeAdvice.ts";

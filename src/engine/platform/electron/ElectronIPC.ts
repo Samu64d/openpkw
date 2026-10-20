@@ -7,7 +7,7 @@ import * as Electron from "electron";
 import Nullable from "../../core/common/Nullable.ts";
 import BiConsumer from "../../core/common/BiConsumer.ts";
 import EventListener from "../../core/common/EventListener.ts";
-import InvalidOperationException from "../../core/error/InvalidOperationException.ts";
+import InvalidOperationException from "../../core/exception/InvalidOperationException.ts";
 import ElectronProcess from "./ElectronProcess.ts";
 
 class ElectronIPC {

@@ -2,7 +2,7 @@
 // tRNSChunkDecoder.ts
 //
 
-import Exception from "../../../error/Exception.ts";
+import CodecException from "../../../exception/CodecException.ts";
 import IHDRData from "../data/IHDRData.ts";
 import tRNSData from "../data/tRNSData.ts";
 import ColorType from "../image/ColorType.ts";
@@ -25,9 +25,9 @@ export default class tRNSChunkDecoder extends ChunkDecoder<tRNSData> {
 		const size: number = this.chunk.getSize();
 
 		if (this.colorType == ColorType.GREYSCALE && size != 2) {
-			throw new Exception("tRNS chunk size must be 2 bytes if color type value is 0: got " + size);
+			throw new CodecException("tRNS chunk size must be 2 bytes for color type 0 but got " + size.toString());
 		} else if (this.colorType == ColorType.TRUECOLOR && size != 6) {
-			throw new Exception("tRNS chunk size must be 6 bytes if color type value is 2: got " + size);
+			throw new CodecException("tRNS chunk size must be 6 bytes for color type 2 but got " + size.toString());
 		}
 
 		return new tRNSData(this.getChunkData().clone());

@@ -2,10 +2,10 @@
 // Pool.ts
 //
 
-import Exception from "../error/Exception.ts";
-import ArgumentException from "../error/ArgumentException.ts";
-import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
-import InvalidOperationException from "../error/InvalidOperationException.ts";
+import Exception from "../exception/Exception.ts";
+import ArgumentException from "../exception/ArgumentException.ts";
+import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
+import InvalidOperationException from "../exception/InvalidOperationException.ts";
 import Capacity from "./Capacity.ts";
 
 class Pool<T extends object> extends Capacity {
@@ -19,9 +19,8 @@ class Pool<T extends object> extends Capacity {
 	private readonly itemMap: Map<T, Pool.ItemState>;
 
 	public constructor(capacity: number, initialItemList: T[]) {
-		super(capacity, true);
-
 		ArgumentOutOfRangeException.throwIfLessThan(capacity, initialItemList.length, "capacity");
+		super(capacity, true);
 
 		this.availableItemStack = new Array<T>();
 		this.itemMap = new Map<T, Pool.ItemState>();
@@ -32,19 +31,17 @@ class Pool<T extends object> extends Capacity {
 	}
 
 	public override shrink(length: number): void {
-		const remainingCapacity: number = this.getRemainingCapacity();
-
-		ArgumentOutOfRangeException.throwIfGreaterThan(remainingCapacity, length, "remainingCapacity");
+		ArgumentOutOfRangeException.throwIfGreaterThan(this.getRemainingCapacity(), length, "remainingCapacity");
 
 		super.shrink(length);
 	}
 
 	public addItem(item: T): void {
 		if (this.hasItem(item) == true) {
-			throw new InvalidOperationException("Cannot add new item to the pool: item was already added");
+			throw new InvalidOperationException("Cannot add item into pool: item was already added");
 		}
 		if (this.getRemainingCapacity() == 0) {
-			throw new Exception("Cannot add new item to the pool: pool is full");
+			throw new Exception("Cannot add item into pool: pool is full");
 		}
 
 		this.availableItemStack.push(item);
@@ -76,13 +73,13 @@ class Pool<T extends object> extends Capacity {
 
 	public releaseItem(item: T): void {
 		if (this.hasItem(item) == false) {
-			throw new ArgumentException("Invalid item reference");
+			throw new ArgumentException("Reference is not a valid pool item", "item");
 		}
 
 		const state: Pool.ItemState = this.itemMap.get(item) as Pool.ItemState;
 
 		if (state != Pool.ItemState.ACQUIRED) {
-			throw new InvalidOperationException("Cannot release item: item is already available");
+			throw new InvalidOperationException("Cannot release an item that is already available");
 		}
 
 		this.availableItemStack.push(item);

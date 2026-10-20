@@ -7,21 +7,21 @@ import Exception from "./Exception.ts";
 
 export default class ArgumentException<T> extends Exception {
 
-	private static buildMessage<T>(parameterName: string, argumentValue: Nullable<T> = null): string {
-		let message: string = "Invalid argument value";
+	private static buildArgumentMessage<T>(parameterName: string, argumentValue: Nullable<T> = null): string {
+		let message: string = "Exception with argument value";
 
 		if (argumentValue != null) {
 			message += " (" + argumentValue + ")";
 		}
 
-		return message + " for parameter '" + parameterName + "'";
+		return message + " of the parameter '" + parameterName + "'";
 	}
 
 	protected readonly parameterName: string;
 	protected readonly argumentValue: Nullable<T>;
 
-	public constructor(parameterName: string, argumentValue: Nullable<T> = null, message: Nullable<string> = null) {
-		super(ArgumentException.postponeMessage(ArgumentException.buildMessage(parameterName, argumentValue), message));
+	public constructor(message: string, parameterName: string, argumentValue: Nullable<T> = null) {
+		super(ArgumentException.postponeMessage(ArgumentException.buildArgumentMessage(parameterName, argumentValue), message));
 
 		this.parameterName = parameterName;
 		this.argumentValue = argumentValue;

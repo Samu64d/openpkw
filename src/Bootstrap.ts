@@ -3,7 +3,7 @@
 //
 
 import Nullable from "./engine/core/common/Nullable.ts";
-import Exception from "./engine/core/error/Exception.ts";
+import Exception from "./engine/core/exception/Exception.ts";
 import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
 import ElectronWindow from "./engine/platform/electron/ElectronWindow.ts";
 import ApplicationBootstrapper from "./engine/application/ApplicationBootstrapper.ts";
@@ -12,7 +12,7 @@ export default class Bootstrap extends ApplicationBootstrapper {
 
 	public static getInstance(): Bootstrap {
 		if (Bootstrap.instance == null) {
-			throw new Exception("Accessing uninitialized class instance");
+			throw new Exception("Trying to access an uninitialized class instance");
 		}
 
 		return Bootstrap.instance;
@@ -30,6 +30,12 @@ export default class Bootstrap extends ApplicationBootstrapper {
 
 	protected constructor() {
 		super(Bootstrap.MAIN_WINDOW_CONFIG);
+	}
+
+	public override onReady(): void {
+	}
+
+	public override onExit(): void {
 	}
 
 	static {

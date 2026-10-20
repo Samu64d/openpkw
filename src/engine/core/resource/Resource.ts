@@ -4,7 +4,7 @@
 
 import Nullable from "../common/Nullable.ts";
 import Disposable from "../reflection/decorators/Disposable.ts";
-import InvalidOperationException from "../error/InvalidOperationException.ts";
+import InvalidOperationException from "../exception/InvalidOperationException.ts";
 import Loader from "./Loader.ts";
 
 @Disposable()

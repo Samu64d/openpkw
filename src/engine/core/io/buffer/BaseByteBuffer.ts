@@ -2,33 +2,20 @@
 // BaseByteBuffer.ts
 //
 
-import Nullable from "../../common/Nullable.ts";
 import Spannable from "../../memory/Spannable.ts";
-import SpannablePoolAllocator from "../../memory/SizeablePoolAllocator.ts";
-import Exception from "../../error/Exception.ts";
-import ArgumentOutOfRangeException from "../../error/ArgumentOutOfRangeException.ts";
+import MemoryDriver from "../../interop/MemoryDriver.ts";
+import DriverRegistry from "../../interop/DriverRegistry.ts";
 import Buffer from "./Buffer.ts";
-import ByteBuffer from "./ByteBuffer.ts";
 
 export default abstract class BaseByteBuffer extends Buffer {
 
 	protected static allocateArrayBuffer(byteLength: number): ArrayBuffer {
-		ArgumentOutOfRangeException.throwIfLessThan(byteLength, 0, "byteLength");
-
-		const arrayBuffer: Nullable<ArrayBuffer> = BaseByteBuffer.ARRAY_BUFFER_ALLOCATOR.malloc(byteLength);
-
-		if (arrayBuffer == null) {
-			throw new Exception("Cannot allocate new array buffer of byte length: " + byteLength);
-		}
-
-		return arrayBuffer;
+		return DriverRegistry.get(MemoryDriver).allocateArrayBuffer(byteLength);
 	};
 
 	protected static freeArrayBuffer(arrayBuffer: ArrayBuffer): void {
-		ByteBuffer.ARRAY_BUFFER_ALLOCATOR.free(arrayBuffer);
+		return DriverRegistry.get(MemoryDriver).freeArrayBuffer(arrayBuffer);
 	}
-
-	private static readonly ARRAY_BUFFER_ALLOCATOR: SpannablePoolAllocator<ArrayBuffer> = new SpannablePoolAllocator<ArrayBuffer>(SpannablePoolAllocator.createItemFactory(ArrayBuffer));
 
 	protected readonly readonly: boolean;
 

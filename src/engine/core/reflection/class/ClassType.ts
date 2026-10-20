@@ -4,7 +4,7 @@
 
 import Nullable from "../../common/Nullable.ts";
 import Callable from "../../common/Callable.ts";
-import Exception from "../../error/Exception.ts";
+import Exception from "../../exception/Exception.ts";
 
 type ClassType<T extends object = object> = ClassType.NoAbstract<T> | ClassType.Abstract<T>;
 

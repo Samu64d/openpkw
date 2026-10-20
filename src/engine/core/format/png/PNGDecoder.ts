@@ -7,7 +7,7 @@ import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import ByteBufferReader from "../../io/buffer/ByteBufferReader.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import Image from "../../resource/Image.ts";
-import Exception from "../../error/Exception.ts";
+import CodecException from "../../exception/CodecException.ts";
 import Chunk from "./chunk/Chunk.ts";
 import IHDRChunkDecoder from "./chunk/IHDRChunkDecoder.ts";
 import PLTEChunkDecoder from "./chunk/PLTEChunkDecoder.ts";
@@ -25,7 +25,7 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private static readonly HEADER_SIZE: number = 8;
 
-	private static readonly HEADER_SIGNATURE: ByteBuffer = ByteBuffer.FROM_ARRAY([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+	private static readonly HEADER_SIGNATURE: number[] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
 	private static readonly CHUNK_REGION_OFFSET: number = 8;
 
@@ -65,9 +65,10 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private validateHeader(): void {
 		const headerValue: ByteBuffer = this.source.slice(0, PNGDecoder.HEADER_SIZE);
+		const headerSignature: ByteBuffer = ByteBuffer.FROM_ARRAY(PNGDecoder.HEADER_SIGNATURE);
 
-		if (headerValue.equals(PNGDecoder.HEADER_SIGNATURE) == false) {
-			throw new Exception("Invalid PNG file header");
+		if (headerValue.equals(headerSignature) == false) {
+			throw new CodecException("Invalid PNG file header");
 		}
 	}
 
@@ -79,7 +80,7 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 		const chunk: Chunk = Chunk.FROM_READER(reader);
 
 		if (chunk.getSignature() != IHDRChunkDecoder.CHUNK_SIGNATURE) {
-			throw new Exception("First chunk must be IHDR: got " + chunk.getSignatureAsString());
+			throw new CodecException("First chunk must be IHDR but got " + chunk.getSignatureAsString());
 		}
 
 		this.ihdrChunk = chunk;
@@ -93,26 +94,26 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 			if (signature == PLTEChunkDecoder.CHUNK_SIGNATURE) {
 				if (idatAccum != 0) {
-					throw new Exception("PLTE chunk must appear before IDAT chunks");
+					throw new CodecException("PLTE chunk must appear before IDAT chunks");
 				}
 
 				this.plteChunk = chunk;
 			} else if (signature == tRNSChunkDecoder.CHUNK_SIGNATURE) {
 				if (idatAccum != 0) {
-					throw new Exception("tRNS chunk must appear before IDAT chunks");
+					throw new CodecException("tRNS chunk must appear before IDAT chunks");
 				}
 
 				this.trnsChunk = chunk;
 			} else if (signature == IDATChunkDecoder.CHUNK_SIGNATURE) {
 				if (idatAccum == -1) {
-					throw new Exception("Multiple IDAT chunks must be consecutive");
+					throw new CodecException("Multiple IDAT chunks must be consecutive");
 				}
 
 				idatChunkList.push(chunk);
 				idatAccum += 1;
 			} else if (chunk.getSignature() == IENDChunkDecoder.CHUNK_SIGNATURE) {
 				if (reader.isEof() == false) {
-					throw new Exception("IEND chunk must be the final chunk in the stream");
+					throw new CodecException("IEND chunk must be the final chunk in the stream");
 				}
 
 				this.iendChunk = chunk;
@@ -131,13 +132,13 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private decodeChunks(): void {
 		if (this.ihdrChunk == null) {
-			throw new Exception("Missing IHDR chunk");
+			throw new CodecException("Missing IHDR chunk");
 		}
 		if (this.idatChunk == null) {
-			throw new Exception("Missing IDAT chunk");
+			throw new CodecException("Missing IDAT chunk");
 		}
 		if (this.iendChunk == null) {
-			throw new Exception("Missing IEND chunk");
+			throw new CodecException("Missing IEND chunk");
 		}
 
 		this.ihdrData = new IHDRChunkDecoder(this.ihdrChunk).decode();
@@ -161,7 +162,7 @@ export default class PNGDecoder extends SingleValueDecoder<ByteBuffer, Image> {
 
 	private composeImage(): Image {
 		if (this.ihdrData == null || this.idatData == null) {
-			throw new Exception("Some critical chunk were missing");
+			throw new CodecException("Some critical chunk were missing");
 		}
 
 		const width: number = this.ihdrData.getWidth();

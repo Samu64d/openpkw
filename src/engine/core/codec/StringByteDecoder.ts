@@ -4,7 +4,8 @@
 
 import Spannable from "../memory/Spannable.ts";
 import BaseByteBuffer from "../io/buffer/BaseByteBuffer.ts";
-import Exception from "../error/Exception.ts";
+import Exception from "../exception/Exception.ts";
+import CodecException from "../exception/CodecException.ts";
 import TextEncoding from "./TextEncoding.ts";
 import Decoder from "./Decoder.ts";
 
@@ -82,7 +83,7 @@ export default class StringByteDecoder implements Decoder<BaseByteBuffer, string
 				this.chunk[chunkIndex] = charCode;
 			} else {
 				if (this.strict == true) {
-					throw new Exception("Invalid byte data for ASCII: encountered incorrect byte value to be decoded: " + charCode);
+					throw new CodecException("Encountered incorrect byte value to decod for ASCII at index" + i.toString());
 				}
 
 				this.chunk[chunkIndex] = StringByteDecoder.ASCII_REPLACEMENT_CHAR_CODE;
@@ -163,7 +164,7 @@ export default class StringByteDecoder implements Decoder<BaseByteBuffer, string
 
 			if (valid == false) {
 				if (this.strict == true) {
-					throw new Exception("Invalid byte data for UTF-8: encountered malformed byte sequence at index " + srcIndex);
+					throw new CodecException("Encountered incorrect byte sequence value to decode for UTF-8 at index: " + srcIndex.toString());
 				}
 
 				this.chunk[chunkIndex] = StringByteDecoder.UNICODE_REPLACEMENT_CODE_POINT;
@@ -179,7 +180,7 @@ export default class StringByteDecoder implements Decoder<BaseByteBuffer, string
 
 	private decodeUtf16LE(source: BaseByteBuffer): string {
 		if (source.getCapacity() % 2 != 0) {
-			throw new Exception("Byte buffer to be decoded has incorrect size: " + source.getCapacity());
+			throw new Exception("Buffer capacity is not valid for decode UTF-16LE. Capacity must be a multiple of 2");
 		}
 
 		const src: Spannable = source.unsafeGetSourceView();
@@ -216,7 +217,7 @@ export default class StringByteDecoder implements Decoder<BaseByteBuffer, string
 
 			if (valid == false) {
 				if (this.strict == true) {
-					throw new Exception("Invalid byte data for UTF-16LE: encountered malformed byte sequence at index " + srcIndex);
+					throw new CodecException("Encountered incorrect byte sequence value to decode for UTF-16LE at index " + srcIndex.toString());
 				}
 
 				this.chunk[chunkIndex] = StringByteDecoder.UNICODE_REPLACEMENT_CODE_POINT;

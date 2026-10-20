@@ -5,8 +5,8 @@
 import MathHelper from "../../math/MathHelper.ts";
 import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
-import InvalidOperationException from "../../error/InvalidOperationException.ts";
-import IOException from "../../error/IOException.ts";
+import InvalidOperationException from "../../exception/InvalidOperationException.ts";
+import IOException from "../../exception/IOException.ts";
 import FileHandler from "../file/FileHandler.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 import ByteBuffer from "./ByteBuffer.ts";
@@ -26,9 +26,11 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 		super(handler.getSize(), handler.isReadonly());
 
 		let chunkLength: number = MappedByteBuffer.DEFAULT_CHUNK_LENGTH;
+
 		if (this.capacity < chunkLength) {
 			chunkLength = MathHelper.findPrevPowerOfTwo(this.capacity);
 		}
+
 		chunkLength = 4;
 
 		this.handler = handler;
@@ -44,7 +46,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	public override get(position: number): number {
 		if (position < 0 || position >= this.capacity) {
-			throw new IOException("Out of file bounds access: got " + position);
+			throw new IOException("Out of file bounds access at " + position.toString());
 		}
 
 		this.syncReadChunk(position);
@@ -56,7 +58,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (position < 0 || position >= this.capacity) {
-			throw new IOException("Out of file bounds access: got " + position);
+			throw new IOException("Out of file bounds access at " + position.toString());
 		}
 
 		this.syncReadChunk(position);
@@ -160,7 +162,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	private writeChunk(): void {
 		if (this.chunkPosition == -1) {
-			throw new IOException("Cannot write chunk at invalid position");
+			throw new IOException("Cannot write chunk buffer data at invalid file position");
 		}
 
 		const writeLength: number = Math.min(this.chunkLength, this.capacity - this.chunkPosition);

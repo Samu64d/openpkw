@@ -6,8 +6,8 @@ import Nullable from "../common/Nullable.ts";
 import Function from "../common/Function.ts";
 import MathHelper from "../math/MathHelper.ts";
 import ClassType from "../reflection/class/ClassType.ts";
-import Exception from "../error/Exception.ts";
-import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
+import Exception from "../exception/Exception.ts";
+import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
 import Pool from "./Pool.ts";
 import PoolAllocator from "./PoolAllocator.ts";
 
@@ -48,7 +48,7 @@ class SizeablePoolAllocator<T extends object> extends PoolAllocator<T> {
 
 		while (true) {
 			if (this.poolRegistry.has(poolId) == false) {
-				throw new Exception("Invalid pool id: got " + poolId);
+				throw new Exception("Invalid pool id: " + poolId.toString());
 			}
 
 			const pool: Pool<T> = this.poolRegistry.get(poolId) as Pool<T>;

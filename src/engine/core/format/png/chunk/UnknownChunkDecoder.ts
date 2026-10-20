@@ -2,7 +2,7 @@
 // UnknownChunkDecoder.ts
 //
 
-import Exception from "../../../error/Exception.ts";
+import Exception from "../../../exception/Exception.ts";
 import Chunk from "./Chunk.ts";
 import ChunkDecoder from "./ChunkDecoder.ts";
 

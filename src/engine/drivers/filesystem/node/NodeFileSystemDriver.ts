@@ -12,7 +12,7 @@ import TextEncoding from "../../../core/codec/TextEncoding.ts";
 import FileSystemDriver from "../../../core/interop/FileSystemDriver.ts";
 import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
-import IOException from "../../../core/error/IOException.ts";
+import IOException from "../../../core/exception/IOException.ts";
 
 @Disposable()
 export default class NodeFileSystemDriver extends FileSystemDriver implements Disposable.Target {

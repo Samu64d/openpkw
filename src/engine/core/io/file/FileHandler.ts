@@ -6,7 +6,7 @@ import ResourceHandle from "../../interop/ResourceHandle.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
-import IOException from "../../error/IOException.ts";
+import IOException from "../../exception/IOException.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
 import MappedByteBuffer from "../buffer/MappedByteBuffer.ts";
 import OpenMode from "./OpenMode.ts";
@@ -79,7 +79,7 @@ export default class FileHandler implements Disposable.Target {
 
 	private readIntoBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
 		if (length > byteBuffer.getCapacity()) {
-			throw new IOException("Cannot read into buffer: length must be at most equal to buffer capacity");
+			throw new IOException("Cannot read into buffer: length value must be at most equal to buffer capacity");
 		}
 
 		this.driver.readFD(this.handle, position, length, byteBuffer, 0);
@@ -94,7 +94,7 @@ export default class FileHandler implements Disposable.Target {
 
 	private writeFromBuffer(position: number, length: number, byteBuffer: ByteBuffer): void {
 		if (length > byteBuffer.getCapacity()) {
-			throw new IOException("Cannot write from buffer: length must be at most equal to buffer capacity");
+			throw new IOException("Cannot write from buffer: length value must be at most equal to buffer capacity");
 		}
 
 		this.driver.writeFD(this.handle, position, length, byteBuffer, 0);

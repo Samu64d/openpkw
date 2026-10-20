@@ -6,7 +6,7 @@ import TextEncoding from "../../codec/TextEncoding.ts";
 import ResourceHandle from "../../interop/ResourceHandle.ts";
 import FileSystemDriver from "../../interop/FileSystemDriver.ts";
 import DriverRegistry from "../../interop/DriverRegistry.ts";
-import IOException from "../../error/IOException.ts";
+import IOException from "../../exception/IOException.ts";
 import ByteBuffer from "../buffer/ByteBuffer.ts";
 import AccessRight from "./AccessRight.ts";
 import OpenMode from "./OpenMode.ts";

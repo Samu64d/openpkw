@@ -33,18 +33,19 @@ export default abstract class ApplicationBootstrapper {
 		return this.mainWindow;
 	}
 
+	public abstract onReady(): void;
+
+	public abstract onExit(): void;
+
 	public exit(): void {
+		this.onExit();
 		ElectronApp.exit();
 	}
 
 	private setupElectron(): void {
 		ElectronProcess.disableSecurityWarnings();
-
-		// Switches
 		ElectronApp.setSwitch("disable-http-cache");
 		ElectronApp.setSwitch("force-color-profile", "srgb");
-
-		// Paths
 		ElectronApp.setWebCachePath(NodeOS.getHomeDir() + ApplicationBootstrapper.APP_WEB_CACHE_FOLDER);
 	}
 
@@ -71,6 +72,7 @@ export default abstract class ApplicationBootstrapper {
 		this.mainWindow = new ElectronWindow(this.mainWindowConfig);
 		this.mainWindow.center();
 		this.mainWindow.loadWebContents(ApplicationBootstrapper.MAIN_WINDOW_CONTENTS_PATH);
+		this.onReady();
 	}
 
 	private registerAppEventListeners(): void {
@@ -86,9 +88,7 @@ export default abstract class ApplicationBootstrapper {
 
 		this.mainWindowError = true;
 		this.mainWindow.unloadWebContents();
-
 		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + errorMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
-
 		this.exit();
 	}
 

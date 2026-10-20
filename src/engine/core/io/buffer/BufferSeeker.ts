@@ -3,8 +3,8 @@
 //
 
 import Nullable from "../../common/Nullable.ts";
-import ArgumentOutOfRangeException from "../../error/ArgumentOutOfRangeException.ts";
-import IOException from "../../error/IOException.ts";
+import ArgumentOutOfRangeException from "../../exception/ArgumentOutOfRangeException.ts";
+import IOException from "../../exception/IOException.ts";
 import Buffer from "./Buffer.ts";
 
 export default abstract class BufferSeeker<T extends Buffer> {
@@ -27,7 +27,7 @@ export default abstract class BufferSeeker<T extends Buffer> {
 
 	public seek(position: number): void {
 		if (position < 0 || position > this.buffer.getCapacity()) {
-			throw new IOException("Cannot access position: out of bounds access: " + position);
+			throw new IOException("Out of bounds access at " + position.toString());
 		}
 
 		this.position = position;

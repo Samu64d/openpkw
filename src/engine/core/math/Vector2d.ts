@@ -4,7 +4,7 @@
 
 import Nullable from "../common/Nullable.ts";
 import Supplier from "../common/Supplier.ts";
-import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
+import ArithmeticException from "../exception/ArithmeticException.ts";
 
 export default class Vector2d {
 
@@ -90,7 +90,9 @@ export default class Vector2d {
 	}
 
 	public div(value: number): Vector2d {
-		ArgumentOutOfRangeException.throwIfZero(value, "value");
+		if (value == 0) {
+			throw new ArithmeticException("Cannot divide by zero");
+		}
 
 		return this.set(this.x / value, this.y / value);
 	}

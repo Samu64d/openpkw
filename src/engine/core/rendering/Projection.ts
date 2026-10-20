@@ -2,7 +2,7 @@
 // Projection.ts
 //
 
-import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
+import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
 
 export default class Projection {
 

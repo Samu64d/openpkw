@@ -2,8 +2,8 @@
 // Capacity.ts
 //
 
-import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
-import InvalidOperationException from "../error/InvalidOperationException.ts";
+import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
+import InvalidOperationException from "../exception/InvalidOperationException.ts";
 
 export default abstract class Capacity {
 

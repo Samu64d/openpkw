@@ -15,8 +15,8 @@ export default class Exception extends Error {
 	}
 
 	private static buildFullMessage(message: string, maybeError: Nullable<unknown> = null): string {
-		if (maybeError instanceof Error) {
-			message += ". Caused by: " + maybeError.message;
+		if (maybeError != null && maybeError instanceof Error) {
+			return message + ". Caused by: " + maybeError.message;
 		}
 
 		return message + ".";

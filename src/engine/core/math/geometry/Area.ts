@@ -3,7 +3,7 @@
 //
 
 import Record from "../../reflection/decorators/Record.ts";
-import ArgumentOutOfRangeException from "../../error/ArgumentOutOfRangeException.ts";
+import ArgumentOutOfRangeException from "../../exception/ArgumentOutOfRangeException.ts";
 
 @Record()
 export default class Area {

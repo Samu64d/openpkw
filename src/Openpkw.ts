@@ -3,11 +3,13 @@
 //
 
 import Nullable from "./engine/core/common/Nullable.ts";
+import MemoryDriver from "./engine/core/interop/MemoryDriver.ts";
 import FileSystemDriver from "./engine/core/interop/FileSystemDriver.ts";
 import DriverRegistry from "./engine/core/interop/DriverRegistry.ts";
 import LogLevel from "./engine/core/util/logger/LogLevel.ts";
 import Logger from "./engine/core/util/logger/Logger.ts";
-import Exception from "./engine/core/error/Exception.ts";
+import Exception from "./engine/core/exception/Exception.ts";
+import PoolMemoryDriver from "./engine/drivers/memory/PoolMemoryDriver.ts";
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
 import Application from "./engine/application/Application.ts";
@@ -17,7 +19,7 @@ export default class Openpkw extends Application {
 
 	public static getInstance(): Openpkw {
 		if (Openpkw.instance == null) {
-			throw new Exception("Accessing uninitialized class instance");
+			throw new Exception("Trying to access an uninitialized class instance");
 		}
 
 		return Openpkw.instance;
@@ -39,6 +41,7 @@ export default class Openpkw extends Application {
 		super();
 
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
+		DriverRegistry.register(MemoryDriver, new PoolMemoryDriver());
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
 		this.keyMap = new Map<string, boolean>();
 		this.renderer = null;

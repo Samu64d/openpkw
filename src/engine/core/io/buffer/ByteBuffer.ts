@@ -8,8 +8,8 @@ import Spannable from "../../memory/Spannable.ts";
 import TextEncoding from "../../codec/TextEncoding.ts";
 import StringByteEncoder from "../../codec/StringByteEncoder.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
-import InvalidOperationException from "../../error/InvalidOperationException.ts";
-import IOException from "../../error/IOException.ts";
+import InvalidOperationException from "../../exception/InvalidOperationException.ts";
+import IOException from "../../exception/IOException.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 
 @Disposable()
@@ -53,7 +53,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 
 	public override get(position: number): number {
 		if (position < 0 || position >= this.capacity) {
-			throw new IOException("Out of bounds access: got " + position);
+			throw new IOException("Out of bounds access at " + position.toString());
 		}
 
 		return this.sourceArray[position];
@@ -64,7 +64,7 @@ export default class ByteBuffer extends BaseByteBuffer implements Disposable.Tar
 			throw new InvalidOperationException("Cannot set value: buffer is readonly");
 		}
 		if (position < 0 || position >= this.capacity) {
-			throw new IOException("Out of bounds access at " + position);
+			throw new IOException("Out of bounds access at " + position.toString());
 		}
 
 		this.sourceArray[position] = value;

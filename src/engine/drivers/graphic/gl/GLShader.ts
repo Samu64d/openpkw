@@ -4,7 +4,7 @@
 
 import Nullable from "../../../core/common/Nullable.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
-import Exception from "../../../core/error/Exception.ts";
+import Exception from "../../../core/exception/Exception.ts";
 import GLContextManager from "./GLContextManager.ts";
 
 @Disposable()

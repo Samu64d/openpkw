@@ -3,7 +3,7 @@
 //
 
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
-import InvalidOperationException from "../../../core/error/InvalidOperationException.ts";
+import InvalidOperationException from "../../../core/exception/InvalidOperationException.ts";
 import GLContextManager from "./GLContextManager.ts";
 
 @Disposable()

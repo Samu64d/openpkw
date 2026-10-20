@@ -3,7 +3,7 @@
 //
 
 import Nullable from "../common/Nullable.ts";
-import ArgumentOutOfRangeException from "../error/ArgumentOutOfRangeException.ts";
+import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
 import Pool from "./Pool.ts";
 import Allocator from "./Allocator.ts";
 
