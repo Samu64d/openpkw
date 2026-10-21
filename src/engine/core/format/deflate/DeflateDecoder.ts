@@ -4,9 +4,9 @@
 
 import NodeZlib from "node:zlib";
 
-import Spannable from "../../memory/Spannable.ts";
 import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
+import CodecException from "../../exception/CodecException.ts";
 
 export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer, ByteBuffer> {
 
@@ -15,9 +15,15 @@ export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer, ByteB
 	}
 
 	public override decode(): ByteBuffer {
-		const src: Spannable = this.source.unsafeGetSourceView();
+		try {
+			const src: Uint8Array = this.source.unsafeGetSourceView();
+			const resultArray: Uint8Array = NodeZlib.inflateSync(src);
 
-		return ByteBuffer.FROM_ARRAY(NodeZlib.inflateSync(src));
+			return ByteBuffer.FROM_ARRAY(resultArray);
+		} catch (e: unknown) {
+			throw new CodecException("Cannot deflate data", e);
+		}
+
 	}
 
 }

@@ -233,8 +233,6 @@ export default class Matrix4d {
 		];
 	}
 
-
-
 }
 
 //TODO: Remove
