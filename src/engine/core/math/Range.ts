@@ -3,7 +3,7 @@
 //
 
 import Record from "../reflection/decorators/Record.ts";
-import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
+import InvalidRangeException from "../exception/InvalidRangeException.ts";
 import MathHelper from "./MathHelper.ts";
 
 @Record()
@@ -14,7 +14,7 @@ export default class Range {
 	private readonly size: number;
 
 	public constructor(min: number, max: number) {
-		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(min, max, "min");
+		InvalidRangeException.throwIfBoundsInvalid(min, max, "min", "max");
 
 		this.min = min;
 		this.max = max;

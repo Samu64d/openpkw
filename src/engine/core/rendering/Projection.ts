@@ -3,6 +3,7 @@
 //
 
 import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
+import InvalidRangeException from "../exception/InvalidRangeException.ts";
 
 export default class Projection {
 
@@ -17,9 +18,7 @@ export default class Projection {
 		ArgumentOutOfRangeException.throwIfLessThanOrEqual(aspectRatio, 0, "aspectRatio");
 		ArgumentOutOfRangeException.throwIfLessThanOrEqual(fieldOfView, 0, "fieldOfView");
 		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(fieldOfView, Math.PI, "fieldOfView");
-		ArgumentOutOfRangeException.throwIfLessThanOrEqual(nearDistance, 0, "nearDistance");
-		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(nearDistance, farDistance, "nearDistance");
-		ArgumentOutOfRangeException.throwIfLessThanOrEqual(farDistance, 0, "farDistance");
+		InvalidRangeException.throwIfBoundsInvalidOrNegative(nearDistance, farDistance, "nearDistance", "farDistance");
 
 		this.aspectRatio = aspectRatio;
 		this.fieldOfView = fieldOfView;
@@ -58,8 +57,7 @@ export default class Projection {
 	}
 
 	public setNearDistance(nearDistance: number): void {
-		ArgumentOutOfRangeException.throwIfLessThanOrEqual(nearDistance, 0, "nearDistance");
-		ArgumentOutOfRangeException.throwIfGreaterThanOrEqual(nearDistance, this.farDistance, "nearDistance");
+		InvalidRangeException.throwIfBoundsInvalidOrNegative(nearDistance, this.farDistance, "nearDistance", "farDistance");
 
 		this.nearDistance = nearDistance;
 		this.invalidate();
@@ -70,8 +68,7 @@ export default class Projection {
 	}
 
 	public setFarDistance(farDistance: number): void {
-		ArgumentOutOfRangeException.throwIfLessThanOrEqual(farDistance, 0, "farDistance");
-		ArgumentOutOfRangeException.throwIfLessThanOrEqual(farDistance, this.nearDistance, "farDistance");
+		InvalidRangeException.throwIfBoundsInvalidOrNegative(this.nearDistance, farDistance, "nearDistance", "farDistance");
 
 		this.farDistance = farDistance;
 		this.invalidate();

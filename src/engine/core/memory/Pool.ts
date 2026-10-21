@@ -4,7 +4,6 @@
 
 import Exception from "../exception/Exception.ts";
 import ArgumentException from "../exception/ArgumentException.ts";
-import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
 import InvalidOperationException from "../exception/InvalidOperationException.ts";
 import Capacity from "./Capacity.ts";
 
@@ -19,8 +18,11 @@ class Pool<T extends object> extends Capacity {
 	private readonly itemMap: Map<T, Pool.ItemState>;
 
 	public constructor(capacity: number, initialItemList: T[]) {
-		ArgumentOutOfRangeException.throwIfLessThan(capacity, initialItemList.length, "capacity");
 		super(capacity, true);
+
+		if (capacity < initialItemList.length) {
+			throw new ArgumentException("Initial item list length cannot be greater than capacity value", "initialItemList");
+		}
 
 		this.availableItemStack = new Array<T>();
 		this.itemMap = new Map<T, Pool.ItemState>();
@@ -31,7 +33,9 @@ class Pool<T extends object> extends Capacity {
 	}
 
 	public override shrink(length: number): void {
-		ArgumentOutOfRangeException.throwIfGreaterThan(this.getRemainingCapacity(), length, "remainingCapacity");
+		if (length > this.getRemainingCapacity()) {
+			throw new InvalidOperationException("Cannot shrink pool capacity below current item usage count");
+		}
 
 		super.shrink(length);
 	}
@@ -41,7 +45,7 @@ class Pool<T extends object> extends Capacity {
 			throw new InvalidOperationException("Cannot add item into pool: item was already added");
 		}
 		if (this.getRemainingCapacity() == 0) {
-			throw new Exception("Cannot add item into pool: pool is full");
+			throw new InvalidOperationException("Cannot add item into pool: pool is full");
 		}
 
 		this.availableItemStack.push(item);

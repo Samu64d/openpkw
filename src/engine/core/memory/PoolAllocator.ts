@@ -3,7 +3,7 @@
 //
 
 import Nullable from "../common/Nullable.ts";
-import ArgumentOutOfRangeException from "../exception/ArgumentOutOfRangeException.ts";
+import InvalidRangeException from "../exception/InvalidRangeException.ts";
 import Pool from "./Pool.ts";
 import Allocator from "./Allocator.ts";
 
@@ -13,8 +13,7 @@ export default abstract class PoolAllocator<T extends object> implements Allocat
 	protected readonly maxPoolCapacity: number;
 
 	public constructor(minPoolCapacity: number, maxPoolCapacity: number) {
-		ArgumentOutOfRangeException.throwIfLessThan(minPoolCapacity, 1, "minPoolCapacity");
-		ArgumentOutOfRangeException.throwIfGreaterThan(minPoolCapacity, maxPoolCapacity, "minPoolCapacity");
+		InvalidRangeException.throwIfBoundsInvalidOrNegative(minPoolCapacity, maxPoolCapacity, "minPoolCapacity", "minPoolCapacity");
 
 		this.minPoolCapacity = minPoolCapacity;
 		this.maxPoolCapacity = maxPoolCapacity;
