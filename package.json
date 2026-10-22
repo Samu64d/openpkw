@@ -4,7 +4,7 @@
 	"description": "Open Pokemon World",
 	"scripts": {
 		"src-build": "cd ./properties && npx webpack --config ./webpack.config.js",
-		"post-build": "cd ./bin/post-build && post-build.cmd",
+		"post-build": "cd ./scripts/post-build && post-build.cmd",
 		"build": "npm run src-build && npm run post-build",
 		"start": "cd ./build && openpkw.cmd",
 		"test": "npm run build && npm run start"

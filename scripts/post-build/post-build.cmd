@@ -17,7 +17,7 @@ set cachePath=%rootPath%\.cache
 set buildPath=%rootPath%\build
 
 :: Download electron release
-start /b /wait "" "node.exe" %rootPath%\bin\electron-downloader\electron-downloader.js
+start /b /wait "" "node.exe" %rootPath%\scripts\download-electron\download-electron.js
 
 :: Copy electron release
 xcopy /i /e /y "%cachePath%\artefacts\electron" "%buildPath%\framework" >nul 2>nul
@@ -27,4 +27,4 @@ rmdir /s /q "%buildPath%\resources" >nul 2>nul
 xcopy /i /e /y "%rootPath%\resources" "%buildPath%\resources" >nul 2>nul
 
 :: Copy launcher
-copy /y "%rootPath%\bin\launcher\launcher.cmd" "%rootPath%\build\openpkw.cmd" >nul 2>nul
+copy /y "%rootPath%\scripts\launcher\launcher.cmd" "%rootPath%\build\openpkw.cmd" >nul 2>nul
