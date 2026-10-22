@@ -6,14 +6,12 @@ import Nullable from "../core/common/Nullable.ts";
 import NodeOS from "../platform/node/NodeOS.ts";
 import NodeChildProcess from "../platform/node/NodeChildProcess.ts";
 import ElectronProcess from "../platform/electron/ElectronProcess.ts";
-import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import ElectronWindow from "../platform/electron/ElectronWindow.ts";
 import ElectronApp from "../platform/electron/ElectronApp.ts";
 import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
+import IPCErrorChannel from "./IPCErrorChannel.ts";
 
 export default abstract class ApplicationBootstrapper {
-
-	public static readonly IPC_ERROR_CHANNEL: ElectronIPC.Channel = "ERROR_CHANNEL";
 
 	private static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
 
@@ -82,8 +80,8 @@ export default abstract class ApplicationBootstrapper {
 		ElectronApp.registerEventListener("ready", this.onReadyListener.bind(this));
 	}
 
-	private onWindowErrorListener(channel: ElectronIPC.Channel, packet: Nullable<IPCErrorChannelPacket> = null): void {
-		if (this.mainWindowError == true || this.mainWindow == null || packet == null) {
+	private onWindowErrorListener(packet: IPCErrorChannelPacket): void {
+		if (this.mainWindowError == true || this.mainWindow == null) {
 			return;
 		}
 
@@ -96,7 +94,7 @@ export default abstract class ApplicationBootstrapper {
 	}
 
 	private registerIpcEventListeners(): void {
-		ElectronIPC.registerRequestListener(ApplicationBootstrapper.IPC_ERROR_CHANNEL, this.onWindowErrorListener.bind(this));
+		IPCErrorChannel.registerErrorListener(this.onWindowErrorListener.bind(this));
 	}
 
 }

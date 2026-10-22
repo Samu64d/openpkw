@@ -11,7 +11,7 @@ interface IPCErrorChannelPacket {
 
 namespace IPCErrorChannelPacket {
 
-	export const FROM_ERROR: Function<Error, IPCErrorChannelPacket> = (e: unknown): IPCErrorChannelPacket => {
+	export const FROM_ERROR: Function<unknown, IPCErrorChannelPacket> = (e: unknown): IPCErrorChannelPacket => {
 		if (e instanceof Error) {
 			return {
 				errorName: e.name,
