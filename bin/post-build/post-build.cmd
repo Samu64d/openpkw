@@ -12,14 +12,19 @@ if "%rootPath:~-1%" == "\" (
 	set scriptPath=%scriptPath:~0,-1%
 )
 
-set rootPath=%scriptPath%\..\..\
+set rootPath=%scriptPath%..\..
+set cachePath=%rootPath%\.cache
+set buildPath=%rootPath%\build
+
+:: Download electron release
+start /b /wait "" "node.exe" %rootPath%\bin\electron-downloader\electron-downloader.js
 
 :: Copy electron release
-xcopy /i /e /y "%rootPath%\bin\electron" "%rootPath%\build\framework" >nul 2>nul
+xcopy /i /e /y "%cachePath%\artefacts\electron" "%buildPath%\framework" >nul 2>nul
 
 :: Copy resources
-rmdir /s /q "%rootPath%\build\resources" >nul 2>nul
-xcopy /i /e /y "%rootPath%\resources" "%rootPath%\build\resources" >nul 2>nul
+rmdir /s /q "%buildPath%\resources" >nul 2>nul
+xcopy /i /e /y "%rootPath%\resources" "%buildPath%\resources" >nul 2>nul
 
 :: Copy launcher
 copy /y "%rootPath%\bin\launcher\launcher.cmd" "%rootPath%\build\openpkw.cmd" >nul 2>nul

@@ -2,7 +2,7 @@
 // NodeFileSystemDriver.ts
 //
 
-import * as FS from "node:fs";
+import * as Fs from "node:fs";
 
 import ReadonlyRecord from "../../../core/common/ReadonlyRecord.ts";
 import ByteBuffer from "../../../core/io/buffer/ByteBuffer.ts";
@@ -47,13 +47,13 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		let accessRight: AccessRight = AccessRight.NONE;
 
 		try {
-			FS.accessSync(path, FS.constants.R_OK);
+			Fs.accessSync(path, Fs.constants.R_OK);
 			accessRight = AccessRight.READ;
 		} catch (e: unknown) {
 		}
 
 		try {
-			FS.accessSync(path, FS.constants.W_OK);
+			Fs.accessSync(path, Fs.constants.W_OK);
 			accessRight = accessRight == AccessRight.NONE ? AccessRight.WRITE : AccessRight.READ_WRITE;
 		} catch (e: unknown) {
 		}
@@ -70,7 +70,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override getFileSize(path: string): number {
-		const stats: FS.Stats = this.getStats(path);
+		const stats: Fs.Stats = this.getStats(path);
 
 		if (stats.isFile() == false) {
 			throw new IOException("Element at path exists but is not a file");
@@ -103,7 +103,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		}
 
 		try {
-			FS.fstatSync(fd);
+			Fs.fstatSync(fd);
 			return true;
 		} catch (e: unknown) {
 			return false;
@@ -112,7 +112,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	public override openFD(path: string, openMode: OpenMode): ResourceHandle {
 		try {
-			const fd: number = FS.openSync(path, this.mapOpenMode(openMode));
+			const fd: number = Fs.openSync(path, this.mapOpenMode(openMode));
 
 			return this.registerFileHandle(fd);
 		} catch (e: unknown) {
@@ -124,7 +124,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
 
-			FS.readSync(fd, buffer.unsafeGetSourceView(), bufferPosition, length, position);
+			Fs.readSync(fd, buffer.unsafeGetSourceView(), bufferPosition, length, position);
 		} catch (e: unknown) {
 			throw new IOException("Cannot read from file", e);
 		}
@@ -134,7 +134,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
 
-			FS.writeSync(fd, byteBuffer.unsafeGetSourceView(), bufferPosition, length, position);
+			Fs.writeSync(fd, byteBuffer.unsafeGetSourceView(), bufferPosition, length, position);
 		} catch (e: unknown) {
 			throw new IOException("Cannot write to file", e);
 		}
@@ -144,7 +144,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		try {
 			const fd: number = this.accessFileHandle(fileHandle);
 
-			FS.closeSync(fd);
+			Fs.closeSync(fd);
 		} catch (e: unknown) {
 			throw new IOException("Cannot close file", e);
 		} finally {
@@ -154,11 +154,11 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	public override moveFile(sourcePath: string, destinationPath: string): void {
 		try {
-			FS.renameSync(sourcePath, destinationPath);
+			Fs.renameSync(sourcePath, destinationPath);
 		} catch (e: unknown) {
 			if (e instanceof Error && e.code == "EXDEV") {
-				FS.copyFileSync(sourcePath, destinationPath);
-				FS.unlinkSync(sourcePath);
+				Fs.copyFileSync(sourcePath, destinationPath);
+				Fs.unlinkSync(sourcePath);
 				return;
 			}
 
@@ -173,13 +173,13 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		return NodeFileSystemDriver.TEXT_ENCODING_MAP[textEncoding];
 	}
 
-	private mapOpenMode(openMode: OpenMode): FS.Mode {
+	private mapOpenMode(openMode: OpenMode): Fs.Mode {
 		return NodeFileSystemDriver.OPEN_MODE_MAP[openMode];
 	}
 
-	private getStats(path: string): FS.Stats {
+	private getStats(path: string): Fs.Stats {
 		try {
-			return FS.statSync(path);
+			return Fs.statSync(path);
 		} catch (e: unknown) {
 			throw new IOException("Cannot access stats", e);
 		}
@@ -187,7 +187,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	private readBinaryFile(path: string): Uint8Array {
 		try {
-			return FS.readFileSync(path, {
+			return Fs.readFileSync(path, {
 				encoding: null
 			});
 		} catch (e: unknown) {
@@ -197,7 +197,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 
 	private readDecodeTextFile(path: string, encoding: BufferEncoding): string {
 		try {
-			return FS.readFileSync(path, {
+			return Fs.readFileSync(path, {
 				encoding: encoding
 			});
 		} catch (e: unknown) {
@@ -208,20 +208,20 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	private writeBinaryFile(path: string, target: Uint8Array, create: boolean): void {
 		try {
 			if (create) {
-				FS.writeFileSync(path, target, {
+				Fs.writeFileSync(path, target, {
 					flag: "w",
 					encoding: null
 				});
 			} else {
-				const fd: number = FS.openSync(path, "r+");
+				const fd: number = Fs.openSync(path, "r+");
 
 				try {
-					FS.ftruncateSync(fd, 0);
-					FS.writeFileSync(fd, target, {
+					Fs.ftruncateSync(fd, 0);
+					Fs.writeFileSync(fd, target, {
 						encoding: null
 					});
 				} finally {
-					FS.closeSync(fd);
+					Fs.closeSync(fd);
 				}
 			}
 		} catch (e: unknown) {
