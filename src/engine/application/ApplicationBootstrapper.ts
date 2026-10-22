@@ -9,7 +9,7 @@ import ElectronProcess from "../platform/electron/ElectronProcess.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import ElectronWindow from "../platform/electron/ElectronWindow.ts";
 import ElectronApp from "../platform/electron/ElectronApp.ts";
-import IPCErrorPacket from "./IPCErrorPacket.ts";
+import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 
 export default abstract class ApplicationBootstrapper {
 
@@ -82,12 +82,12 @@ export default abstract class ApplicationBootstrapper {
 		ElectronApp.registerEventListener("ready", this.onReadyListener.bind(this));
 	}
 
-	private onWindowErrorListener(channel: ElectronIPC.Channel, errorPacket: Nullable<IPCErrorPacket> = null): void {
-		if (this.mainWindowError == true || this.mainWindow == null || errorPacket == null) {
+	private onWindowErrorListener(channel: ElectronIPC.Channel, packet: Nullable<IPCErrorChannelPacket> = null): void {
+		if (this.mainWindowError == true || this.mainWindow == null || packet == null) {
 			return;
 		}
 
-		const messageBoxMessage: string = errorPacket.name + ": " + errorPacket.message;
+		const messageBoxMessage: string = packet.errorName + ": " + packet.errorMessage;
 
 		this.mainWindowError = true;
 		this.mainWindow.unloadWebContents();

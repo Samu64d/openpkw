@@ -5,7 +5,7 @@
 import Nullable from "../core/common/Nullable.ts";
 import EventListener from "../core/common/EventListener.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
-import IPCErrorPacket from "./IPCErrorPacket.ts";
+import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 import ApplicationBootstrapper from "./ApplicationBootstrapper.ts";
 
 export default abstract class Application {
@@ -21,21 +21,22 @@ export default abstract class Application {
 
 	public abstract onWindowResize(): void;
 
-	public abstract onError(error: Error): void;
+	public abstract onError(e: unknown): void;
 
-	private registerWindowEventListener<T>(eventName: any, listener: EventListener<T>): void {
+	protected registerWindowEventListener<T>(eventName: any, listener: EventListener<T>): void {
 		window.addEventListener(eventName, listener);
 	}
 
 	private updateCanvasSize(): void {
+		const body: HTMLElement = this.document.body;
 		const canvasElement: Nullable<HTMLCanvasElement> = this.document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
 
 		if (canvasElement == null) {
 			return;
 		}
 
-		canvasElement.width = Math.floor(this.document.body.clientWidth);
-		canvasElement.height = Math.floor(this.document.body.clientHeight);
+		canvasElement.width = Math.floor(body.clientWidth);
+		canvasElement.height = Math.floor(body.clientHeight);
 	}
 
 	private onLoadListener(): void {
@@ -50,10 +51,10 @@ export default abstract class Application {
 
 	private onErrorListener(event: ErrorEvent): void {
 		const error: Error = event.error;
-		const errorPacket: IPCErrorPacket = IPCErrorPacket.FROM_ERROR(error);
+		const packet: IPCErrorChannelPacket = IPCErrorChannelPacket.FROM_ERROR(error);
 
 		this.onError(error);
-		void ElectronIPC.sendRequest(ApplicationBootstrapper.IPC_ERROR_CHANNEL, errorPacket);
+		void ElectronIPC.sendRequest(ApplicationBootstrapper.IPC_ERROR_CHANNEL, packet);
 	}
 
 	private registerWindowEventListeners(): void {
