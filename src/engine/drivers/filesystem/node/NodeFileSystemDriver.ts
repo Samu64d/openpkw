@@ -4,6 +4,7 @@
 
 import * as Fs from "node:fs";
 
+import Nullable from "../../../core/common/Nullable.ts";
 import ReadonlyRecord from "../../../core/common/ReadonlyRecord.ts";
 import ByteBuffer from "../../../core/io/buffer/ByteBuffer.ts";
 import AccessRight from "../../../core/io/file/AccessRight.ts";
@@ -62,18 +63,30 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override existsDirectory(path: string): boolean {
-		return this.getStats(path).isDirectory();
+		const stats: Nullable<Fs.Stats> = this.getStats(path);
+
+		if (stats == null) {
+			return false;
+		}
+
+		return stats.isDirectory();
 	}
 
 	public override existsFile(path: string): boolean {
-		return this.getStats(path).isFile();
+		const stats: Nullable<Fs.Stats> = this.getStats(path);
+
+		if (stats == null) {
+			return false;
+		}
+
+		return stats.isFile();
 	}
 
 	public override getFileSize(path: string): number {
-		const stats: Fs.Stats = this.getStats(path);
+		const stats: Nullable<Fs.Stats> = this.getStats(path);
 
-		if (stats.isFile() == false) {
-			throw new IOException("Element at path exists but is not a file");
+		if (stats == null || stats.isFile() == false) {
+			throw new IOException("Cannot get file size: path does not contains a valid file");
 		}
 
 		return stats.size;
@@ -156,10 +169,14 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		try {
 			Fs.renameSync(sourcePath, destinationPath);
 		} catch (e: unknown) {
-			if (e instanceof Error && e.code == "EXDEV") {
-				Fs.copyFileSync(sourcePath, destinationPath);
-				Fs.unlinkSync(sourcePath);
-				return;
+			if (e instanceof Error && (e as NodeJS.ErrnoException).code == "EXDEV") {
+				try {
+					Fs.copyFileSync(sourcePath, destinationPath);
+					Fs.unlinkSync(sourcePath);
+					return;
+				} catch (e: unknown) {
+					throw new IOException("Cannot move file", e);
+				}
 			}
 
 			throw new IOException("Cannot move file", e);
@@ -167,6 +184,14 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 	}
 
 	public override dispose(): void {
+		for (const fd of this.fileHandleMap.values()) {
+			try {
+				Fs.closeSync(fd);
+			} catch (e: unknown) {
+			}
+		}
+
+		this.fileHandleMap.clear();
 	}
 
 	private mapTextEncoding(textEncoding: TextEncoding): BufferEncoding {
@@ -177,11 +202,11 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 		return NodeFileSystemDriver.OPEN_MODE_MAP[openMode];
 	}
 
-	private getStats(path: string): Fs.Stats {
+	private getStats(path: string): Nullable<Fs.Stats> {
 		try {
 			return Fs.statSync(path);
 		} catch (e: unknown) {
-			throw new IOException("Cannot access stats", e);
+			return null;
 		}
 	}
 
