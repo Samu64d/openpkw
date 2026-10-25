@@ -113,6 +113,10 @@ export default class Openpkw extends Application {
 				return;
 			}
 
+			if (event.code == "KeyP" && this.renderer != null) {
+				this.renderer.setDebugLines(!this.renderer.getDebugLines());
+			}
+
 			this.keyMap.set(event.code, true);
 		});
 

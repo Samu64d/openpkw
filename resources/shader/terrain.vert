@@ -10,9 +10,13 @@ uniform sampler2D samplerImage;
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec2 uv;
 
+centroid out float outDistance;
 centroid out vec2 outUv;
 
 void main() {
-    gl_Position = projection * modelView * vec4(position, 1.0);
+	vec4 viewPosition = modelView * vec4(position, 1.0);
+
+	gl_Position = projection * viewPosition;
+	outDistance = -viewPosition.z;
 	outUv = uv;
 }

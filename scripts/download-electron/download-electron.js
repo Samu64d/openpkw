@@ -27,7 +27,7 @@ function main() {
 
 	if (Fs.existsSync(executableFilePath)) {
 		process.exit(0);
-	};
+	}
 
 	return Get.downloadArtifact({
 		arch: "x64",

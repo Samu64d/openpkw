@@ -41,6 +41,7 @@ export default class Renderer {
 	private readonly modelProgramMap: Map<string, string>;
 	private readonly camera: Camera;
 	private time: number;
+	private debugLines: boolean;
 
 	public constructor(context: WebGL2RenderingContext) {
 		this.context = context;
@@ -51,6 +52,7 @@ export default class Renderer {
 		this.modelProgramMap = new Map<string, string>();
 		this.camera = new Camera();
 		this.time = 0;
+		this.debugLines = false;
 	}
 
 	public init(): void {
@@ -78,12 +80,18 @@ export default class Renderer {
 		this.loadModel("tree_1", "tree");
 		this.loadModel("tree_2", "tree");
 		this.loadModel("sign_0");
-		this.loadModel("cart");
+		this.loadModel("plantar_0");
+		this.loadModel("trash_bin_0");
+		this.loadModel("table_0");
+		this.loadModel("parasol_0");
+		this.loadModel("track_house_0");
 		this.loadModel("house_0");
 		this.loadModel("house_1");
 		this.loadModel("house_2");
+		this.loadModel("house_3");
+		this.loadModel("house_4");
 
-		this.camera.lookAt(new Vector3d(3, 2.85, 3), new Vector3d(3, 0, 0));
+		this.camera.lookAt(new Vector3d(3.0, 2.5, 2.5), new Vector3d(3.0, 0.0, 0.0));
 	}
 
 	public update(time: number): void {
@@ -96,6 +104,14 @@ export default class Renderer {
 
 	public moveCamera(x: number, y: number, z: number): void {
 		this.camera.lookAt(this.camera.getPosition().add(x, y, z), this.camera.getTarget().add(x, y, z));
+	}
+
+	public getDebugLines(): boolean {
+		return this.debugLines;
+	}
+
+	public setDebugLines(debugLines: boolean): void {
+		this.debugLines = debugLines;
 	}
 
 	private createShader(path: string, type: number): GLShader {
@@ -195,7 +211,7 @@ export default class Renderer {
 
 		// Projection
 		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
-		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 0.5, 0.1, 1000.0);
+		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 1.57 / 2, 0.1, 1000.0);
 
 		this.context.uniformMatrix4fv(projectionLocation, false, project.getMatrix());
 
@@ -212,7 +228,10 @@ export default class Renderer {
 
 		vao.bind();
 		texture.bind();
-		this.context.drawElements(this.context.TRIANGLES, vao.ebo, this.context.UNSIGNED_INT, 0);
+
+		const mode: GLenum = this.debugLines ? this.context.LINE_STRIP : this.context.TRIANGLES;
+
+		this.context.drawElements(mode, vao.ebo, this.context.UNSIGNED_INT, 0);
 		vao.unbind();
 	}
 
@@ -258,12 +277,18 @@ export default class Renderer {
 
 	}
 
-	private drawObject(modelName: string, x: number, y: number, z: number): void {
+	private drawObject(modelName: string, x: number, y: number, z: number, modelRotationX: number = 0): void {
 		const step: number = 0.25;
 		const xPos: number = (x - 0.5) * step;
 		const yPos: number = y * step;
 		const zPos: number = (z - 0.5) * step;
-		const modelView: number[] = translate(xPos, yPos, zPos);
+		let modelView: number[] = translate(xPos, yPos, zPos);
+
+		if (modelRotationX != 0) {
+			const rxs: number = modelRotationX / 180 * Math.PI;
+
+			modelView = multiplyAll(modelView, rot(rxs, 0, 0));
+		}
 
 		this.drawModel(modelName, modelView);
 	}
@@ -289,14 +314,27 @@ export default class Renderer {
 		this.drawObject("tree_0", 4.0, 0.85, 19.0);
 		this.drawObject("tree_2", 6.5, 0.85, 18.5);
 
-		this.drawObject("tree_2", 7.5, 0.0, 22.5);
+		this.drawObject("tree_2", 6.0, 0.0, 22.5);
 
-		this.drawObject("sign_0", 10.0, 0.0, 9.0);
+		this.drawObject("sign_0", 11.0, 0.0, 4.5);
 
-		this.drawObject("house_0", 15.0, 0.0, 9.0);
-		this.drawObject("house_1", 16.0, 0.0, 15.0);
-		this.drawObject("house_2", 12.0, 0.0, 15.0);
-		this.drawObject("cart", 9.0, 0.0, 24.0);
+		this.drawObject("house_0", 16.0, 0.0, 4.5);
+		this.drawObject("house_2", 12.5, 0.0, 15.0);
+		this.drawObject("house_2", 17.5, 0.0, 15.0);
+
+		this.drawObject("table_0", 10.5, 0.0, 18.0);
+		this.drawObject("parasol_0", 10.5, 0.0, 18.0);
+		this.drawObject("table_0", 12.0, 0.0, 19.0);
+		this.drawObject("parasol_0", 12.0, 0.0, 19.0);
+		this.drawObject("table_0", 13.0, 0.0, 18.0);
+		this.drawObject("trash_bin_0", 14.5, 0.0, 17.0);
+		this.drawObject("plantar_0", 11.0, 0.0, 20.0, 90);
+		this.drawObject("plantar_0", 12.5, 0.0, 20.0, 90);
+
+		this.drawObject("house_3", 14.0, 0.0, 24.0);
+		this.drawObject("house_4", 19.0, 0.0, 24.0);
+
+		this.drawObject("track_house_0", 9.5, 0.0, 22.0);
 	}
 
 }
