@@ -18,7 +18,7 @@ class ElectronWindow implements Disposable.Target {
 		nodeIntegration: true,
 		webSecurity: false,
 		contextIsolation: false
-	}
+	};
 
 	private static buildConstructorOptions(config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions {
 		const options: Electron.BrowserWindowConstructorOptions = {

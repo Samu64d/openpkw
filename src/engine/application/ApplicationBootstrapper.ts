@@ -80,7 +80,7 @@ export default abstract class ApplicationBootstrapper {
 		ElectronApp.registerEventListener("ready", this.onReadyListener.bind(this));
 	}
 
-	private onWindowErrorListener(packet: IPCErrorChannelPacket): void {
+	private ipcErrorChannelListener(packet: IPCErrorChannelPacket): void {
 		if (this.mainWindowError == true || this.mainWindow == null) {
 			return;
 		}
@@ -94,7 +94,7 @@ export default abstract class ApplicationBootstrapper {
 	}
 
 	private registerIpcEventListeners(): void {
-		IPCErrorChannel.registerErrorListener(this.onWindowErrorListener.bind(this));
+		IPCErrorChannel.registerErrorListener(this.ipcErrorChannelListener.bind(this));
 	}
 
 }

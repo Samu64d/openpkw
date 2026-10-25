@@ -1,5 +1,5 @@
 //
-// download-electron.ts
+// download-electron.js
 //
 
 import * as Fs from "node:fs";
@@ -37,7 +37,9 @@ function main() {
 		platform: "win32",
 		version: version
 	}).then((zipFilePath) => {
-		return ExtractZip.extract(zipFilePath, { dir: artefactPath }).then(() => {
+		return ExtractZip.extract(zipFilePath, {
+			dir: artefactPath
+		}).then(() => {
 			Fs.rmSync(zipFilePath);
 		});
 	}).catch((error) => {

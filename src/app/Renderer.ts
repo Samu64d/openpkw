@@ -14,6 +14,7 @@ import OBJDecoder from "../engine/core/format/obj/OBJDecoder.ts";
 import Image from "../engine/core/resource/Image.ts";
 import Mesh from "../engine/core/resource/Mesh.ts";
 import Color from "../engine/core/rendering/Color.ts";
+import Viewport from "../engine/core/rendering/Viewport.ts";
 import Projection from "../engine/core/rendering/Projection.ts";
 import Camera from "../engine/core/rendering/Camera.ts";
 import Exception from "../engine/core/exception/Exception.ts";
@@ -33,12 +34,20 @@ export default class Renderer {
 
 	private static readonly CLEAR_COLOR: Color = [255, 255, 255, 255];
 
+	private static readonly NEAR_DISTANCE: number = 0.1;
+
+	private static readonly FAR_DISTANCE: number = 10000.0;
+
+	private static readonly FOV: number = 1.57 / 2.0;
+
 	private readonly context: WebGL2RenderingContext;
 	private readonly contextManager: GLContextManager;
 	private readonly programMap: Map<string, GLProgram>;
 	private readonly modelMap: Map<string, GLVertexArray>;
 	private readonly textureMap: Map<string, GLTexture>;
 	private readonly modelProgramMap: Map<string, string>;
+	private readonly viewport: Viewport;
+	private readonly projection: Projection;
 	private readonly camera: Camera;
 	private time: number;
 	private debugLines: boolean;
@@ -50,6 +59,8 @@ export default class Renderer {
 		this.modelMap = new Map<string, GLVertexArray>();
 		this.textureMap = new Map<string, GLTexture>();
 		this.modelProgramMap = new Map<string, string>();
+		this.viewport = new Viewport(this.context.canvas.width, this.context.canvas.height);
+		this.projection = new Projection(this.viewport.getAspectRatio(), Renderer.FOV, Renderer.NEAR_DISTANCE, Renderer.FAR_DISTANCE);
 		this.camera = new Camera();
 		this.time = 0;
 		this.debugLines = false;
@@ -94,16 +105,16 @@ export default class Renderer {
 		this.camera.lookAt(new Vector3d(3.0, 2.5, 2.5), new Vector3d(3.0, 0.0, 0.0));
 	}
 
-	public update(time: number): void {
-		this.time = time;
-		this.contextManager.setViewport(this.context.canvas.width, this.context.canvas.height);
-		this.contextManager.clear(Renderer.CLEAR_COLOR);
-		this.drawMap();
-		this.drawObjects();
+	public setViewportSize(width: number, height: number): void {
+		this.viewport.setSize(width, height);
+		this.projection.setAspectRatio(this.viewport.getAspectRatio());
 	}
 
 	public moveCamera(x: number, y: number, z: number): void {
-		this.camera.lookAt(this.camera.getPosition().add(x, y, z), this.camera.getTarget().add(x, y, z));
+		const position: Vector3d = this.camera.getPosition().add(x, y, z);
+		const target: Vector3d = this.camera.getTarget().add(x, y, z);
+
+		this.camera.lookAt(position, target);
 	}
 
 	public getDebugLines(): boolean {
@@ -112,6 +123,14 @@ export default class Renderer {
 
 	public setDebugLines(debugLines: boolean): void {
 		this.debugLines = debugLines;
+	}
+
+	public draw(time: number): void {
+		this.time = time;
+		this.contextManager.setViewport(this.viewport.getWidth(), this.viewport.getHeight());
+		this.contextManager.clear(Renderer.CLEAR_COLOR);
+		this.drawMap();
+		this.drawObjects();
 	}
 
 	private createShader(path: string, type: number): GLShader {
@@ -200,39 +219,26 @@ export default class Renderer {
 	private drawModel(modelName: string, modelView: number[]): void {
 		const programName: string = this.modelProgramMap.get(modelName) as string;
 		const program: GLProgram = this.programMap.get(programName) as GLProgram;
+		const viewportSizeLocation = this.context.getUniformLocation(program.getProgramObject(), "viewportSize");
+		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
+		const modelViewLocation = this.context.getUniformLocation(program.getProgramObject(), "modelView");
+		const timeLocation = this.context.getUniformLocation(program.getProgramObject(), "time");
+		const vao: GLVertexArray = this.modelMap.get(modelName) as GLVertexArray;
+		const texture: GLTexture = this.textureMap.get(modelName) as GLTexture;
+		const elementType: GLenum = this.debugLines ? this.context.LINE_STRIP : this.context.TRIANGLES;
 
 		program.use();
 
-		// Viewport size
-		const viewportSizeLocation = this.context.getUniformLocation(program.getProgramObject(), "viewportSize");
-		const viewportSize: number[] = [this.context.canvas.width, this.context.canvas.height];
-
-		this.context.uniform2iv(viewportSizeLocation, viewportSize);
-
-		// Projection
-		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
-		const project: Projection = new Projection(this.context.canvas.width / this.context.canvas.height, 1.57 / 2, 0.1, 1000.0);
-
-		this.context.uniformMatrix4fv(projectionLocation, false, project.getMatrix());
-
-		// Time
-		const timeLocation = this.context.getUniformLocation(program.getProgramObject(), "time");
-
-		this.context.uniform1f(timeLocation, this.time / 100);
-
-		const vao: GLVertexArray = this.modelMap.get(modelName) as GLVertexArray;
-		const texture: GLTexture = this.textureMap.get(modelName) as GLTexture;
-		const modelViewLocation = this.context.getUniformLocation(program.getProgramObject(), "modelView");
-
+		this.context.uniform2iv(viewportSizeLocation, this.viewport.getSize());
+		this.context.uniformMatrix4fv(projectionLocation, false, this.projection.getMatrix());
 		this.context.uniformMatrix4fv(modelViewLocation, false, multiplyAll(this.camera.getMatrix(), modelView));
+		this.context.uniform1f(timeLocation, this.time / 100.0);
 
 		vao.bind();
 		texture.bind();
-
-		const mode: GLenum = this.debugLines ? this.context.LINE_STRIP : this.context.TRIANGLES;
-
-		this.context.drawElements(mode, vao.ebo, this.context.UNSIGNED_INT, 0);
+		this.context.drawElements(elementType, vao.ebo, this.context.UNSIGNED_INT, 0);
 		vao.unbind();
+		program.unuse();
 	}
 
 	private drawMap(): void {
@@ -270,11 +276,9 @@ export default class Renderer {
 
 						this.drawModel(modelName, modelView);
 					}
-
 				}
 			}
 		}
-
 	}
 
 	private drawObject(modelName: string, x: number, y: number, z: number, modelRotationX: number = 0): void {
