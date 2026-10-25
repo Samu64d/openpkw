@@ -129,8 +129,49 @@ export default class Renderer {
 		this.time = time;
 		this.contextManager.setViewport(this.viewport.getWidth(), this.viewport.getHeight());
 		this.contextManager.clear(Renderer.CLEAR_COLOR);
+		this.updatePrograms();
 		this.drawMap();
-		this.drawObjects();
+		this.drawObject("tree_0", 1.0, 0.0, 9.0);
+		this.drawObject("tree_0", 1.0, 0.0, 11.0);
+		this.drawObject("tree_0", 1.0, 0.0, 13.0);
+		this.drawObject("tree_0", 1.0, 0.0, 15.0);
+		this.drawObject("tree_0", 4.0, 0.0, 9.0);
+		this.drawObject("tree_0", 4.0, 0.0, 11.0);
+		this.drawObject("tree_0", 4.0, 0.0, 13.0);
+		this.drawObject("tree_0", 4.0, 0.0, 15.0);
+		this.drawObject("tree_0", 6.0, 0.0, 9.0);
+		this.drawObject("tree_0", 6.0, 0.0, 11.0);
+		this.drawObject("tree_0", 6.0, 0.0, 13.0);
+		this.drawObject("tree_0", 6.0, 0.0, 15.0);
+		this.drawObject("tree_0", 8.0, 0.0, 9.0);
+		this.drawObject("tree_0", 8.0, 0.0, 11.0);
+		this.drawObject("tree_0", 8.0, 0.0, 13.0);
+		this.drawObject("tree_0", 8.0, 0.0, 15.0);
+
+		this.drawObject("tree_0", 4.0, 0.85, 19.0);
+		this.drawObject("tree_2", 6.5, 0.85, 18.5);
+
+		this.drawObject("tree_2", 6.0, 0.0, 22.5);
+
+		this.drawObject("sign_0", 11.0, 0.0, 4.5);
+
+		this.drawObject("house_0", 16.0, 0.0, 4.5);
+		this.drawObject("house_2", 12.5, 0.0, 15.0);
+		this.drawObject("house_2", 17.5, 0.0, 15.0);
+
+		this.drawObject("table_0", 10.5, 0.0, 18.0);
+		this.drawObject("parasol_0", 10.5, 0.0, 18.0);
+		this.drawObject("table_0", 12.0, 0.0, 19.0);
+		this.drawObject("parasol_0", 12.0, 0.0, 19.0);
+		this.drawObject("table_0", 13.0, 0.0, 18.0);
+		this.drawObject("trash_bin_0", 14.5, 0.0, 17.0);
+		this.drawObject("plantar_0", 11.0, 0.0, 20.0, 90);
+		this.drawObject("plantar_0", 12.5, 0.0, 20.0, 90);
+
+		this.drawObject("house_3", 14.0, 0.0, 24.0);
+		this.drawObject("house_4", 19.0, 0.0, 24.0);
+
+		this.drawObject("track_house_0", 9.5, 0.0, 22.0);
 	}
 
 	private createShader(path: string, type: number): GLShader {
@@ -216,24 +257,30 @@ export default class Renderer {
 		this.modelProgramMap.set(modelName, programName);
 	}
 
+	private updatePrograms(): void {
+		for (const program of this.programMap.values()) {
+			const viewportSizeLocation = this.context.getUniformLocation(program.getProgramObject(), "viewportSize");
+			const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
+			const timeLocation = this.context.getUniformLocation(program.getProgramObject(), "time");
+
+			program.use();
+			this.context.uniform2iv(viewportSizeLocation, this.viewport.getSize());
+			this.context.uniformMatrix4fv(projectionLocation, false, this.projection.getMatrix());
+			this.context.uniform1f(timeLocation, this.time / 100.0);
+			program.unuse();
+		}
+	}
+
 	private drawModel(modelName: string, modelView: number[]): void {
 		const programName: string = this.modelProgramMap.get(modelName) as string;
 		const program: GLProgram = this.programMap.get(programName) as GLProgram;
-		const viewportSizeLocation = this.context.getUniformLocation(program.getProgramObject(), "viewportSize");
-		const projectionLocation = this.context.getUniformLocation(program.getProgramObject(), "projection");
 		const modelViewLocation = this.context.getUniformLocation(program.getProgramObject(), "modelView");
-		const timeLocation = this.context.getUniformLocation(program.getProgramObject(), "time");
 		const vao: GLVertexArray = this.modelMap.get(modelName) as GLVertexArray;
 		const texture: GLTexture = this.textureMap.get(modelName) as GLTexture;
 		const elementType: GLenum = this.debugLines ? this.context.LINE_STRIP : this.context.TRIANGLES;
 
 		program.use();
-
-		this.context.uniform2iv(viewportSizeLocation, this.viewport.getSize());
-		this.context.uniformMatrix4fv(projectionLocation, false, this.projection.getMatrix());
 		this.context.uniformMatrix4fv(modelViewLocation, false, multiplyAll(this.camera.getMatrix(), modelView));
-		this.context.uniform1f(timeLocation, this.time / 100.0);
-
 		vao.bind();
 		texture.bind();
 		this.context.drawElements(elementType, vao.ebo, this.context.UNSIGNED_INT, 0);
@@ -241,8 +288,21 @@ export default class Renderer {
 		program.unuse();
 	}
 
-	private drawMap(): void {
+	private drawTile(tileName: string, tilePosX: number, tilePosY: number, tilePosZ: number, rotation: number = 0): void {
 		const step: number = 0.25;
+		const modelPosX: number = tilePosX * step;
+		const modelPosY: number = tilePosY * step;
+		const modelPosZ: number = tilePosZ * step;
+		let modelView: number[] = translate(modelPosX, modelPosY, modelPosZ);
+
+		if (rotation != 0) {
+			modelView = multiplyAll(modelView, rot(rotation / 180 * Math.PI, 0, 0));
+		}
+
+		this.drawModel(tileName, modelView);
+	}
+
+	private drawMap(): void {
 		const data: string[][][] = MapData;
 
 		for (let y: number = 0; y < data.length; y++) {
@@ -254,10 +314,6 @@ export default class Renderer {
 				for (let x: number = 0; x < row.length; x++) {
 					const tileConfig: string = row[x];
 					const elementConfigList: string[] = tileConfig.split(";");
-					const xPos: number = x * step;
-					const yPos: number = y * step;
-					const zPos: number = z * step;
-					let modelView: number[] = translate(xPos, yPos, zPos);
 
 					for (const elementConfig of elementConfigList) {
 						const modelName: string = elementConfig.split(":").at(0) ?? "air";
@@ -266,79 +322,27 @@ export default class Renderer {
 							continue;
 						}
 
-						const modelRotationX: number = Number(elementConfig.split(":").at(1) ?? 0);
+						const rotation: number = Number(elementConfig.split(":").at(1) ?? 0);
 
-						if (modelRotationX != 0) {
-							const rxs: number = modelRotationX / 180 * Math.PI;
-
-							modelView = multiplyAll(modelView, rot(rxs, 0.0, 0.0));
-						}
-
-						this.drawModel(modelName, modelView);
+						this.drawTile(modelName, x, y, z, rotation);
 					}
 				}
 			}
 		}
 	}
 
-	private drawObject(modelName: string, x: number, y: number, z: number, modelRotationX: number = 0): void {
+	private drawObject(modelName: string, posX: number, posY: number, posZ: number, rotX: number = 0): void {
 		const step: number = 0.25;
-		const xPos: number = (x - 0.5) * step;
-		const yPos: number = y * step;
-		const zPos: number = (z - 0.5) * step;
-		let modelView: number[] = translate(xPos, yPos, zPos);
+		const modelPosX: number = (posX - 0.5) * step;
+		const modelPosY: number = posY * step;
+		const modelPosZ: number = (posZ - 0.5) * step;
+		let modelView: number[] = translate(modelPosX, modelPosY, modelPosZ);
 
-		if (modelRotationX != 0) {
-			const rxs: number = modelRotationX / 180 * Math.PI;
-
-			modelView = multiplyAll(modelView, rot(rxs, 0, 0));
+		if (rotX != 0) {
+			modelView = multiplyAll(modelView, rot(rotX / 180 * Math.PI, 0, 0));
 		}
 
 		this.drawModel(modelName, modelView);
-	}
-
-	private drawObjects(): void {
-		this.drawObject("tree_0", 1.0, 0.0, 9.0);
-		this.drawObject("tree_0", 1.0, 0.0, 11.0);
-		this.drawObject("tree_0", 1.0, 0.0, 13.0);
-		this.drawObject("tree_0", 1.0, 0.0, 15.0);
-		this.drawObject("tree_0", 4.0, 0.0, 9.0);
-		this.drawObject("tree_0", 4.0, 0.0, 11.0);
-		this.drawObject("tree_0", 4.0, 0.0, 13.0);
-		this.drawObject("tree_0", 4.0, 0.0, 15.0);
-		this.drawObject("tree_0", 6.0, 0.0, 9.0);
-		this.drawObject("tree_0", 6.0, 0.0, 11.0);
-		this.drawObject("tree_0", 6.0, 0.0, 13.0);
-		this.drawObject("tree_0", 6.0, 0.0, 15.0);
-		this.drawObject("tree_0", 8.0, 0.0, 9.0);
-		this.drawObject("tree_0", 8.0, 0.0, 11.0);
-		this.drawObject("tree_0", 8.0, 0.0, 13.0);
-		this.drawObject("tree_0", 8.0, 0.0, 15.0);
-
-		this.drawObject("tree_0", 4.0, 0.85, 19.0);
-		this.drawObject("tree_2", 6.5, 0.85, 18.5);
-
-		this.drawObject("tree_2", 6.0, 0.0, 22.5);
-
-		this.drawObject("sign_0", 11.0, 0.0, 4.5);
-
-		this.drawObject("house_0", 16.0, 0.0, 4.5);
-		this.drawObject("house_2", 12.5, 0.0, 15.0);
-		this.drawObject("house_2", 17.5, 0.0, 15.0);
-
-		this.drawObject("table_0", 10.5, 0.0, 18.0);
-		this.drawObject("parasol_0", 10.5, 0.0, 18.0);
-		this.drawObject("table_0", 12.0, 0.0, 19.0);
-		this.drawObject("parasol_0", 12.0, 0.0, 19.0);
-		this.drawObject("table_0", 13.0, 0.0, 18.0);
-		this.drawObject("trash_bin_0", 14.5, 0.0, 17.0);
-		this.drawObject("plantar_0", 11.0, 0.0, 20.0, 90);
-		this.drawObject("plantar_0", 12.5, 0.0, 20.0, 90);
-
-		this.drawObject("house_3", 14.0, 0.0, 24.0);
-		this.drawObject("house_4", 19.0, 0.0, 24.0);
-
-		this.drawObject("track_house_0", 9.5, 0.0, 22.0);
 	}
 
 }
