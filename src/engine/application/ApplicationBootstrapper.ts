@@ -7,6 +7,7 @@ import NodeOS from "../platform/node/NodeOS.ts";
 import NodeChildProcess from "../platform/node/NodeChildProcess.ts";
 import ElectronProcess from "../platform/electron/ElectronProcess.ts";
 import ElectronWindow from "../platform/electron/ElectronWindow.ts";
+import ElectronWebContentsView from "../platform/electron/ElectronWebContentsView.ts";
 import ElectronApp from "../platform/electron/ElectronApp.ts";
 import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
@@ -17,12 +18,16 @@ export default abstract class ApplicationBootstrapper {
 
 	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
 
-	private readonly mainWindowConfig: Partial<ElectronWindow.BuildConfig>;
-	private mainWindow: Nullable<ElectronWindow> = null;
-	private mainWindowError: boolean = false;
+	private readonly mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>;
+	private mainWindow: Nullable<ElectronWindow>;
+	private mainWebContentsView: Nullable<ElectronWebContentsView>;
+	private mainWindowOnError: boolean;
 
-	protected constructor(mainWindowConfig: Partial<ElectronWindow.BuildConfig>) {
-		this.mainWindowConfig = mainWindowConfig;
+	protected constructor(mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>) {
+		this.mainWindowBuildConfig = mainWindowBuildConfig;
+		this.mainWindow = null;
+		this.mainWebContentsView = null;
+		this.mainWindowOnError = false;
 		this.setupElectron();
 		this.registerAppEventListeners();
 		this.registerIpcEventListeners();
@@ -68,9 +73,14 @@ export default abstract class ApplicationBootstrapper {
 			return;
 		}
 
-		this.mainWindow = new ElectronWindow(this.mainWindowConfig);
+		this.mainWindow = new ElectronWindow(this.mainWindowBuildConfig);
 		this.mainWindow.center();
-		this.mainWindow.loadWebContents(ApplicationBootstrapper.MAIN_WINDOW_CONTENTS_PATH);
+
+		this.mainWebContentsView = new ElectronWebContentsView();
+		this.mainWindow.addWebContentView(this.mainWebContentsView);
+		this.mainWebContentsView.autoAdaptToWindowBounds(this.mainWindow);
+		this.mainWebContentsView.loadFile(ApplicationBootstrapper.MAIN_WINDOW_CONTENTS_PATH);
+
 		this.onReady();
 	}
 
@@ -81,14 +91,14 @@ export default abstract class ApplicationBootstrapper {
 	}
 
 	private ipcErrorChannelListener(packet: IPCErrorChannelPacket): void {
-		if (this.mainWindowError == true || this.mainWindow == null) {
+		if (this.mainWindow == null || this.mainWebContentsView == null || this.mainWindowOnError == true) {
 			return;
 		}
 
 		const messageBoxMessage: string = packet.errorName + ": " + packet.errorMessage;
 
-		this.mainWindowError = true;
-		this.mainWindow.unloadWebContents();
+		this.mainWindowOnError = true;
+		this.mainWebContentsView.unload();
 		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + messageBoxMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
 		this.exit();
 	}

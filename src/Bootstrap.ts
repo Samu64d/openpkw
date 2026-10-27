@@ -25,6 +25,7 @@ export default class Bootstrap extends ApplicationBootstrapper {
 		height: 600,
 		minWidth: 800,
 		minHeight: 600,
+		title: "Openpkw - Open Pokemon World",
 		icon: "../resources/icon/AppIcon.ico"
 	};
 

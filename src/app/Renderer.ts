@@ -288,12 +288,12 @@ export default class Renderer {
 		program.unuse();
 	}
 
-	private drawTile(tileName: string, tilePosX: number, tilePosY: number, tilePosZ: number, rotation: number = 0): void {
+	private drawTile(tileName: string, tileXPos: number, tileYPos: number, tileZPos: number, rotation: number = 0): void {
 		const step: number = 0.25;
-		const modelPosX: number = tilePosX * step;
-		const modelPosY: number = tilePosY * step;
-		const modelPosZ: number = tilePosZ * step;
-		let modelView: number[] = translate(modelPosX, modelPosY, modelPosZ);
+		const modelXPos: number = tileXPos * step;
+		const modelYPos: number = tileYPos * step;
+		const modelZPos: number = tileZPos * step;
+		let modelView: number[] = translate(modelXPos, modelYPos, modelZPos);
 
 		if (rotation != 0) {
 			modelView = multiplyAll(modelView, rot(rotation / 180 * Math.PI, 0, 0));
@@ -331,12 +331,12 @@ export default class Renderer {
 		}
 	}
 
-	private drawObject(modelName: string, posX: number, posY: number, posZ: number, rotX: number = 0): void {
+	private drawObject(modelName: string, XPos: number, YPos: number, ZPos: number, rotX: number = 0): void {
 		const step: number = 0.25;
-		const modelPosX: number = (posX - 0.5) * step;
-		const modelPosY: number = posY * step;
-		const modelPosZ: number = (posZ - 0.5) * step;
-		let modelView: number[] = translate(modelPosX, modelPosY, modelPosZ);
+		const modelXPos: number = (XPos - 0.5) * step;
+		const modelYPos: number = YPos * step;
+		const modelZPos: number = (ZPos - 0.5) * step;
+		let modelView: number[] = translate(modelXPos, modelYPos, modelZPos);
 
 		if (rotX != 0) {
 			modelView = multiplyAll(modelView, rot(rotX / 180 * Math.PI, 0, 0));

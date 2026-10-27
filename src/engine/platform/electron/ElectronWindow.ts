@@ -6,6 +6,7 @@ import * as Electron from "electron";
 
 import EventListener from "../../core/common/EventListener.ts";
 import Disposable from "../../core/reflection/decorators/Disposable.ts";
+import ElectronWebContentsView from "./ElectronWebContentsView.ts";
 
 @Disposable()
 class ElectronWindow implements Disposable.Target {
@@ -14,13 +15,7 @@ class ElectronWindow implements Disposable.Target {
 
 	private static readonly DEFAULT_HEIGHT: number = 600;
 
-	private static readonly DEFAULT_WEB_PREFERENCES: Electron.WebPreferences = {
-		nodeIntegration: true,
-		webSecurity: false,
-		contextIsolation: false
-	};
-
-	private static buildConstructorOptions(config: Partial<ElectronWindow.BuildConfig>): Electron.BrowserWindowConstructorOptions {
+	private static buildConstructorOptions(config: Partial<ElectronWindow.BuildConfig>): Electron.BaseWindowConstructorOptions {
 		const options: Electron.BrowserWindowConstructorOptions = {
 			width: config.width ?? ElectronWindow.DEFAULT_WIDTH,
 			height: config.height ?? ElectronWindow.DEFAULT_HEIGHT,
@@ -31,14 +26,14 @@ class ElectronWindow implements Disposable.Target {
 			fullscreen: config.fullscreen ?? false,
 			frame: !config.borderless,
 			fullscreenable: config.fullscreenable ?? false,
-			icon: config.icon,
-			webPreferences: ElectronWindow.DEFAULT_WEB_PREFERENCES
+			title: config.title ?? "Application",
+			icon: config.icon
 		};
 
 		return options;
 	};
 
-	private readonly windowObject: Electron.BrowserWindow;
+	private readonly windowObject: Electron.BaseWindow;
 
 	public constructor(config: Partial<ElectronWindow.BuildConfig>) {
 		const options: Electron.BrowserWindowConstructorOptions = ElectronWindow.buildConstructorOptions(config);
@@ -75,48 +70,48 @@ class ElectronWindow implements Disposable.Target {
 		return this.windowObject.getMinimumSize()[0];
 	}
 
-	public setMinWidth(width: number): void {
-		this.windowObject.setMinimumSize(width, this.getMinHeight());
+	public setMinWidth(minWidth: number): void {
+		this.windowObject.setMinimumSize(minWidth, this.getMinHeight());
 	}
 
 	public getMinHeight(): number {
 		return this.windowObject.getMinimumSize()[1];
 	}
 
-	public setMinHeight(height: number): void {
-		this.windowObject.setMinimumSize(this.getMinWidth(), height);
+	public setMinHeight(minHeight: number): void {
+		this.windowObject.setMinimumSize(this.getMinWidth(), minHeight);
 	}
 
 	public getMaxWidth(): number {
 		return this.windowObject.getMaximumSize()[0];
 	}
 
-	public setMaxWidth(width: number): void {
-		this.windowObject.setMaximumSize(width, this.getMaxHeight());
+	public setMaxWidth(maxWidth: number): void {
+		this.windowObject.setMaximumSize(maxWidth, this.getMaxHeight());
 	}
 
 	public getMaxHeight(): number {
 		return this.windowObject.getMaximumSize()[1];
 	}
 
-	public setMaxHeight(height: number): void {
-		this.windowObject.setMaximumSize(this.getMaxWidth(), height);
+	public setMaxHeight(maxHeight: number): void {
+		this.windowObject.setMaximumSize(this.getMaxWidth(), maxHeight);
 	}
 
 	public getXPos(): number {
 		return this.windowObject.getPosition()[0];
 	}
 
-	public setXPos(x: number): void {
-		this.windowObject.setPosition(x, this.getYPos());
+	public setXPos(xPos: number): void {
+		this.windowObject.setPosition(xPos, this.getYPos());
 	}
 
 	public getYPos(): number {
 		return this.windowObject.getPosition()[1];
 	}
 
-	public setYPos(y: number): void {
-		this.windowObject.setPosition(this.getXPos(), y);
+	public setYPos(yPos: number): void {
+		this.windowObject.setPosition(this.getXPos(), yPos);
 	}
 
 	public center(): void {
@@ -200,30 +195,20 @@ class ElectronWindow implements Disposable.Target {
 		this.windowObject.focus();
 	}
 
+	public addWebContentView(webContentView: ElectronWebContentsView): void {
+		this.windowObject.contentView.addChildView(webContentView.getWebContentsViewObject());
+	}
+
+	public removeWebContentView(webContentView: ElectronWebContentsView): void {
+		this.windowObject.contentView.removeChildView(webContentView.getWebContentsViewObject());
+	}
+
 	public registerEventListener(event: any, listener: EventListener<Electron.Event>): void {
 		this.windowObject.on(event, listener);
 	}
 
-	public loadWebContents(filePath: string): void {
-		this.windowObject.loadFile(filePath);
-	}
-
-	public unloadWebContents(): void {
-		this.windowObject.webContents.loadURL("about:blank");
-	}
-
-	public openDevTools(detach: boolean = false): void {
-		if (detach == true) {
-			this.windowObject.webContents.openDevTools({
-				mode: "detach"
-			});
-		} else {
-			this.windowObject.webContents.openDevTools();
-		}
-	}
-
-	public closeDevTools(): void {
-		this.windowObject.webContents.closeDevTools();
+	public removeEventListener(event: any, listener: EventListener<Electron.Event>): void {
+		this.windowObject.off(event, listener);
 	}
 
 	public dispose(): void {
@@ -248,6 +233,7 @@ namespace ElectronWindow {
 		fullscreen: boolean,
 		borderless: boolean,
 		fullscreenable: boolean,
+		title: string,
 		icon: string
 	}
 
