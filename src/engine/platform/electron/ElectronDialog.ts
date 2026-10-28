@@ -19,13 +19,12 @@ class ElectronDialog {
 		this.dialogObject = dialog;
 	}
 
-	public showForWindow(window: ElectronWindow, type: ElectronDialog.Type, message: string): void {
+	public showMessageBox(window: ElectronWindow, type: ElectronDialog.Type, message: string): void {
 		this.dialogObject.showMessageBoxSync(window.getWindowObject(), {
 			type: type,
 			title: window.getTitle(),
 			message: "",
-			detail: message,
-
+			detail: message
 		});
 	}
 

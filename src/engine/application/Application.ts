@@ -2,125 +2,94 @@
 // Application.ts
 //
 
-import Nullable from "../core/common/Nullable.ts";
 import EventListener from "../core/common/EventListener.ts";
-import Exception from "../core/exception/Exception.ts";
-import InvalidOperationException from "../core/exception/InvalidOperationException.ts";
+import NodePath from "../platform/node/NodePath.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
+import ApplicationContents from "./ApplicationContents.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
 
 export default abstract class Application {
 
-	private static readonly CANVAS_ELEMENT_ID: string = "canvas";
+	public static readonly CONTENTS_TEMPLATE: string = `
+		<!DOCTYPE html>
+		<html style="box-sizing: content-box; width: 100%; height: 100%; margin: 0px; user-select: none; cursor: default;">
+			<head>
+				<meta charset="UTF-8"></meta>
+				<script src="{{src}}"></script>
+			</head>
+			<body style="box-sizing: content-box; display: flex; width: 100%; height: 100%; margin: 0px; justify-content: center; align-items: center;">
+			</body>
+		</html>
+	`;
 
-	private static readonly DEFAULT_CONTEXT_ATTRIBUTES: WebGLContextAttributes = {
-		alpha: false,
-		antialias: false,
-		depth: true,
-		premultipliedAlpha: true
-	};
+	public static generateApplicationContents(entryPointPath: string): ApplicationContents {
+		const template: string = Application.CONTENTS_TEMPLATE;
+		const templateInstance: string = template.replace("{{src}}", entryPointPath);
+		const dataUrl: string = "data:text/html;base64," + Buffer.from(templateInstance).toString("base64");
+		const baseUrl: string = NodePath.join([__dirname, "../"]);
 
-	private readonly electronIPC: ElectronIPC;
-	private readonly ipcErrorChannel: IPCErrorChannel;
-	private readonly document: Document;
-	private documentReady: boolean;
-	private documentError: boolean;
-	private renderingCanvas: Nullable<HTMLCanvasElement>;
-	private renderingContext: Nullable<WebGL2RenderingContext>;
+		return new ApplicationContents(entryPointPath, dataUrl, baseUrl);
+	}
+
+	protected readonly ipcErrorChannel: IPCErrorChannel;
+	protected readonly window: Window;
+	private windowIsReady: boolean;
+	private windowHasErrors: boolean;
 
 	protected constructor() {
-		this.electronIPC = ElectronIPC.FROM_GLOBAL_REFERENCE();
-		this.ipcErrorChannel = new IPCErrorChannel(this.electronIPC);
-		this.document = window.document;
-		this.documentReady = false;
-		this.documentError = false;
-		this.renderingCanvas = null;
-		this.renderingContext = null;
+		this.ipcErrorChannel = new IPCErrorChannel(ElectronIPC.FROM_GLOBAL_REFERENCE());
+		this.window = window;
+		this.windowIsReady = false;
+		this.windowHasErrors = false;
 		this.registerWindowEventListeners();
 	}
 
 	public isReady(): boolean {
-		return this.documentReady;
+		return this.windowIsReady;
 	}
 
-	public abstract onInit(): void;
+	public abstract onReady(): void;
 
 	public getClientWidth(): number {
-		if (this.documentReady == false) {
-			throw new InvalidOperationException("Application is not ready");
-		}
-
-		return Math.floor(this.document.body.clientWidth);
+		return Math.floor(this.window.innerWidth);
 	}
 
 	public getClientHeight(): number {
-		if (this.documentReady == false) {
-			throw new InvalidOperationException("Application is not ready");
-		}
-
-		return Math.floor(this.document.body.clientHeight);
+		return Math.floor(this.window.innerHeight);
 	}
 
 	public abstract onClientResize(width: number, height: number): void;
 
-	public getRenderingContext(): Nullable<WebGL2RenderingContext> {
-		return this.renderingContext;
-	}
-
-	public hasError(): boolean {
-		return this.documentError;
+	public hasErrors(): boolean {
+		return this.windowHasErrors;
 	}
 
 	public abstract onError(e: unknown): void;
 
-	private registerWindowEventListener<T>(eventName: any, listener: EventListener<T>): void {
-		window.addEventListener(eventName, listener);
+	protected getDocument(): Document {
+		return this.window.document;
 	}
 
-	private setupRenderingCanvasAndContext(): void {
-		this.renderingCanvas = this.document.getElementById(Application.CANVAS_ELEMENT_ID) as Nullable<HTMLCanvasElement>;
-
-		if (this.renderingCanvas == null) {
-			throw new Exception("Cannot find document canvas element");
-		}
-
-		this.renderingCanvas.width = this.getClientWidth();
-		this.renderingCanvas.height = this.getClientHeight();
-		this.renderingContext = this.renderingCanvas.getContext("webgl2", Application.DEFAULT_CONTEXT_ATTRIBUTES);
-
-		if (this.renderingContext == null) {
-			throw new Exception("Cannot get canvas rendering context");
-		}
+	protected onLoadListener(): void {
+		this.windowIsReady = true;
+		this.onReady();
 	}
 
-	private onLoadListener(): void {
-		this.documentReady = true;
-		this.setupRenderingCanvasAndContext();
-		this.onInit();
-	}
-
-	private onResizeListener(): void {
+	protected onResizeListener(): void {
 		const width: number = this.getClientWidth();
 		const height: number = this.getClientHeight();
-
-		if (this.renderingCanvas != null) {
-			if (this.renderingCanvas.width != width) {
-				this.renderingCanvas.width = width;
-			}
-			if (this.renderingCanvas.height != height) {
-				this.renderingCanvas.height = height;
-			}
-		}
 
 		this.onClientResize(width, height);
 	}
 
-	private onErrorListener(event: ErrorEvent): void {
-		const e: unknown = event.error;
+	protected onErrorListener(event: ErrorEvent): void {
+		this.windowHasErrors = true;
+		this.ipcErrorChannel.sendError(event.error);
+		this.onError(event.error);
+	}
 
-		this.documentError = true;
-		this.ipcErrorChannel.sendError(e);
-		this.onError(e);
+	private registerWindowEventListener<T extends keyof WindowEventMap>(eventName: T, listener: EventListener<WindowEventMap[T]>): void {
+		this.window.addEventListener(eventName, listener);
 	}
 
 	private registerWindowEventListeners(): void {

@@ -12,10 +12,10 @@ import Exception from "./engine/core/exception/Exception.ts";
 import PoolMemoryDriver from "./engine/drivers/memory/PoolMemoryDriver.ts";
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import NodeProcess from "./engine/platform/node/NodeProcess.ts";
-import Application from "./engine/application/Application.ts";
+import CanvasApplication from "./engine/application/CanvasApplication.ts";
 import Renderer from "./app/Renderer.ts";
 
-export default class Openpkw extends Application {
+export default class Openpkw extends CanvasApplication {
 
 	public static getInstance(): Openpkw {
 		if (Openpkw.instance == null) {
@@ -38,7 +38,7 @@ export default class Openpkw extends Application {
 	private renderer: Nullable<Renderer>;
 
 	private constructor() {
-		super();
+		super(false);
 
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
 		DriverRegistry.register(MemoryDriver, new PoolMemoryDriver());
@@ -49,7 +49,7 @@ export default class Openpkw extends Application {
 		this.renderer = null;
 	}
 
-	public override onInit(): void {
+	public override onReady(): void {
 		this.logger.log(LogLevel.INFO, "Start initializing application");
 
 		document.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -71,6 +71,13 @@ export default class Openpkw extends Application {
 
 			this.keyMap.set(event.code, false);
 		});
+
+		const audio: HTMLAudioElement = document.createElement("audio");
+		document.body.appendChild(audio);
+		audio.src = "./resources/music/track_0.mp3";
+		audio.loop = true;
+		audio.style.display = "none";
+		audio.play();
 
 		this.initRenderer();
 	}

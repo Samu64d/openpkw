@@ -23,11 +23,12 @@ class ElectronWindow implements Disposable.Target {
 			minHeight: config.minHeight ?? 0,
 			maxWidth: config.maxWidth ?? undefined,
 			maxHeight: config.maxHeight ?? undefined,
-			fullscreen: config.fullscreen ?? false,
-			frame: !config.borderless,
-			fullscreenable: config.fullscreenable ?? false,
 			title: config.title ?? "Application",
-			icon: config.icon
+			icon: config.icon,
+			frame: !config.borderless,
+			fullscreen: config.fullscreen ?? false,
+			fullscreenable: config.fullscreenable ?? false,
+			useContentSize: true
 		};
 
 		return options;
@@ -116,6 +117,14 @@ class ElectronWindow implements Disposable.Target {
 
 	public setYPos(yPos: number): void {
 		this.windowObject.setPosition(this.getXPos(), yPos);
+	}
+
+	public getContentWidth(): number {
+		return this.windowObject.getContentBounds().width;
+	}
+
+	public getContentHeight(): number {
+		return this.windowObject.getContentBounds().height;
 	}
 
 	public center(): void {
@@ -228,17 +237,17 @@ class ElectronWindow implements Disposable.Target {
 namespace ElectronWindow {
 
 	export interface BuildConfig {
-		width: number,
-		height: number,
-		minWidth: number,
-		minHeight: number,
-		maxWidth: number,
-		maxHeight: number,
-		fullscreen: boolean,
-		borderless: boolean,
-		fullscreenable: boolean,
-		title: string,
-		icon: string
+		width: number;
+		height: number;
+		minWidth: number;
+		minHeight: number;
+		maxWidth: number;
+		maxHeight: number;
+		title: string;
+		icon: string;
+		borderless: boolean;
+		fullscreen: boolean;
+		fullscreenable: boolean;
 	}
 
 }

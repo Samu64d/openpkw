@@ -10,34 +10,32 @@ import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import ElectronDialog from "../platform/electron/ElectronDialog.ts";
 import ElectronWindow from "../platform/electron/ElectronWindow.ts";
 import ElectronWebContentsView from "../platform/electron/ElectronWebContentsView.ts";
+import ApplicationContents from "./ApplicationContents.ts";
 import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
 
 export default abstract class ApplicationBootstrapper {
 
-	private readonly webViewCachePath: string;
-	private readonly mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>;
-	private readonly mainWindowContentsPath: string;
+	private readonly windowBuildConfig: Partial<ElectronWindow.BuildConfig>;
+	private readonly applicationContents: ApplicationContents;
+	private readonly cachePath: string;
 	private readonly electronApp: ElectronApp;
-	private readonly electronIPC: ElectronIPC;
 	private readonly electronDialog: ElectronDialog;
 	private readonly ipcErrorChannel: IPCErrorChannel;
 	private mainWindow: Nullable<ElectronWindow>;
 	private mainWebContentsView: Nullable<ElectronWebContentsView>;
-	private mainWindowOnError: boolean;
+	private hasErrors: boolean;
 
-	protected constructor(webViewCachePath: string, mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>, mainWindowContentsPath: string) {
-		this.webViewCachePath = webViewCachePath;
-		this.mainWindowBuildConfig = mainWindowBuildConfig;
-		this.mainWindowContentsPath = mainWindowContentsPath;
-
+	protected constructor(windowBuildConfig: Partial<ElectronWindow.BuildConfig>, applicationContents: ApplicationContents, cachePath: string) {
+		this.windowBuildConfig = windowBuildConfig;
+		this.applicationContents = applicationContents;
+		this.cachePath = cachePath;
 		this.electronApp = ElectronApp.FROM_GLOBAL_REFERENCE();
-		this.electronIPC = ElectronIPC.FROM_GLOBAL_REFERENCE();
 		this.electronDialog = ElectronDialog.FROM_GLOBAL_REFERENCE();
-		this.ipcErrorChannel = new IPCErrorChannel(this.electronIPC);
+		this.ipcErrorChannel = new IPCErrorChannel(ElectronIPC.FROM_GLOBAL_REFERENCE());
 		this.mainWindow = null;
 		this.mainWebContentsView = null;
-		this.mainWindowOnError = false;
+		this.hasErrors = false;
 		this.setupEnvironmentConfiguration();
 		this.registerAppEventListeners();
 		this.registerIpcEventListeners();
@@ -64,7 +62,7 @@ export default abstract class ApplicationBootstrapper {
 		this.electronApp.disableSecurityWarnings();
 		this.electronApp.setSwitch("disable-http-cache");
 		this.electronApp.setSwitch("force-color-profile", "srgb");
-		this.electronApp.setWebCachePath(NodeOS.getHomeDir() + this.webViewCachePath);
+		this.electronApp.setUserDataPath(NodeOS.getHomeDir() + this.cachePath);
 	}
 
 	private onWindowAllClosedListener(): void {
@@ -87,14 +85,17 @@ export default abstract class ApplicationBootstrapper {
 			return;
 		}
 
-		this.mainWindow = new ElectronWindow(this.mainWindowBuildConfig);
+		this.mainWindow = new ElectronWindow(this.windowBuildConfig);
 		this.mainWindow.center();
 
 		this.mainWebContentsView = new ElectronWebContentsView();
-		this.mainWindow.addWebContentView(this.mainWebContentsView);
 		this.mainWebContentsView.autoAdaptToWindowBounds(this.mainWindow);
-		this.mainWebContentsView.loadFile(this.mainWindowContentsPath);
+		this.mainWindow.addWebContentView(this.mainWebContentsView);
 
+		const contentsFile: string = this.applicationContents.getDataUrl();
+		const baseUrl: string = this.applicationContents.getBaseUrl();
+
+		this.mainWebContentsView.loadDataUrl(contentsFile, baseUrl);
 		this.onReady();
 	}
 
@@ -105,15 +106,25 @@ export default abstract class ApplicationBootstrapper {
 	}
 
 	private ipcErrorChannelListener(packet: IPCErrorChannelPacket): void {
-		if (this.mainWindow == null || this.mainWebContentsView == null || this.mainWindowOnError == true) {
+		if (this.hasErrors == true) {
 			return;
 		}
 
-		const dialogMessage: string = packet.errorName + ": " + packet.errorMessage;
+		this.hasErrors = true;
 
-		this.mainWindowOnError = true;
-		this.mainWebContentsView.unload();
-		this.electronDialog.showForWindow(this.mainWindow, ElectronDialog.Type.ERROR, dialogMessage);
+		const errorDescription: string = packet.errorName + ": " + packet.errorMessage;
+
+		if (this.mainWindow != null) {
+
+			if (this.mainWebContentsView != null) {
+				this.mainWebContentsView.unload();
+			}
+
+			this.electronDialog.showMessageBox(this.mainWindow, ElectronDialog.Type.ERROR, errorDescription);
+		} else {
+			console.error("Critical startup error: ", errorDescription);
+		}
+
 		this.exit();
 	}
 

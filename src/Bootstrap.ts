@@ -6,7 +6,9 @@ import Nullable from "./engine/core/common/Nullable.ts";
 import Exception from "./engine/core/exception/Exception.ts";
 import NodeProcess from "./engine/platform/node/NodeProcess.ts";
 import ElectronWindow from "./engine/platform/electron/ElectronWindow.ts";
+import ApplicationContents from "./engine/application/ApplicationContents.ts";
 import ApplicationBootstrapper from "./engine/application/ApplicationBootstrapper.ts";
+import CanvasApplication from "./engine/application/CanvasApplication.ts";
 
 export default class Bootstrap extends ApplicationBootstrapper {
 
@@ -20,21 +22,22 @@ export default class Bootstrap extends ApplicationBootstrapper {
 
 	private static instance: Nullable<Bootstrap> = null;
 
-	private static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
 
-	private static readonly MAIN_WINDOW_CONFIG: Partial<ElectronWindow.BuildConfig> = {
+	private static readonly MAIN_WINDOW_BUILD_CONFIG: Partial<ElectronWindow.BuildConfig> = {
 		width: 800,
 		height: 600,
 		minWidth: 800,
 		minHeight: 600,
-		title: "Openpkw - Open Pokemon World",
-		icon: "../resources/icon/AppIcon.ico"
+		title: "Openpkw",
+		icon: "../resources/icon/app_icon.ico"
 	};
 
-	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
+	private static readonly APPLICATION_CONTENT: ApplicationContents = CanvasApplication.generateApplicationContents("./lib/Renderer.js");
+
+	private static readonly WEB_VIEW_CACHE_PATH: string = "/AppData/local/Openpkw/WebViewCache";
 
 	private constructor() {
-		super(Bootstrap.APP_WEB_CACHE_FOLDER, Bootstrap.MAIN_WINDOW_CONFIG, Bootstrap.MAIN_WINDOW_CONTENTS_PATH);
+		super(Bootstrap.MAIN_WINDOW_BUILD_CONFIG, Bootstrap.APPLICATION_CONTENT, Bootstrap.WEB_VIEW_CACHE_PATH);
 	}
 
 	public override onReady(): void {

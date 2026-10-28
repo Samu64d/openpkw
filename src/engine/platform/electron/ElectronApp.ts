@@ -25,11 +25,11 @@ export default class ElectronApp {
 		return this.appObject;
 	}
 
-	public getWebCachePath(): string {
+	public getUserDataPath(): string {
 		return this.appObject.getPath("userData");
 	}
 
-	public setWebCachePath(path: string): void {
+	public setUserDataPath(path: string): void {
 		this.appObject.setPath("userData", path);
 	}
 

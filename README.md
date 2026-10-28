@@ -2,5 +2,6 @@
 
 ## TODO:
 
+- Keyboard class
 - Implements full OBJDecoder
-- Implements Matrix classes
+- Matrix classes

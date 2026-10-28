@@ -14,7 +14,6 @@ export default class ElectronWebContentsView implements Disposable.Target {
 
 	private static readonly DEFAULT_WEB_PREFERENCES: Electron.WebPreferences = {
 		nodeIntegration: true,
-		webSecurity: false,
 		contextIsolation: false
 	};
 
@@ -86,8 +85,14 @@ export default class ElectronWebContentsView implements Disposable.Target {
 		this.setBounds(bounds);
 	}
 
-	public loadURL(url: string): void {
+	public loadUrl(url: string): void {
 		this.getWebContents().loadURL(url);
+	}
+
+	public loadDataUrl(dataUrl: string, baseUrl: string): void {
+		this.getWebContents().loadURL(dataUrl, {
+			baseURLForDataURL: baseUrl
+		});
 	}
 
 	public loadFile(filePath: string): void {
@@ -95,7 +100,7 @@ export default class ElectronWebContentsView implements Disposable.Target {
 	}
 
 	public unload(): void {
-		this.loadURL("about:blank");
+		this.loadUrl("about:blank");
 	}
 
 	public openDevTools(detach: boolean = false): void {
@@ -164,8 +169,8 @@ export default class ElectronWebContentsView implements Disposable.Target {
 			return;
 		}
 
-		const width: number = this.adaptWindow.getWidth();
-		const height: number = this.adaptWindow.getHeight();
+		const width: number = this.adaptWindow.getContentWidth();
+		const height: number = this.adaptWindow.getContentHeight();
 
 		this.setXPos(0);
 		this.setYPos(0);
