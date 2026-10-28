@@ -19,14 +19,10 @@ function main() {
 	const executableFilePath = Path.resolve(artefactPath, "./electron.exe");
 
 	try {
-		if (Fs.readFileSync(versionFilePath, "utf-8").replace(/^v/, "") == version) {
+		if (Fs.existsSync(executableFilePath) && Fs.readFileSync(versionFilePath, "utf-8").replace(/^v/, "") == version) {
 			process.exit(0);
 		}
-	} catch {
-	}
-
-	if (Fs.existsSync(executableFilePath)) {
-		process.exit(0);
+	} catch (e) {
 	}
 
 	return Get.downloadArtifact({
