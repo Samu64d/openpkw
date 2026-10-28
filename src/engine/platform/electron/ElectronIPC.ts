@@ -5,57 +5,53 @@
 import * as Electron from "electron";
 
 import Nullable from "../../core/common/Nullable.ts";
-import BiConsumer from "../../core/common/BiConsumer.ts";
+import Supplier from "../../core/common/Supplier.ts";
 import EventListener from "../../core/common/EventListener.ts";
 import InvalidOperationException from "../../core/exception/InvalidOperationException.ts";
-import ElectronProcess from "./ElectronProcess.ts";
+import NodeProcess from "../node/NodeProcess.ts";
 
 class ElectronIPC {
 
-	public static registerRequestListener(channel: ElectronIPC.Channel, listener: EventListener<ElectronIPC.Channel>): void {
-		if (ElectronIPC.register == null) {
+	public static readonly FROM_GLOBAL_REFERENCE: Supplier<ElectronIPC> = (): ElectronIPC => {
+		const processType: NodeProcess.Type = NodeProcess.getType();
+		let register: Nullable<ElectronIPC.Register> = null;
+		let invoker: Nullable<ElectronIPC.Invoker> = null;
+
+		if (processType == NodeProcess.Type.MAIN) {
+			register = Electron.ipcMain.handle.bind(Electron.ipcMain);
+		}
+
+		if (processType == NodeProcess.Type.RENDERER) {
+			invoker = Electron.ipcRenderer.invoke.bind(Electron.ipcRenderer);
+		}
+
+		return new ElectronIPC(register, invoker);
+	};
+
+	private readonly register: Nullable<ElectronIPC.Register> = null;
+	private readonly invoker: Nullable<ElectronIPC.Invoker> = null;
+
+	private constructor(register: Nullable<ElectronIPC.Register>, invoker: Nullable<ElectronIPC.Invoker>) {
+		this.register = register;
+		this.invoker = invoker;
+	}
+
+	public registerRequestListener(channel: ElectronIPC.Channel, listener: EventListener<ElectronIPC.Channel>): void {
+		if (this.register == null) {
 			throw new InvalidOperationException("Cannot register an IPC listener for current context");
 		}
 
-		ElectronIPC.register(channel, (event: any, ...args: any[]) => {
+		this.register(channel, (event: Electron.IpcMainInvokeEvent, ...args: any[]) => {
 			return listener(channel, ...args);
 		});
 	}
 
-	public static sendRequest(channel: ElectronIPC.Channel, ...args: any[]): any {
-		if (ElectronIPC.invoker == null) {
+	public sendRequest(channel: ElectronIPC.Channel, ...args: any[]): any {
+		if (this.invoker == null) {
 			throw new InvalidOperationException("Cannot send an IPC message for current context");
 		}
 
-		return ElectronIPC.invoker(channel, ...args);
-	}
-
-	private static register: Nullable<BiConsumer<ElectronIPC.Channel, EventListener<any>>> = null;
-
-	private static invoker: Nullable<(channel: ElectronIPC.Channel, ...args: any[]) => any> = null;
-
-	private constructor() {
-	}
-
-	static {
-		const processType: ElectronProcess.Type = ElectronProcess.getType();
-
-		switch (processType) {
-			case ElectronProcess.Type.MAIN:
-				{
-					ElectronIPC.register = Electron.ipcMain.handle.bind(Electron.ipcMain);
-					break;
-				}
-			case ElectronProcess.Type.RENDERER:
-				{
-					ElectronIPC.invoker = Electron.ipcRenderer.invoke.bind(Electron.ipcRenderer);
-					break;
-				}
-			default:
-				{
-					break;
-				}
-		}
+		return this.invoker(channel, ...args);
 	}
 
 }
@@ -63,6 +59,10 @@ class ElectronIPC {
 namespace ElectronIPC {
 
 	export type Channel = string;
+
+	export type Register = (channel: Channel, listener: EventListener<Electron.IpcMainInvokeEvent>) => void;
+
+	export type Invoker = (channel: Channel, ...args: any[]) => any;
 
 }
 

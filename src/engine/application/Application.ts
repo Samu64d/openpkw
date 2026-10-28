@@ -6,9 +6,12 @@ import Nullable from "../core/common/Nullable.ts";
 import EventListener from "../core/common/EventListener.ts";
 import Exception from "../core/exception/Exception.ts";
 import InvalidOperationException from "../core/exception/InvalidOperationException.ts";
+import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
 
 export default abstract class Application {
+
+	private static readonly CANVAS_ELEMENT_ID: string = "canvas";
 
 	private static readonly DEFAULT_CONTEXT_ATTRIBUTES: WebGLContextAttributes = {
 		alpha: false,
@@ -17,13 +20,17 @@ export default abstract class Application {
 		premultipliedAlpha: true
 	};
 
-	protected readonly document: Document;
+	private readonly electronIPC: ElectronIPC;
+	private readonly ipcErrorChannel: IPCErrorChannel;
+	private readonly document: Document;
 	private documentReady: boolean;
 	private documentError: boolean;
 	private renderingCanvas: Nullable<HTMLCanvasElement>;
 	private renderingContext: Nullable<WebGL2RenderingContext>;
 
 	protected constructor() {
+		this.electronIPC = ElectronIPC.FROM_GLOBAL_REFERENCE();
+		this.ipcErrorChannel = new IPCErrorChannel(this.electronIPC);
 		this.document = window.document;
 		this.documentReady = false;
 		this.documentError = false;
@@ -71,7 +78,7 @@ export default abstract class Application {
 	}
 
 	private setupRenderingCanvasAndContext(): void {
-		this.renderingCanvas = this.document.getElementById("canvas") as Nullable<HTMLCanvasElement>;
+		this.renderingCanvas = this.document.getElementById(Application.CANVAS_ELEMENT_ID) as Nullable<HTMLCanvasElement>;
 
 		if (this.renderingCanvas == null) {
 			throw new Exception("Cannot find document canvas element");
@@ -109,11 +116,11 @@ export default abstract class Application {
 	}
 
 	private onErrorListener(event: ErrorEvent): void {
-		const error: unknown = event.error;
+		const e: unknown = event.error;
 
 		this.documentError = true;
-		this.onError(error);
-		IPCErrorChannel.sendError(error);
+		this.ipcErrorChannel.sendError(e);
+		this.onError(e);
 	}
 
 	private registerWindowEventListeners(): void {

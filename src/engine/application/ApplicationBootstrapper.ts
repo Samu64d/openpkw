@@ -4,31 +4,41 @@
 
 import Nullable from "../core/common/Nullable.ts";
 import NodeOS from "../platform/node/NodeOS.ts";
-import NodeChildProcess from "../platform/node/NodeChildProcess.ts";
-import ElectronProcess from "../platform/electron/ElectronProcess.ts";
+import NodeProcess from "../platform/node/NodeProcess.ts";
+import ElectronApp from "../platform/electron/ElectronApp.ts";
+import ElectronIPC from "../platform/electron/ElectronIPC.ts";
+import ElectronDialog from "../platform/electron/ElectronDialog.ts";
 import ElectronWindow from "../platform/electron/ElectronWindow.ts";
 import ElectronWebContentsView from "../platform/electron/ElectronWebContentsView.ts";
-import ElectronApp from "../platform/electron/ElectronApp.ts";
 import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
 
 export default abstract class ApplicationBootstrapper {
 
-	private static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
-
-	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
-
+	private readonly webViewCachePath: string;
 	private readonly mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>;
+	private readonly mainWindowContentsPath: string;
+	private readonly electronApp: ElectronApp;
+	private readonly electronIPC: ElectronIPC;
+	private readonly electronDialog: ElectronDialog;
+	private readonly ipcErrorChannel: IPCErrorChannel;
 	private mainWindow: Nullable<ElectronWindow>;
 	private mainWebContentsView: Nullable<ElectronWebContentsView>;
 	private mainWindowOnError: boolean;
 
-	protected constructor(mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>) {
+	protected constructor(webViewCachePath: string, mainWindowBuildConfig: Partial<ElectronWindow.BuildConfig>, mainWindowContentsPath: string) {
+		this.webViewCachePath = webViewCachePath;
 		this.mainWindowBuildConfig = mainWindowBuildConfig;
+		this.mainWindowContentsPath = mainWindowContentsPath;
+
+		this.electronApp = ElectronApp.FROM_GLOBAL_REFERENCE();
+		this.electronIPC = ElectronIPC.FROM_GLOBAL_REFERENCE();
+		this.electronDialog = ElectronDialog.FROM_GLOBAL_REFERENCE();
+		this.ipcErrorChannel = new IPCErrorChannel(this.electronIPC);
 		this.mainWindow = null;
 		this.mainWebContentsView = null;
 		this.mainWindowOnError = false;
-		this.setupElectron();
+		this.setupEnvironmentConfiguration();
 		this.registerAppEventListeners();
 		this.registerIpcEventListeners();
 	}
@@ -43,14 +53,18 @@ export default abstract class ApplicationBootstrapper {
 
 	public exit(): void {
 		this.onExit();
-		ElectronApp.exit();
+		this.electronApp.exit();
 	}
 
-	private setupElectron(): void {
-		ElectronProcess.disableSecurityWarnings();
-		ElectronApp.setSwitch("disable-http-cache");
-		ElectronApp.setSwitch("force-color-profile", "srgb");
-		ElectronApp.setWebCachePath(NodeOS.getHomeDir() + ApplicationBootstrapper.APP_WEB_CACHE_FOLDER);
+	private setupEnvironmentConfiguration(): void {
+		NodeProcess.registerEventListener("uncaughtException", (e: unknown) => {
+			this.ipcErrorChannelListener(IPCErrorChannelPacket.FROM_ERROR(e));
+		});
+
+		this.electronApp.disableSecurityWarnings();
+		this.electronApp.setSwitch("disable-http-cache");
+		this.electronApp.setSwitch("force-color-profile", "srgb");
+		this.electronApp.setWebCachePath(NodeOS.getHomeDir() + this.webViewCachePath);
 	}
 
 	private onWindowAllClosedListener(): void {
@@ -68,7 +82,7 @@ export default abstract class ApplicationBootstrapper {
 	}
 
 	private onReadyListener(): void {
-		if (ElectronApp.requestSingleInstanceLock() == false) {
+		if (this.electronApp.requestSingleInstanceLock() == false) {
 			this.exit();
 			return;
 		}
@@ -79,15 +93,15 @@ export default abstract class ApplicationBootstrapper {
 		this.mainWebContentsView = new ElectronWebContentsView();
 		this.mainWindow.addWebContentView(this.mainWebContentsView);
 		this.mainWebContentsView.autoAdaptToWindowBounds(this.mainWindow);
-		this.mainWebContentsView.loadFile(ApplicationBootstrapper.MAIN_WINDOW_CONTENTS_PATH);
+		this.mainWebContentsView.loadFile(this.mainWindowContentsPath);
 
 		this.onReady();
 	}
 
 	private registerAppEventListeners(): void {
-		ElectronApp.registerEventListener("window-all-closed", this.onWindowAllClosedListener.bind(this));
-		ElectronApp.registerEventListener("second-instance", this.onSecondInstanceListener.bind(this));
-		ElectronApp.registerEventListener("ready", this.onReadyListener.bind(this));
+		this.electronApp.registerEventListener("window-all-closed", this.onWindowAllClosedListener.bind(this));
+		this.electronApp.registerEventListener("second-instance", this.onSecondInstanceListener.bind(this));
+		this.electronApp.registerEventListener("ready", this.onReadyListener.bind(this));
 	}
 
 	private ipcErrorChannelListener(packet: IPCErrorChannelPacket): void {
@@ -95,16 +109,16 @@ export default abstract class ApplicationBootstrapper {
 			return;
 		}
 
-		const messageBoxMessage: string = packet.errorName + ": " + packet.errorMessage;
+		const dialogMessage: string = packet.errorName + ": " + packet.errorMessage;
 
 		this.mainWindowOnError = true;
 		this.mainWebContentsView.unload();
-		NodeChildProcess.spawn("powershell.exe", ["Add-Type -AssemblyName PresentationCore, PresentationFramework; [System.Windows.MessageBox]::Show(\"" + messageBoxMessage + "\", \"Openpkw\", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error);"], true);
+		this.electronDialog.showForWindow(this.mainWindow, ElectronDialog.Type.ERROR, dialogMessage);
 		this.exit();
 	}
 
 	private registerIpcEventListeners(): void {
-		IPCErrorChannel.registerErrorListener(this.ipcErrorChannelListener.bind(this));
+		this.ipcErrorChannel.registerErrorListener(this.ipcErrorChannelListener.bind(this));
 	}
 
 }

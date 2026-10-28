@@ -4,7 +4,7 @@
 
 import Nullable from "./engine/core/common/Nullable.ts";
 import Exception from "./engine/core/exception/Exception.ts";
-import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
+import NodeProcess from "./engine/platform/node/NodeProcess.ts";
 import ElectronWindow from "./engine/platform/electron/ElectronWindow.ts";
 import ApplicationBootstrapper from "./engine/application/ApplicationBootstrapper.ts";
 
@@ -20,6 +20,8 @@ export default class Bootstrap extends ApplicationBootstrapper {
 
 	private static instance: Nullable<Bootstrap> = null;
 
+	private static readonly APP_WEB_CACHE_FOLDER: string = "/AppData/local/Openpkw/WebViewCache";
+
 	private static readonly MAIN_WINDOW_CONFIG: Partial<ElectronWindow.BuildConfig> = {
 		width: 800,
 		height: 600,
@@ -29,8 +31,10 @@ export default class Bootstrap extends ApplicationBootstrapper {
 		icon: "../resources/icon/AppIcon.ico"
 	};
 
-	protected constructor() {
-		super(Bootstrap.MAIN_WINDOW_CONFIG);
+	private static readonly MAIN_WINDOW_CONTENTS_PATH: string = "../resources/markup/MainWindow.html";
+
+	private constructor() {
+		super(Bootstrap.APP_WEB_CACHE_FOLDER, Bootstrap.MAIN_WINDOW_CONFIG, Bootstrap.MAIN_WINDOW_CONTENTS_PATH);
 	}
 
 	public override onReady(): void {
@@ -40,7 +44,7 @@ export default class Bootstrap extends ApplicationBootstrapper {
 	}
 
 	static {
-		if (ElectronProcess.getType() == ElectronProcess.Type.MAIN) {
+		if (NodeProcess.getType() == NodeProcess.Type.MAIN) {
 			Bootstrap.instance = new Bootstrap();
 		}
 	}

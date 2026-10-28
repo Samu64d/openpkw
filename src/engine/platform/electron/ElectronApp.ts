@@ -5,45 +5,60 @@
 import * as Electron from "electron";
 
 import Nullable from "../../core/common/Nullable.ts";
+import Supplier from "../../core/common/Supplier.ts";
 import EventListener from "../../core/common/EventListener.ts";
+import NodeProcess from "../node/NodeProcess.ts";
 
 export default class ElectronApp {
 
-	public static getInstance(): Electron.App {
-		return ElectronApp.app;
+	public static readonly FROM_GLOBAL_REFERENCE: Supplier<ElectronApp> = (): ElectronApp => {
+		return new ElectronApp(Electron.app);
+	};
+
+	private readonly appObject: Electron.App;
+
+	private constructor(app: Electron.App) {
+		this.appObject = app;
 	}
 
-	public static getWebCachePath(): string {
-		return this.app.getPath("userData");
+	public getAppObject(): Electron.App {
+		return this.appObject;
 	}
 
-	public static setWebCachePath(path: string): void {
-		this.app.setPath("userData", path);
+	public getWebCachePath(): string {
+		return this.appObject.getPath("userData");
 	}
 
-	public static registerEventListener(eventName: any, listener: EventListener<Electron.Event>): void {
-		this.app.on(eventName, listener);
+	public setWebCachePath(path: string): void {
+		this.appObject.setPath("userData", path);
 	}
 
-	public static setSwitch(name: string, value: Nullable<string> = null): void {
+	public setSwitch(name: string, value: Nullable<string> = null): void {
 		if (value != null) {
-			this.app.commandLine.appendSwitch(name, value);
+			this.appObject.commandLine.appendSwitch(name, value);
 		} else {
-			this.app.commandLine.appendSwitch(name);
+			this.appObject.commandLine.appendSwitch(name);
 		}
 	}
 
-	public static requestSingleInstanceLock(): boolean {
-		return this.app.requestSingleInstanceLock();
+	public requestSingleInstanceLock(): boolean {
+		return this.appObject.requestSingleInstanceLock();
 	}
 
-	public static exit(): void {
-		this.app.quit();
+	public disableSecurityWarnings(): void {
+		NodeProcess.disableSecurityWarnings();
 	}
 
-	private static readonly app: Electron.App = Electron.app;
+	public registerEventListener(eventName: any, listener: EventListener<Electron.Event>): void {
+		this.appObject.on(eventName, listener);
+	}
 
-	private constructor() {
+	public removeEventListener(event: any, listener: EventListener<Electron.Event>): void {
+		this.appObject.off(event, listener);
+	}
+
+	public exit(): void {
+		this.appObject.quit();
 	}
 
 }

@@ -11,7 +11,7 @@ import Logger from "./engine/core/util/logger/Logger.ts";
 import Exception from "./engine/core/exception/Exception.ts";
 import PoolMemoryDriver from "./engine/drivers/memory/PoolMemoryDriver.ts";
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
-import ElectronProcess from "./engine/platform/electron/ElectronProcess.ts";
+import NodeProcess from "./engine/platform/node/NodeProcess.ts";
 import Application from "./engine/application/Application.ts";
 import Renderer from "./app/Renderer.ts";
 
@@ -37,7 +37,7 @@ export default class Openpkw extends Application {
 	private lastUpdateTime: number;
 	private renderer: Nullable<Renderer>;
 
-	protected constructor() {
+	private constructor() {
 		super();
 
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
@@ -141,7 +141,7 @@ export default class Openpkw extends Application {
 	}
 
 	static {
-		if (ElectronProcess.getType() == ElectronProcess.Type.RENDERER) {
+		if (NodeProcess.getType() == NodeProcess.Type.RENDERER) {
 			Openpkw.instance = new Openpkw();
 		}
 	}

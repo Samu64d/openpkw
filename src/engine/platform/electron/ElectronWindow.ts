@@ -16,7 +16,7 @@ class ElectronWindow implements Disposable.Target {
 	private static readonly DEFAULT_HEIGHT: number = 600;
 
 	private static buildConstructorOptions(config: Partial<ElectronWindow.BuildConfig>): Electron.BaseWindowConstructorOptions {
-		const options: Electron.BrowserWindowConstructorOptions = {
+		const options: Electron.BaseWindowConstructorOptions = {
 			width: config.width ?? ElectronWindow.DEFAULT_WIDTH,
 			height: config.height ?? ElectronWindow.DEFAULT_HEIGHT,
 			minWidth: config.minWidth ?? 0,
@@ -36,10 +36,14 @@ class ElectronWindow implements Disposable.Target {
 	private readonly windowObject: Electron.BaseWindow;
 
 	public constructor(config: Partial<ElectronWindow.BuildConfig>) {
-		const options: Electron.BrowserWindowConstructorOptions = ElectronWindow.buildConstructorOptions(config);
+		const options: Electron.BaseWindowConstructorOptions = ElectronWindow.buildConstructorOptions(config);
 
-		this.windowObject = new Electron.BrowserWindow(options);
+		this.windowObject = new Electron.BaseWindow(options);
 		this.windowObject.removeMenu();
+	}
+
+	public getWindowObject(): Electron.BaseWindow {
+		return this.windowObject;
 	}
 
 	public getTitle(): string {
