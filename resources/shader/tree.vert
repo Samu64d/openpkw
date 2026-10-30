@@ -17,9 +17,9 @@ void main() {
 	float waveX = sin(position.x + time * 1.5) * 0.03 * position.y;
 	float waveZ = cos(position.z + time * 1.5) * 0.03 * position.y;
 	vec3 wavedPosition = vec3(position.x + waveX, position.y, position.z + waveZ);
-	vec4 viewPosition = modelView * vec4(wavedPosition, 1.0);
+	vec4 modelViewPosition = modelView * vec4(wavedPosition, 1.0);
 
-	gl_Position = projection * viewPosition;
-	outDistance = -viewPosition.z;
+	gl_Position = projection * modelViewPosition;
+	outDistance = -modelViewPosition.z;
 	outUv = uv;
 }

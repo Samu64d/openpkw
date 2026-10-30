@@ -10,8 +10,10 @@ uniform sampler2D samplerImage;
 centroid in float outDistance;
 centroid in vec2 outUv;
 
-out vec4 color;
+out vec4 outColor;
 
+float ambientLightStrength = 0.15;
+vec4 ambientLightColor = vec4(0.9, 0.9, 0.95, 1.0);
 float fogStart = 1.0;
 float fogEnd = 5.0;
 vec4 fogColor = vec4(0.9, 0.85, 0.9, 1.0);
@@ -23,7 +25,8 @@ void main() {
 		discard;
 	}
 
-	float fogFactor = clamp((fogEnd - outDistance) / (fogEnd - fogStart), 0.0, 1.0);
+	vec4 ambientSamplerColor = mix(samplerColor, ambientLightColor, ambientLightStrength);
+	float fogFactor = clamp((outDistance - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
 
-	color = mix(fogColor, samplerColor, fogFactor);
+	outColor = mix(ambientSamplerColor, fogColor, fogFactor);
 }

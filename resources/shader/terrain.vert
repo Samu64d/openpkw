@@ -14,9 +14,9 @@ centroid out float outDistance;
 centroid out vec2 outUv;
 
 void main() {
-	vec4 viewPosition = modelView * vec4(position, 1.0);
+	vec4 modelViewPosition = modelView * vec4(position, 1.0);
 
-	gl_Position = projection * viewPosition;
-	outDistance = -viewPosition.z;
+	gl_Position = projection * modelViewPosition;
+	outDistance = -modelViewPosition.z;
 	outUv = uv;
 }
