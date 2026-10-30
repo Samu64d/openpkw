@@ -15,7 +15,7 @@ export default abstract class Application {
 		<html style="box-sizing: content-box; width: 100%; height: 100%; margin: 0px; user-select: none; cursor: default;">
 			<head>
 				<meta charset="UTF-8"></meta>
-				<script src="{{src}}"></script>
+				<script src="{{entryPointPath}}"></script>
 			</head>
 			<body style="box-sizing: content-box; display: flex; width: 100%; height: 100%; margin: 0px; justify-content: center; align-items: center;">
 			</body>
@@ -24,7 +24,7 @@ export default abstract class Application {
 
 	public static generateApplicationContents(entryPointPath: string): ApplicationContents {
 		const template: string = Application.CONTENTS_TEMPLATE;
-		const templateInstance: string = template.replace("{{src}}", entryPointPath);
+		const templateInstance: string = template.replace("{{entryPointPath}}", entryPointPath);
 		const dataUrl: string = "data:text/html;base64," + Buffer.from(templateInstance).toString("base64");
 		const baseUrl: string = NodePath.join([__dirname, "../"]);
 

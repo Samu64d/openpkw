@@ -38,7 +38,7 @@ export default class Openpkw extends CanvasApplication {
 	private renderer: Nullable<Renderer>;
 
 	private constructor() {
-		super(false);
+		super(CanvasApplication.ADAPTIVE_RESOLUTION(0.5), false);
 
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
 		DriverRegistry.register(MemoryDriver, new PoolMemoryDriver());
@@ -83,12 +83,21 @@ export default class Openpkw extends CanvasApplication {
 	}
 
 	public override onClientResize(width: number, height: number): void {
+	}
+
+	public override onCanvasResize(width: number, height: number): void {
 		if (this.renderer == null) {
 			return;
 		}
 
 		this.renderer.setViewportSize(width, height);
 		this.renderer.draw(this.time);
+	}
+
+	public override onRenderingContextLost(): void {
+	}
+
+	public override onRenderingContextRestored(): void {
 	}
 
 	public override onError(e: unknown): void {
