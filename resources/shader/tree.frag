@@ -13,7 +13,7 @@ centroid in vec2 outUv;
 out vec4 color;
 
 float fogStart = 1.0;
-float fogEnd = 20.0;
+float fogEnd = 5.0;
 vec4 fogColor = vec4(0.9, 0.85, 0.9, 1.0);
 
 void main() {

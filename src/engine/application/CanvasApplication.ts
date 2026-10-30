@@ -6,9 +6,9 @@ import Nullable from "../core/common/Nullable.ts";
 import Function from "../core/common/Function.ts";
 import BiFunction from "../core/common/BiFunction.ts";
 import Exception from "../core/exception/Exception.ts";
-import Application from "./Application.ts";
+import BrowserApplication from "./BrowserApplication.ts";
 
-abstract class CanvasApplication extends Application {
+abstract class CanvasApplication extends BrowserApplication {
 
 	public static readonly FIXED_RESOLUTION: BiFunction<number, number, CanvasApplication.ResolutionAdapter> = (width: number, height: number): CanvasApplication.ResolutionAdapter => {
 		return new CanvasApplication.FixedResolutionAdapter(width, height);
@@ -34,7 +34,9 @@ abstract class CanvasApplication extends Application {
 
 		this.resolutionAdapter = resolutionAdapter;
 		this.antialiasing = antialiasing;
-		this.canvasElement = this.getDocument().createElement("canvas");
+		this.canvasElement = this.browserDocument.createElement("canvas");
+		this.canvasElement.style.width = "100%";
+		this.canvasElement.style.height = "100%";
 		this.canvasContext = null;
 	}
 
@@ -97,13 +99,11 @@ abstract class CanvasApplication extends Application {
 	}
 
 	private setupCanvas(): void {
-		this.canvasElement.style.width = "100%";
-		this.canvasElement.style.height = "100%";
+		this.browserDocument.appendNodeToBody(this.canvasElement);
+
 		this.canvasElement.addEventListener("contextlost", this.onRenderingContextLost.bind(this));
 		this.canvasElement.addEventListener("contextrestored", this.onRenderingContextRestored.bind(this));
 		this.updateCanvasSize();
-
-		this.getDocument().body.appendChild(this.canvasElement);
 
 		const attributes: WebGLContextAttributes = {
 			...CanvasApplication.DEFAULT_CANVAS_CONTEXT_ATTRIBUTES,

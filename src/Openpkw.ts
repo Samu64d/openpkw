@@ -9,7 +9,7 @@ import DriverRegistry from "./engine/core/interop/DriverRegistry.ts";
 import LogLevel from "./engine/core/util/logger/LogLevel.ts";
 import Logger from "./engine/core/util/logger/Logger.ts";
 import Exception from "./engine/core/exception/Exception.ts";
-import PoolMemoryDriver from "./engine/drivers/memory/PoolMemoryDriver.ts";
+import BrowserMemoryDriver from "./engine/drivers/memory/browser/BrowserMemoryDriver.ts";
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import NodeProcess from "./engine/platform/node/NodeProcess.ts";
 import CanvasApplication from "./engine/application/CanvasApplication.ts";
@@ -41,7 +41,7 @@ export default class Openpkw extends CanvasApplication {
 		super(CanvasApplication.ADAPTIVE_RESOLUTION(0.5), false);
 
 		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
-		DriverRegistry.register(MemoryDriver, new PoolMemoryDriver());
+		DriverRegistry.register(MemoryDriver, new BrowserMemoryDriver());
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
 		this.keyMap = new Map<string, boolean>();
 		this.time = 0;
@@ -74,7 +74,7 @@ export default class Openpkw extends CanvasApplication {
 
 		const audio: HTMLAudioElement = document.createElement("audio");
 		document.body.appendChild(audio);
-		audio.src = "./resources/music/track_0.mp3";
+		audio.src = "./resources/music/track_1.mp3";
 		audio.loop = true;
 		audio.style.display = "none";
 		audio.play();

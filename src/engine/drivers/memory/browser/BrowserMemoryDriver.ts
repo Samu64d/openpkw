@@ -2,15 +2,15 @@
 // PoolMemoryDriver.ts
 //
 
-import Nullable from "../../core/common/Nullable.ts";
-import SizeablePoolAllocator from "../../core/memory/SizeablePoolAllocator.ts";
-import MemoryDriver from "../../core/interop/MemoryDriver.ts";
-import Disposable from "../../core/reflection/decorators/Disposable.ts";
-import Exception from "../../core/exception/Exception.ts";
-import ArgumentOutOfRangeException from "../../core/exception/ArgumentOutOfRangeException.ts";
+import Nullable from "../../../core/common/Nullable.ts";
+import SizeablePoolAllocator from "../../../core/memory/SizeablePoolAllocator.ts";
+import MemoryDriver from "../../../core/interop/MemoryDriver.ts";
+import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import Exception from "../../../core/exception/Exception.ts";
+import ArgumentOutOfRangeException from "../../../core/exception/ArgumentOutOfRangeException.ts";
 
 @Disposable()
-export default class PoolMemoryDriver extends MemoryDriver implements Disposable.Target {
+export default class BrowserMemoryDriver extends MemoryDriver implements Disposable.Target {
 
 	private readonly allocator: SizeablePoolAllocator<ArrayBuffer>;
 

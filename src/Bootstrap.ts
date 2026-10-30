@@ -32,7 +32,7 @@ export default class Bootstrap extends ApplicationBootstrapper {
 		icon: "../resources/icon/app_icon.ico"
 	};
 
-	private static readonly APPLICATION_CONTENT: ApplicationContents = CanvasApplication.generateApplicationContents("./lib/Renderer.js");
+	private static readonly APPLICATION_CONTENT: ApplicationContents = ApplicationContents.BUILD_FOR(CanvasApplication, "./lib/Renderer.js");
 
 	private static readonly WEB_VIEW_CACHE_PATH: string = "/AppData/local/Openpkw/WebViewCache";
 
