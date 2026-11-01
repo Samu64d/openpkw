@@ -45,6 +45,10 @@ export default abstract class ApplicationBootstrapper {
 		return this.mainWindow;
 	}
 
+	public getMainWebContentsView(): Nullable<ElectronWebContentsView> {
+		return this.mainWebContentsView;
+	}
+
 	public abstract onReady(): void;
 
 	public abstract onExit(): void;

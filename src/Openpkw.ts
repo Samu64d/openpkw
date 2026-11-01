@@ -5,12 +5,14 @@
 import Nullable from "./engine/core/common/Nullable.ts";
 import MemoryDriver from "./engine/core/interop/MemoryDriver.ts";
 import FileSystemDriver from "./engine/core/interop/FileSystemDriver.ts";
+import KeyboardDriver from "./engine/core/interop/KeyboardDriver.ts";
 import DriverRegistry from "./engine/core/interop/DriverRegistry.ts";
 import LogLevel from "./engine/core/util/logger/LogLevel.ts";
 import Logger from "./engine/core/util/logger/Logger.ts";
 import Exception from "./engine/core/exception/Exception.ts";
 import BrowserMemoryDriver from "./engine/drivers/memory/browser/BrowserMemoryDriver.ts";
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
+import BrowserKeyboardDriver from "./engine/drivers/keyboard/browser/BrowserKeyboardDriver.ts";
 import NodeProcess from "./engine/platform/node/NodeProcess.ts";
 import CanvasApplication from "./engine/application/CanvasApplication.ts";
 import Renderer from "./app/Renderer.ts";
@@ -32,7 +34,7 @@ export default class Openpkw extends CanvasApplication {
 	private static readonly LOG_FILE_NAME: string = "./openpkw.log";
 
 	private readonly logger: Logger;
-	private readonly keyMap: Map<string, boolean>;
+	private readonly keyboard: KeyboardDriver;
 	private time: number;
 	private lastUpdateTime: number;
 	private renderer: Nullable<Renderer>;
@@ -40,10 +42,8 @@ export default class Openpkw extends CanvasApplication {
 	private constructor() {
 		super(CanvasApplication.ADAPTIVE_RESOLUTION(0.5), false);
 
-		DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
-		DriverRegistry.register(MemoryDriver, new BrowserMemoryDriver());
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
-		this.keyMap = new Map<string, boolean>();
+		this.keyboard = DriverRegistry.get(KeyboardDriver);
 		this.time = 0;
 		this.lastUpdateTime = -1;
 		this.renderer = null;
@@ -52,26 +52,7 @@ export default class Openpkw extends CanvasApplication {
 	public override onReady(): void {
 		this.logger.log(LogLevel.INFO, "Start initializing application");
 
-		document.addEventListener("keydown", (event: KeyboardEvent) => {
-			if (event.code == null) {
-				return;
-			}
-
-			if (event.code == "KeyP" && this.renderer != null) {
-				this.renderer.setDebugLines(!this.renderer.getDebugLines());
-			}
-
-			this.keyMap.set(event.code, true);
-		});
-
-		document.addEventListener("keyup", (event: KeyboardEvent) => {
-			if (event.code == null) {
-				return;
-			}
-
-			this.keyMap.set(event.code, false);
-		});
-
+		// Test
 		const audio: HTMLAudioElement = document.createElement("audio");
 		document.body.appendChild(audio);
 		audio.src = "./resources/music/track_1.mp3";
@@ -114,28 +95,29 @@ export default class Openpkw extends CanvasApplication {
 		if (elapsed > 10) {
 			this.lastUpdateTime = now - (elapsed % 10);
 
-			if (this.keyMap.get("ArrowRight")) {
+			if (this.keyboard.isKeyPressed("ArrowRight")) {
 				this.renderer.moveCamera(0.025, 0, 0);
 			}
-			if (this.keyMap.get("ArrowLeft")) {
+			if (this.keyboard.isKeyPressed("ArrowLeft")) {
 				this.renderer.moveCamera(-0.025, 0, 0);
 			}
-			if (this.keyMap.get("ArrowUp")) {
+			if (this.keyboard.isKeyPressed("ArrowUp")) {
 				this.renderer.moveCamera(0, 0, -0.025);
 			}
-			if (this.keyMap.get("ArrowDown")) {
+			if (this.keyboard.isKeyPressed("ArrowDown")) {
 				this.renderer.moveCamera(0.0, 0, 0.025);
 			}
-			if (this.keyMap.get("BracketRight")) {
+			if (this.keyboard.isKeyPressed("BracketRight")) {
 				this.renderer.moveCamera(0, 0.025, 0);
 			}
-			if (this.keyMap.get("Slash")) {
+			if (this.keyboard.isKeyPressed("Slash")) {
 				this.renderer.moveCamera(0, -0.025, 0);
 			}
 
-			this.renderer.draw(this.time);
 			this.time += 1;
 		}
+
+		this.renderer.draw(this.time);
 
 		window.requestAnimationFrame(this.updateRenderer.bind(this));
 	}
@@ -158,6 +140,10 @@ export default class Openpkw extends CanvasApplication {
 
 	static {
 		if (NodeProcess.getType() == NodeProcess.Type.RENDERER) {
+			DriverRegistry.register(MemoryDriver, new BrowserMemoryDriver());
+			DriverRegistry.register(FileSystemDriver, new NodeFileSystemDriver());
+			DriverRegistry.register(KeyboardDriver, new BrowserKeyboardDriver());
+
 			Openpkw.instance = new Openpkw();
 		}
 	}
