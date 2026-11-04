@@ -1,14 +1,17 @@
 //
-// Application.ts
+// BrowserApplication.ts
 //
 
+import EventRegistrationTracker from "../core/event/EventRegistrationTracker.ts";
+import Disposable from "../core/reflection/decorators/Disposable.ts";
 import BrowserWindow from "../platform/browser/BrowserWindow.ts";
 import BrowserDocument from "../platform/browser/BrowserDocument.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
 import Application from "./Application.ts";
 
-export default abstract class BrowserApplication extends Application {
+@Disposable()
+export default abstract class BrowserApplication extends Application implements Disposable.Target {
 
 	public static override getContentsTemplate(): string {
 		return `
@@ -27,15 +30,17 @@ export default abstract class BrowserApplication extends Application {
 	protected readonly ipcErrorChannel: IPCErrorChannel;
 	protected readonly browserWindow: BrowserWindow;
 	protected readonly browserDocument: BrowserDocument;
+	private readonly browserWindowEvents: EventRegistrationTracker<keyof WindowEventMap, WindowEventMap[keyof WindowEventMap]>;
 	private windowIsReady: boolean;
 	private windowHasErrors: boolean;
 
-	protected constructor() {
+	public constructor() {
 		super();
 
 		this.ipcErrorChannel = new IPCErrorChannel(ElectronIPC.FROM_GLOBAL_REFERENCE());
 		this.browserWindow = BrowserWindow.FROM_GLOBAL_REFERENCE();
 		this.browserDocument = BrowserDocument.FROM_GLOBAL_REFERENCE();
+		this.browserWindowEvents = new EventRegistrationTracker(this.browserWindow);
 		this.windowIsReady = false;
 		this.windowHasErrors = false;
 		this.registerWindowEventListeners();
@@ -61,6 +66,14 @@ export default abstract class BrowserApplication extends Application {
 		return this.browserDocument;
 	}
 
+	public getDocumentBody(): HTMLElement {
+		return this.browserDocument.getBody();
+	}
+
+	public dispose(): void {
+		this.browserWindowEvents.removeAll();
+	}
+
 	protected onLoadListener(): void {
 		this.windowIsReady = true;
 		this.onReady();
@@ -80,9 +93,9 @@ export default abstract class BrowserApplication extends Application {
 	}
 
 	private registerWindowEventListeners(): void {
-		this.browserWindow.registerEventListener("load", this.onLoadListener.bind(this));
-		this.browserWindow.registerEventListener("resize", this.onResizeListener.bind(this));
-		this.browserWindow.registerEventListener("error", this.onErrorListener.bind(this));
+		this.browserWindowEvents.add("load", this.onLoadListener.bind(this));
+		this.browserWindowEvents.add("resize", this.onResizeListener.bind(this));
+		this.browserWindowEvents.add("error", this.onErrorListener.bind(this));
 	}
 
 }

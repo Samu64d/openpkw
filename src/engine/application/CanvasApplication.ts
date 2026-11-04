@@ -79,6 +79,13 @@ abstract class CanvasApplication extends BrowserApplication {
 
 	public abstract onRenderingContextRestored(): void;
 
+	public override dispose(): void {
+		super.dispose();
+
+		this.browserDocument.removeNodeFromBody(this.canvasElement);
+		this.canvasElement.remove();
+	}
+
 	protected override onLoadListener(): void {
 		this.setupCanvas();
 		super.onLoadListener();

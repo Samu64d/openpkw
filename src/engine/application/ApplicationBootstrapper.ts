@@ -3,6 +3,8 @@
 //
 
 import Nullable from "../core/common/Nullable.ts";
+import EventRegistrationTracker from "../core/event/EventRegistrationTracker.ts";
+import Disposable from "../core/reflection/decorators/Disposable.ts";
 import NodeOS from "../platform/node/NodeOS.ts";
 import NodeProcess from "../platform/node/NodeProcess.ts";
 import ElectronApp from "../platform/electron/ElectronApp.ts";
@@ -14,7 +16,8 @@ import ApplicationContents from "./ApplicationContents.ts";
 import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 import IPCErrorChannel from "./IPCErrorChannel.ts";
 
-export default abstract class ApplicationBootstrapper {
+@Disposable()
+export default abstract class ApplicationBootstrapper implements Disposable.Target {
 
 	private readonly windowBuildConfig: Partial<ElectronWindow.BuildConfig>;
 	private readonly applicationContents: ApplicationContents;
@@ -22,17 +25,19 @@ export default abstract class ApplicationBootstrapper {
 	private readonly electronApp: ElectronApp;
 	private readonly electronDialog: ElectronDialog;
 	private readonly ipcErrorChannel: IPCErrorChannel;
+	private readonly electronAppEvents: EventRegistrationTracker<any, Electron.Event>;
 	private mainWindow: Nullable<ElectronWindow>;
 	private mainWebContentsView: Nullable<ElectronWebContentsView>;
 	private hasErrors: boolean;
 
-	protected constructor(windowBuildConfig: Partial<ElectronWindow.BuildConfig>, applicationContents: ApplicationContents, cachePath: string) {
+	public constructor(windowBuildConfig: Partial<ElectronWindow.BuildConfig>, applicationContents: ApplicationContents, cachePath: string) {
 		this.windowBuildConfig = windowBuildConfig;
 		this.applicationContents = applicationContents;
 		this.cachePath = cachePath;
 		this.electronApp = ElectronApp.FROM_GLOBAL_REFERENCE();
 		this.electronDialog = ElectronDialog.FROM_GLOBAL_REFERENCE();
 		this.ipcErrorChannel = new IPCErrorChannel(ElectronIPC.FROM_GLOBAL_REFERENCE());
+		this.electronAppEvents = new EventRegistrationTracker<any, Electron.Event>(this.electronApp);
 		this.mainWindow = null;
 		this.mainWebContentsView = null;
 		this.hasErrors = false;
@@ -56,6 +61,10 @@ export default abstract class ApplicationBootstrapper {
 	public exit(): void {
 		this.onExit();
 		this.electronApp.exit();
+	}
+
+	public dispose(): void {
+		this.electronAppEvents.removeAll();
 	}
 
 	private setupEnvironmentConfiguration(): void {
@@ -104,9 +113,9 @@ export default abstract class ApplicationBootstrapper {
 	}
 
 	private registerAppEventListeners(): void {
-		this.electronApp.registerEventListener("window-all-closed", this.onWindowAllClosedListener.bind(this));
-		this.electronApp.registerEventListener("second-instance", this.onSecondInstanceListener.bind(this));
-		this.electronApp.registerEventListener("ready", this.onReadyListener.bind(this));
+		this.electronAppEvents.add("window-all-closed", this.onWindowAllClosedListener.bind(this));
+		this.electronAppEvents.add("second-instance", this.onSecondInstanceListener.bind(this));
+		this.electronAppEvents.add("ready", this.onReadyListener.bind(this));
 	}
 
 	private ipcErrorChannelListener(packet: IPCErrorChannelPacket): void {

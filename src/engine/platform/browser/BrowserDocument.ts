@@ -34,6 +34,10 @@ export default class BrowserDocument implements EventEmitter<keyof DocumentEvent
 		this.getBody().appendChild(node);
 	}
 
+	public removeNodeFromBody(node: Node): void {
+		this.getBody().removeChild(node);
+	}
+
 	public registerEventListener<T extends keyof DocumentEventMap>(eventName: T, listener: EventListener<DocumentEventMap[T]>): void {
 		this.documentObject.addEventListener(eventName, listener);
 	}

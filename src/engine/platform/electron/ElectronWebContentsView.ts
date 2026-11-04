@@ -158,6 +158,7 @@ export default class ElectronWebContentsView implements Disposable.Target, Event
 			return;
 		}
 
+		this.removeAutoAdaptToWindowBounds();
 		this.getWebContents().close();
 	}
 
