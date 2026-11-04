@@ -4,12 +4,13 @@
 
 import * as Electron from "electron";
 
-import EventListener from "../../core/common/EventListener.ts";
+import EventListener from "../../core/event/EventListener.ts";
+import EventEmitter from "../../core/event/EventEmitter.ts";
 import Disposable from "../../core/reflection/decorators/Disposable.ts";
 import ElectronWebContentsView from "./ElectronWebContentsView.ts";
 
 @Disposable()
-class ElectronWindow implements Disposable.Target {
+class ElectronWindow implements Disposable.Target, EventEmitter<any, Electron.Event> {
 
 	private static readonly DEFAULT_WIDTH: number = 800;
 
@@ -216,12 +217,12 @@ class ElectronWindow implements Disposable.Target {
 		this.windowObject.contentView.removeChildView(webContentView.getWebContentsViewObject());
 	}
 
-	public registerEventListener(event: any, listener: EventListener<Electron.Event>): void {
-		this.windowObject.on(event, listener);
+	public registerEventListener(eventName: any, listener: EventListener<Electron.Event>): void {
+		this.windowObject.on(eventName, listener);
 	}
 
-	public removeEventListener(event: any, listener: EventListener<Electron.Event>): void {
-		this.windowObject.off(event, listener);
+	public unregisterEventListener(eventName: any, listener: EventListener<Electron.Event>): void {
+		this.windowObject.off(eventName, listener);
 	}
 
 	public dispose(): void {

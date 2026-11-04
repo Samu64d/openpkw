@@ -2,10 +2,11 @@
 // BrowserDocument.ts
 //
 
-import EventListener from "../../core/common/EventListener.ts";
 import Supplier from "../../core/common/Supplier.ts";
+import EventListener from "../../core/event/EventListener.ts";
+import EventEmitter from "../../core/event/EventEmitter.ts";
 
-export default class BrowserDocument {
+export default class BrowserDocument implements EventEmitter<keyof DocumentEventMap, DocumentEventMap[keyof DocumentEventMap]> {
 
 	public static readonly FROM_GLOBAL_REFERENCE: Supplier<BrowserDocument> = (): BrowserDocument => {
 		return new BrowserDocument(document);

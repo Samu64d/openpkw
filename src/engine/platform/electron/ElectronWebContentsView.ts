@@ -5,12 +5,13 @@
 import * as Electron from "electron";
 
 import Nullable from "../../core/common/Nullable.ts";
-import EventListener from "../../core/common/EventListener.ts";
+import EventListener from "../../core/event/EventListener.ts";
+import EventEmitter from "../../core/event/EventEmitter.ts";
 import Disposable from "../../core/reflection/decorators/Disposable.ts";
 import ElectronWindow from "./ElectronWindow.ts";
 
 @Disposable()
-export default class ElectronWebContentsView implements Disposable.Target {
+export default class ElectronWebContentsView implements Disposable.Target, EventEmitter<any, void> {
 
 	private static readonly DEFAULT_WEB_PREFERENCES: Electron.WebPreferences = {
 		nodeIntegration: true,
@@ -138,10 +139,18 @@ export default class ElectronWebContentsView implements Disposable.Target {
 		}
 
 		if (this.adaptWindowCallback != null) {
-			this.adaptWindow.removeEventListener("resize", this.adaptWindowCallback);
+			this.adaptWindow.unregisterEventListener("resize", this.adaptWindowCallback);
 		}
 
 		this.adaptWindow = null;
+	}
+
+	public registerEventListener(eventName: any, listener: EventListener<void>): void {
+		this.webContentsViewObject.on(eventName, listener);
+	}
+
+	public unregisterEventListener(eventName: any, listener: EventListener<void>): void {
+		this.webContentsViewObject.off(eventName, listener);
 	}
 
 	public dispose(): void {

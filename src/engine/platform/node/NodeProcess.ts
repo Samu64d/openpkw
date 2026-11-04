@@ -2,7 +2,7 @@
 // NodeProcess.ts
 //
 
-import EventListener from "../../core/common/EventListener.ts";
+import EventListener from "../../core/event/EventListener.ts";
 
 class NodeProcess {
 
@@ -30,8 +30,8 @@ class NodeProcess {
 		process.on(eventName, listener);
 	}
 
-	public static removeEventListener(event: any, listener: EventListener<Electron.Event>): void {
-		process.off(event, listener);
+	public static removeEventListener(eventName: any, listener: EventListener<Electron.Event>): void {
+		process.off(eventName, listener);
 	}
 
 	private constructor() {

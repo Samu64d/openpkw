@@ -6,10 +6,11 @@ import * as Electron from "electron";
 
 import Nullable from "../../core/common/Nullable.ts";
 import Supplier from "../../core/common/Supplier.ts";
-import EventListener from "../../core/common/EventListener.ts";
+import EventListener from "../../core/event/EventListener.ts";
+import EventEmitter from "../../core/event/EventEmitter.ts";
 import NodeProcess from "../node/NodeProcess.ts";
 
-export default class ElectronApp {
+export default class ElectronApp implements EventEmitter<any, Electron.Event> {
 
 	public static readonly FROM_GLOBAL_REFERENCE: Supplier<ElectronApp> = (): ElectronApp => {
 		return new ElectronApp(Electron.app);
@@ -53,8 +54,8 @@ export default class ElectronApp {
 		this.appObject.on(eventName, listener);
 	}
 
-	public removeEventListener(event: any, listener: EventListener<Electron.Event>): void {
-		this.appObject.off(event, listener);
+	public unregisterEventListener(eventName: any, listener: EventListener<Electron.Event>): void {
+		this.appObject.off(eventName, listener);
 	}
 
 	public exit(): void {

@@ -12,9 +12,9 @@ export default abstract class KeyboardDriver implements Driver {
 
 	public abstract isKeyReleased(key: string): boolean;
 
-	public abstract getKeyPressTimestamp(key: string): number;
+	public abstract getLastKeyPressTimestamp(key: string): number;
 
-	public abstract getKeyReleaseTimestamp(key: string): number;
+	public abstract getLastKeyReleaseTimestamp(key: string): number;
 
 	public abstract getKeyPressDeltaTime(key: string): number;
 

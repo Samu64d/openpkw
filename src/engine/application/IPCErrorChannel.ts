@@ -2,7 +2,7 @@
 // IPCErrorChannel.ts
 //
 
-import EventListener from "../core/common/EventListener.ts";
+import EventListener from "../core/event/EventListener.ts";
 import ElectronIPC from "../platform/electron/ElectronIPC.ts";
 import IPCErrorChannelPacket from "./IPCErrorChannelPacket.ts";
 

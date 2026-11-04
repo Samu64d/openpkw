@@ -2,10 +2,11 @@
 // BrowserWindow.ts
 //
 
-import EventListener from "../../core/common/EventListener.ts";
 import Supplier from "../../core/common/Supplier.ts";
+import EventListener from "../../core/event/EventListener.ts";
+import EventEmitter from "../../core/event/EventEmitter.ts";
 
-export default class BrowserWindow {
+export default class BrowserWindow implements EventEmitter<keyof WindowEventMap, WindowEventMap[keyof WindowEventMap]> {
 
 	public static readonly FROM_GLOBAL_REFERENCE: Supplier<BrowserWindow> = (): BrowserWindow => {
 		return new BrowserWindow(window);

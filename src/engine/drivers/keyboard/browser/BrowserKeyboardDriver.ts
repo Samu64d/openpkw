@@ -2,6 +2,7 @@
 // BrowserKeyboardDriver.ts
 //
 
+import EventRegistrationTracker from "../../../core/event/EventRegistrationTracker.ts";
 import KeyboardDriver from "../../../core/interop/KeyboardDriver.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
 import Exception from "../../../core/exception/Exception.ts";
@@ -13,60 +14,63 @@ class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target 
 	private static readonly KEY_LIST: string[] = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "BracketRight", "Slash"];
 
 	private readonly browserWindow: BrowserWindow;
-	private readonly keyStateMap: Map<string, BrowserKeyboardDriver.KeyState>;
+	private readonly eventTracker: EventRegistrationTracker<keyof WindowEventMap, WindowEventMap[keyof WindowEventMap]>;
+	private readonly keyStatsMap: Map<string, BrowserKeyboardDriver.KeyStats>;
 
 	public constructor() {
 		super();
 
 		this.browserWindow = BrowserWindow.FROM_GLOBAL_REFERENCE();
-		this.keyStateMap = new Map<string, BrowserKeyboardDriver.KeyState>();
+		this.eventTracker = new EventRegistrationTracker(this.browserWindow);
+		this.keyStatsMap = new Map<string, BrowserKeyboardDriver.KeyStats>();
 	}
 
 	public override init(): void {
-		this.populateKeyStateMap();
+		this.populateKeyStatsMap();
 		this.registerWindowEventListeners();
 	}
 
 	public override isKeyPressed(key: string): boolean {
-		const keyState: BrowserKeyboardDriver.KeyState = this.tryGetKeyState(key);
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.tryGetKeyStats(key);
 
-		return keyState.getPressState() == BrowserKeyboardDriver.KeyPressState.PRESSED;
+		return keyStats.getState() == BrowserKeyboardDriver.KeyState.PRESSED;
 	}
 
 	public override isKeyReleased(key: string): boolean {
-		const keyState: BrowserKeyboardDriver.KeyState = this.tryGetKeyState(key);
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.tryGetKeyStats(key);
 
-		return keyState.getPressState() == BrowserKeyboardDriver.KeyPressState.RELEASED;
+		return keyStats.getState() == BrowserKeyboardDriver.KeyState.RELEASED;
 	}
 
-	public override getKeyPressTimestamp(key: string): number {
-		const keyState: BrowserKeyboardDriver.KeyState = this.tryGetKeyState(key);
+	public override getLastKeyPressTimestamp(key: string): number {
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.tryGetKeyStats(key);
 
-		return keyState.getPressTimestamp();
+		return keyStats.getLastPressTime();
 	}
 
-	public override getKeyReleaseTimestamp(key: string): number {
-		const keyState: BrowserKeyboardDriver.KeyState = this.tryGetKeyState(key);
+	public override getLastKeyReleaseTimestamp(key: string): number {
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.tryGetKeyStats(key);
 
-		return keyState.getReleaseTimestamp();
+		return keyStats.getLastReleaseTime();
 	}
 
 	public override getKeyPressDeltaTime(key: string): number {
-		const keyPressTimestamp: number = this.getKeyPressTimestamp(key);
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.tryGetKeyStats(key);
 
-		if (this.isKeyPressed(key) == false || keyPressTimestamp == -1) {
+		if (this.isKeyPressed(key) == false || keyStats.getLastReleaseTime() == -1) {
 			return -1;
 		}
 
-		return performance.now() - keyPressTimestamp;
+		return performance.now() - keyStats.getLastReleaseTime();
 	}
 
 	public override dispose(): void {
+		this.eventTracker.removeAll();
 	}
 
-	private populateKeyStateMap(): void {
+	private populateKeyStatsMap(): void {
 		for (const key of BrowserKeyboardDriver.KEY_LIST) {
-			this.keyStateMap.set(key, new BrowserKeyboardDriver.KeyState());
+			this.keyStatsMap.set(key, new BrowserKeyboardDriver.KeyStats());
 		}
 	}
 
@@ -77,10 +81,10 @@ class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target 
 			return;
 		}
 
-		const keyState: BrowserKeyboardDriver.KeyState = this.keyStateMap.get(key) as BrowserKeyboardDriver.KeyState;
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.keyStatsMap.get(key) as BrowserKeyboardDriver.KeyStats;
 
-		keyState.setPressState(BrowserKeyboardDriver.KeyPressState.PRESSED);
-		keyState.setPressTimestamp(performance.now());
+		keyStats.setState(BrowserKeyboardDriver.KeyState.PRESSED);
+		keyStats.setLastPressTime(performance.now());
 	}
 
 	private onKeyUpListener(e: KeyboardEvent): void {
@@ -90,80 +94,80 @@ class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target 
 			return;
 		}
 
-		const keyState: BrowserKeyboardDriver.KeyState = this.keyStateMap.get(key) as BrowserKeyboardDriver.KeyState;
+		const keyStats: BrowserKeyboardDriver.KeyStats = this.keyStatsMap.get(key) as BrowserKeyboardDriver.KeyStats;
 
-		keyState.setPressState(BrowserKeyboardDriver.KeyPressState.RELEASED);
-		keyState.setReleaseTimestamp(performance.now());
+		keyStats.setState(BrowserKeyboardDriver.KeyState.RELEASED);
+		keyStats.setLastReleaseTime(performance.now());
 	}
 
-	private onBlurListener(e: FocusEvent): void {
-		for (const keyState of this.keyStateMap.values()) {
-			keyState.setPressState(BrowserKeyboardDriver.KeyPressState.RELEASED);
-			keyState.setReleaseTimestamp(performance.now());
+	private onBlurListener(): void {
+		for (const keyStats of this.keyStatsMap.values()) {
+			keyStats.setState(BrowserKeyboardDriver.KeyState.RELEASED);
+			keyStats.setLastReleaseTime(performance.now());
 		}
 	}
 
 	private registerWindowEventListeners(): void {
-		this.browserWindow.registerEventListener("keydown", this.onKeyDownListener.bind(this));
-		this.browserWindow.registerEventListener("keyup", this.onKeyUpListener.bind(this));
-		this.browserWindow.registerEventListener("blur", this.onBlurListener.bind(this));
+		this.eventTracker.add("keydown", this.onKeyDownListener.bind(this));
+		this.eventTracker.add("keyup", this.onKeyUpListener.bind(this));
+		this.eventTracker.add("blur", this.onBlurListener.bind(this));
 	}
 
 	private hasKey(key: string): boolean {
-		return this.keyStateMap.has(key);
+		return this.keyStatsMap.has(key);
 	}
 
-	private tryGetKeyState(key: string): BrowserKeyboardDriver.KeyState {
+	private tryGetKeyStats(key: string): BrowserKeyboardDriver.KeyStats {
 		if (this.hasKey(key) == false) {
 			throw new Exception("Unknown keyboard key");
 		}
 
-		return this.keyStateMap.get(key) as BrowserKeyboardDriver.KeyState;
+		return this.keyStatsMap.get(key) as BrowserKeyboardDriver.KeyStats;
 	}
 
 }
 
 namespace BrowserKeyboardDriver {
 
-	export enum KeyPressState {
+	export enum KeyState {
 		RELEASED,
 		PRESSED
 	}
 
-	export class KeyState {
+	export class KeyStats {
 
-		private pressState: KeyPressState;
-		private pressTimestamp: number;
-		private releaseTimestamp: number;
+		private state: KeyState;
+		private lastPressTime: number;
+		private lastReleaseTime: number;
 
 		public constructor() {
-			this.pressState = KeyPressState.RELEASED;
-			this.pressTimestamp = -1;
-			this.releaseTimestamp = -1;
+			this.state = KeyState.RELEASED;
+			this.lastPressTime = -1;
+			this.lastReleaseTime = -1;
 		}
 
-		public getPressState(): KeyPressState {
-			return this.pressState;
+		public getState(): KeyState {
+			return this.state;
 		}
 
-		public setPressState(pressState: KeyPressState): void {
-			this.pressState = pressState;
+		public setState(state: KeyState): void {
+			this.state = state;
 		}
 
-		public getPressTimestamp(): number {
-			return this.pressTimestamp;
+		public getLastPressTime(): number {
+			return this.lastPressTime;
 		}
 
-		public setPressTimestamp(pressTimestamp: number): void {
-			this.pressTimestamp = pressTimestamp;
+		public setLastPressTime(lastPressTime: number): void {
+			this.lastPressTime = lastPressTime;
 		}
 
-		public getReleaseTimestamp(): number {
-			return this.releaseTimestamp;
+		public getLastReleaseTime(): number {
+			return this.lastReleaseTime;
 		}
 
-		public setReleaseTimestamp(releaseTimestamp: number): void {
-			this.releaseTimestamp = releaseTimestamp;
+		public setLastReleaseTime(lastReleaseTime: number): void {
+			this.lastReleaseTime = lastReleaseTime;
 		}
 
 	}

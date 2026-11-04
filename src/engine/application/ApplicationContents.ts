@@ -12,6 +12,7 @@ import Application from "./Application.ts";
 export default class ApplicationContents {
 
 	public static readonly BUILD_FOR: BiFunction<ClassType<Application>, string, ApplicationContents> = (applicationType: ClassType<Application>, entryPointPath: string): ApplicationContents => {
+		//@ts-ignore
 		const template: string = applicationType.getContentsTemplate();
 		const templateInstance: string = template.replace("{{entryPointPath}}", entryPointPath);
 		const dataUrl: string = "data:text/html;base64," + Buffer.from(templateInstance).toString("base64");

@@ -27,4 +27,16 @@ export default class DriverRegistry {
 		return this.driverMap.get(type) as T;
 	}
 
+	public static dispose<T extends Driver>(type: ClassType<T>): void {
+		if (this.isRegistered(type) == false) {
+			throw new InvalidOperationException("Trying to access a driver that is currently not registered");
+		}
+
+		const driver: T = this.driverMap.get(type) as T;
+
+		driver.dispose();
+		this.driverMap.delete(type);
+
+	}
+
 }

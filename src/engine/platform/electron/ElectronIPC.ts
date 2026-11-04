@@ -6,7 +6,7 @@ import * as Electron from "electron";
 
 import Nullable from "../../core/common/Nullable.ts";
 import Supplier from "../../core/common/Supplier.ts";
-import EventListener from "../../core/common/EventListener.ts";
+import EventListener from "../../core/event/EventListener.ts";
 import InvalidOperationException from "../../core/exception/InvalidOperationException.ts";
 import NodeProcess from "../node/NodeProcess.ts";
 
