@@ -1,109 +1,249 @@
 {
-	"data": [
-				[
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_corner_outer:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass;cliff_corner_inner", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass;cliff_corner_inner:270", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_corner_outer:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass;wall_cliff_base_corner_outer:180", "grass;wall_cliff_base_straight:180", "grass;wall_cliff_base_straight:180", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass;cliff_straight", "grass;cliff_corner_inner:90", "grass", "grass", "grass", "grass;wall_cliff_base_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass;wall_cliff_base_straight:90", "grass", "grass", "grass", "grass;wall_cliff_base_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass;wall_cliff_base_corner_outer:90", "grass;wall_cliff_base_straight", "grass;wall_cliff_base_straight", "grass;wall_cliff_base_straight", "grass;wall_cliff_base_corner_outer", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"]
-				],
-				[
-					["air", "air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
-					["grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "air", "air", "air"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "air", "air", "air", "air"],
-					["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["grass", "grass;wall_cliff_top_corner_outer:180", "grass;wall_cliff_top_straight:180", "grass;wall_cliff_top_straight:180", "wall_cliff_top_straight:180", "wall_cliff_top_corner_outer:270", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "wall_cliff_top_straight:90", "air", "air", "air", "wall_cliff_top_straight:270", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "wall_cliff_top_straight:90", "air", "air", "air", "wall_cliff_top_straight:270", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "wall_cliff_top_corner_outer:90", "wall_cliff_top_straight", "wall_cliff_top_straight", "wall_cliff_top_straight", "wall_cliff_top_corner_outer", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
-				],
-				[
-					["air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "grass", "grass", "grass", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "grass", "grass", "grass", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
-					["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
-				]
+	"terrain": [
+		[
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_corner_outer:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass;cliff_corner_inner", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass;cliff_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass;cliff_corner_inner:270", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_straight:180", "grass;cliff_corner_outer:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass;wall_cliff_base_corner_outer:180", "grass;wall_cliff_base_straight:180", "grass;wall_cliff_base_straight:180", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass;cliff_straight", "grass;cliff_corner_inner:90", "grass", "grass", "grass", "grass;wall_cliff_base_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass;wall_cliff_base_straight:90", "grass", "grass", "grass", "grass;wall_cliff_base_straight:270", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass;wall_cliff_base_corner_outer:90", "grass;wall_cliff_base_straight", "grass;wall_cliff_base_straight", "grass;wall_cliff_base_straight", "grass;wall_cliff_base_corner_outer", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"]
+		],
+		[
+			["air", "air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air"],
+			["grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "air", "air", "air"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "air", "air", "air", "air"],
+			["grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["grass", "grass;wall_cliff_top_corner_outer:180", "grass;wall_cliff_top_straight:180", "grass;wall_cliff_top_straight:180", "wall_cliff_top_straight:180", "wall_cliff_top_corner_outer:270", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "wall_cliff_top_straight:90", "air", "air", "air", "wall_cliff_top_straight:270", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "wall_cliff_top_straight:90", "air", "air", "air", "wall_cliff_top_straight:270", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "wall_cliff_top_corner_outer:90", "wall_cliff_top_straight", "wall_cliff_top_straight", "wall_cliff_top_straight", "wall_cliff_top_corner_outer", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
+		],
+		[
+			["air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "grass;cliff_straight:270", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_straight", "grass;cliff_corner_outer", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "grass", "grass", "grass", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "grass", "grass", "grass", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"],
+			["air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air", "air"]
+		]
+	],
+	"props": [
+		{
+			"name": "tree_0",
+			"pos": [1.0, 0.0, 9.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [1.0, 0.0, 11.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [1.0, 0.0, 13.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [1.0, 0.0, 15.0]
+		},
+				{
+			"name": "tree_0",
+			"pos": [4.0, 0.0, 9.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [4.0, 0.0, 11.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [4.0, 0.0, 13.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [4.0, 0.0, 15.0]
+		},
+				{
+			"name": "tree_0",
+			"pos": [6.0, 0.0, 9.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [6.0, 0.0, 11.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [6.0, 0.0, 13.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [6.0, 0.0, 15.0]
+		},
+				{
+			"name": "tree_0",
+			"pos": [8.0, 0.0, 9.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [8.0, 0.0, 11.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [8.0, 0.0, 13.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [8.0, 0.0, 15.0]
+		},
+		{
+			"name": "tree_0",
+			"pos": [4.0, 0.85, 19.0]
+		},
+		{
+			"name": "tree_2",
+			"pos": [6.5, 0.85, 18.5]
+		},
+		{
+			"name": "tree_2",
+			"pos": [6.0, 0.0, 22.5]
+		},
+		{
+			"name": "sign_0",
+			"pos": [11.0, 0.0, 4.5]
+		},
+		{
+			"name": "house_0",
+			"pos": [16.0, 0.0, 4.5]
+		},
+		{
+			"name": "house_2",
+			"pos": [12.5, 0.0, 15.0]
+		},
+		{
+			"name": "house_2",
+			"pos": [17.5, 0.0, 15.0]
+		},				
+		{
+			"name": "table_0",
+			"pos": [10.5, 0.0, 18.0]
+		},
+		{
+			"name": "parasol_0",
+			"pos": [10.5, 0.0, 18.0]
+		},
+		{
+			"name": "table_0",
+			"pos": [12.0, 0.0, 19.0]
+		},
+		{
+			"name": "parasol_0",
+			"pos": [12.0, 0.0, 19.0]
+		},
+		{
+			"name": "table_0",
+			"pos": [13.0, 0.0, 18.0]
+		},
+		{
+			"name": "trash_bin_0",
+			"pos": [14.5, 0.0, 17.0]
+		},
+		{
+			"name": "plantar_0",
+			"pos": [11.0, 0.0, 20.0],
+			"rot": 90
+		},
+		{
+			"name": "plantar_0",
+			"pos": [12.5, 0.0, 20.0],
+			"rot": 90
+		},
+		{
+			"name": "house_3",
+			"pos": [14.0, 0.0, 24.0]
+		},
+		{
+			"name": "house_4",
+			"pos": [19.0, 0.0, 24.0]
+		},
+		{
+			"name": "track_house_0",
+			"pos": [9.5, 0.0, 22.0]
+		}
 	]
 }

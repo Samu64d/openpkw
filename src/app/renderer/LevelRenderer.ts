@@ -28,7 +28,7 @@ import Props from "../level/Props.ts";
 import Prop from "../level/Prop.ts";
 import Program from "./Program.ts";
 import Programs from "./Programs.ts";
-import LevelMap from "../level/LevelMap.ts";
+import MapDefinition from "../level/MapDefinition.ts";
 import Level from "../level/Level.ts";
 
 export default class LevelRenderer {
@@ -113,49 +113,7 @@ export default class LevelRenderer {
 		this.contextManager.setViewport(this.viewport.getWidth(), this.viewport.getHeight());
 		this.contextManager.clear(LevelRenderer.CLEAR_COLOR);
 		this.updatePrograms();
-		this.drawMap();
-
-		this.drawProp("tree_0", 1.0, 0.0, 9.0);
-		this.drawProp("tree_0", 1.0, 0.0, 11.0);
-		this.drawProp("tree_0", 1.0, 0.0, 13.0);
-		this.drawProp("tree_0", 1.0, 0.0, 15.0);
-		this.drawProp("tree_0", 4.0, 0.0, 9.0);
-		this.drawProp("tree_0", 4.0, 0.0, 11.0);
-		this.drawProp("tree_0", 4.0, 0.0, 13.0);
-		this.drawProp("tree_0", 4.0, 0.0, 15.0);
-		this.drawProp("tree_0", 6.0, 0.0, 9.0);
-		this.drawProp("tree_0", 6.0, 0.0, 11.0);
-		this.drawProp("tree_0", 6.0, 0.0, 13.0);
-		this.drawProp("tree_0", 6.0, 0.0, 15.0);
-		this.drawProp("tree_0", 8.0, 0.0, 9.0);
-		this.drawProp("tree_0", 8.0, 0.0, 11.0);
-		this.drawProp("tree_0", 8.0, 0.0, 13.0);
-		this.drawProp("tree_0", 8.0, 0.0, 15.0);
-
-		this.drawProp("tree_0", 4.0, 0.85, 19.0);
-		this.drawProp("tree_2", 6.5, 0.85, 18.5);
-
-		this.drawProp("tree_2", 6.0, 0.0, 22.5);
-
-		this.drawProp("sign_0", 11.0, 0.0, 4.5);
-
-		this.drawProp("house_0", 16.0, 0.0, 4.5);
-		this.drawProp("house_2", 12.5, 0.0, 15.0);
-		this.drawProp("house_2", 17.5, 0.0, 15.0);
-
-		this.drawProp("table_0", 10.5, 0.0, 18.0);
-		this.drawProp("parasol_0", 10.5, 0.0, 18.0);
-		this.drawProp("table_0", 12.0, 0.0, 19.0);
-		this.drawProp("parasol_0", 12.0, 0.0, 19.0);
-		this.drawProp("table_0", 13.0, 0.0, 18.0);
-		this.drawProp("trash_bin_0", 14.5, 0.0, 17.0);
-		this.drawProp("plantar_0", 11.0, 0.0, 20.0, 90);
-		this.drawProp("plantar_0", 12.5, 0.0, 20.0, 90);
-
-		this.drawProp("house_3", 14.0, 0.0, 24.0);
-		this.drawProp("house_4", 19.0, 0.0, 24.0);
-
-		this.drawProp("track_house_0", 9.5, 0.0, 22.0);
+		this.drawLevel();
 	}
 
 	private uploadModel(mesh: Mesh): GLVertexArray {
@@ -303,11 +261,11 @@ export default class LevelRenderer {
 		this.drawModel(tileName, modelView, textureIndex);
 	}
 
-	private drawProp(propName: string, XPos: number, YPos: number, ZPos: number, rotX: number = 0): void {
+	private drawProp(propName: string, xPos: number, yPos: number, zPos: number, rotX: number = 0): void {
 		const step: number = 0.25;
-		const modelXPos: number = (XPos - 0.5) * step;
-		const modelYPos: number = YPos * step;
-		const modelZPos: number = (ZPos - 0.5) * step;
+		const modelXPos: number = (xPos - 0.5) * step;
+		const modelYPos: number = yPos * step;
+		const modelZPos: number = (zPos - 0.5) * step;
 		let modelView: number[] = translate(modelXPos, modelYPos, modelZPos);
 
 		if (rotX != 0) {
@@ -317,12 +275,13 @@ export default class LevelRenderer {
 		this.drawModel(propName, modelView);
 	}
 
-	private drawMap(): void {
-		const map: LevelMap = this.level.getMap();
-		const mapData: string[][][] = map.data;
+	private drawLevel(): void {
+		const map: MapDefinition = this.level.getMap();
+		const terrain: MapDefinition.Terrain = map.terrain;
+		const propList: MapDefinition.Prop[] = map.props;
 
-		for (let y: number = 0; y < mapData.length; y++) {
-			const layer: string[][] = mapData[y];
+		for (let y: number = 0; y < terrain.length; y++) {
+			const layer: string[][] = terrain[y];
 
 			for (let z: number = 0; z < layer.length; z++) {
 				const row: string[] = layer[z];
@@ -344,6 +303,16 @@ export default class LevelRenderer {
 					}
 				}
 			}
+		}
+
+		for (const prop of propList) {
+			const propName: string = prop.name;
+			const xPos: number = prop.pos[0];
+			const yPos: number = prop.pos[1];
+			const zPos: number = prop.pos[2];
+			const rot: number = prop.rot ?? 0;
+
+			this.drawProp(propName, xPos, yPos, zPos, rot);
 		}
 	}
 

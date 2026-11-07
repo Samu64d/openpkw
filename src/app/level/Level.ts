@@ -11,7 +11,7 @@ import FileHandler from "../../engine/core/io/file/FileHandler.ts";
 import StringByteDecoder from "../../engine/core/codec/StringByteDecoder.ts";
 import Record from "../../engine/core/reflection/decorators/Record.ts";
 import InvalidOperationException from "../../engine/core/exception/InvalidOperationException.ts";
-import LevelMap from "./LevelMap.ts";
+import MapDefinition from "./MapDefinition.ts";
 
 @Record()
 class Level {
@@ -21,9 +21,9 @@ class Level {
 	};
 
 	private readonly name: string;
-	private readonly map: LevelMap;
+	private readonly map: MapDefinition;
 
-	public constructor(name: string, map: LevelMap) {
+	public constructor(name: string, map: MapDefinition) {
 		this.name = name;
 		this.map = map;
 	}
@@ -32,7 +32,7 @@ class Level {
 		return this.name;
 	}
 
-	public getMap(): LevelMap {
+	public getMap(): MapDefinition {
 		return this.map;
 	}
 
@@ -42,7 +42,7 @@ namespace Level {
 
 	export class Builder {
 
-		private static loadMapFile(filePath: string): LevelMap {
+		private static loadMapFile(filePath: string): MapDefinition {
 			const fileHandler: FileHandler = File.open(filePath, OpenMode.READ);
 			const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
 			const text: string = new StringByteDecoder().decode(byteBuffer);
@@ -50,7 +50,7 @@ namespace Level {
 
 			fileHandler.dispose();
 			byteBuffer.dispose();
-			return object as LevelMap;
+			return object as MapDefinition;
 		}
 
 		private levelName: Nullable<string>;
@@ -76,7 +76,7 @@ namespace Level {
 				throw new InvalidOperationException("Level name was not provided");
 			}
 
-			const map: LevelMap = Builder.loadMapFile(this.getMapFilePath());
+			const map: MapDefinition = Builder.loadMapFile(this.getMapFilePath());
 
 			return new Level(this.levelName, map);
 		}
