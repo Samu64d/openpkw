@@ -69,7 +69,7 @@ export default class PNGImage {
 				}
 			default:
 				{
-					throw new CodecException("Unknown color type value: " + this.colorType);
+					throw new CodecException("Unknown color type value: " + String(this.colorType));
 				}
 		}
 
@@ -80,6 +80,7 @@ export default class PNGImage {
 		if (this.transparencyData == null) {
 			return -1;
 		}
+
 		return (this.transparencyData.get(0) << 8) | this.transparencyData.get(1);
 	}
 

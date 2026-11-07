@@ -9,8 +9,8 @@ enum InterlaceMethod {
 
 namespace InterlaceMethod {
 
-	export function is(value: number): value is InterlaceMethod {
-		return value == InterlaceMethod.NONE || value == InterlaceMethod.ADAM_7;
+	export function is(value: unknown): value is InterlaceMethod {
+		return value === InterlaceMethod.NONE || value === InterlaceMethod.ADAM_7;
 	}
 
 }

@@ -25,7 +25,7 @@ export default class Levels {
 
 	private static readonly LEVEL_0: Level.Builder = Level.BUILDER()
 		.withName("level_0")
-		.withMap("map_0")
+		.withMap("map_0");
 
 	private static readonly LEVEL_MAP: Map<string, Level> = new Map<string, Level>();
 

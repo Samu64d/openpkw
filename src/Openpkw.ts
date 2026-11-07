@@ -165,7 +165,7 @@ export default class Openpkw extends CanvasApplication {
 		audio.src = "./resources/music/track/track_1.mp3";
 		audio.loop = true;
 		audio.style.display = "none";
-		audio.play();
+		void audio.play();
 	}
 
 	static {

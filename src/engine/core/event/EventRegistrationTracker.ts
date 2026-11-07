@@ -8,7 +8,7 @@ import EventEmitter from "./EventEmitter.ts";
 
 class EventRegistrationTracker<T, K> {
 
-	private readonly emitter: EventEmitter<any, any>;
+	private readonly emitter: EventEmitter<unknown, unknown>;
 	private readonly registrationList: Array<EventRegistrationTracker.Registration>;
 
 	public constructor(emitter: EventEmitter<T, K>) {
@@ -52,19 +52,19 @@ namespace EventRegistrationTracker {
 	@Record()
 	export class Registration {
 
-		private readonly eventName: any;
-		private readonly listener: EventListener<any>;
+		private readonly eventName: unknown;
+		private readonly listener: EventListener<unknown>;
 
-		public constructor(eventName: any, listener: EventListener<any>) {
+		public constructor(eventName: unknown, listener: EventListener<unknown>) {
 			this.eventName = eventName;
 			this.listener = listener;
 		}
 
-		public getEventName(): any {
+		public getEventName(): unknown {
 			return this.eventName;
 		}
 
-		public getListener(): EventListener<any> {
+		public getListener(): EventListener<unknown> {
 			return this.listener;
 		}
 

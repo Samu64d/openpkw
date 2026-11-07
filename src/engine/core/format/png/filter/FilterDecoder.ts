@@ -141,7 +141,7 @@ export default class FilterDecoder extends SingleValueDecoder<ByteBuffer, ByteBu
 					}
 				default:
 					{
-						throw new CodecException("Unknown filter type value: " + filterType);
+						throw new CodecException("Unknown filter type value: " + String(filterType));
 					}
 			}
 		}

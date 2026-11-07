@@ -30,12 +30,12 @@ namespace ColorType {
 		[ColorType.ALPHA_TRUECOLOR]: [8, 16]
 	};
 
-	export function is(value: number): value is ColorType {
-		return value == ColorType.GREYSCALE
-			|| value == ColorType.TRUECOLOR
-			|| value == ColorType.INDEXED
-			|| value == ColorType.ALPHA_GREYSCALE
-			|| value == ColorType.ALPHA_TRUECOLOR;
+	export function is(value: unknown): value is ColorType {
+		return value === ColorType.GREYSCALE
+			|| value === ColorType.TRUECOLOR
+			|| value === ColorType.INDEXED
+			|| value === ColorType.ALPHA_GREYSCALE
+			|| value === ColorType.ALPHA_TRUECOLOR;
 	}
 
 	export function getChannelCount(colorType: ColorType): number {

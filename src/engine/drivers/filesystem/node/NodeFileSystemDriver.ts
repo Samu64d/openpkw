@@ -13,6 +13,7 @@ import TextEncoding from "../../../core/codec/TextEncoding.ts";
 import FileSystemDriver from "../../../core/interop/FileSystemDriver.ts";
 import ResourceHandle from "../../../core/interop/ResourceHandle.ts";
 import Disposable from "../../../core/reflection/decorators/Disposable.ts";
+import Exception from "../../../core/exception/Exception.ts";
 import IOException from "../../../core/exception/IOException.ts";
 
 @Disposable()
@@ -188,6 +189,7 @@ export default class NodeFileSystemDriver extends FileSystemDriver implements Di
 			try {
 				Fs.closeSync(fd);
 			} catch (e: unknown) {
+				throw new Exception("Cannot dispose file handle");
 			}
 		}
 

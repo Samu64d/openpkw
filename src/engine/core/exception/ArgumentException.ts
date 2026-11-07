@@ -11,7 +11,7 @@ export default class ArgumentException<T> extends Exception {
 		let message: string = "Exception with argument value";
 
 		if (argumentValue != null) {
-			message += " (" + argumentValue + ")";
+			message += " (" + String(argumentValue) + ")";
 		}
 
 		return message + " of the parameter '" + parameterName + "'";

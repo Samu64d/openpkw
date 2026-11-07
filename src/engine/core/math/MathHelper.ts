@@ -58,7 +58,7 @@ export default class MathHelper {
 		value |= value >> 4;
 		value |= value >> 8;
 		value |= value >> 16;
-		return ++value;
+		return value + 1;
 	}
 
 	private constructor() {

@@ -11,7 +11,7 @@ export default abstract class Capacity {
 	protected readonly resizable: boolean;
 
 	public constructor(capacity: number, resizable: boolean = false) {
-		ArgumentOutOfRangeException.throwIfLessThan(capacity, 0, "capacity")
+		ArgumentOutOfRangeException.throwIfLessThan(capacity, 0, "capacity");
 
 		this.capacity = capacity;
 		this.resizable = resizable;

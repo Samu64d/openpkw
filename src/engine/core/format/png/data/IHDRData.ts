@@ -3,6 +3,7 @@
 //
 
 import Record from "../../../reflection/decorators/Record.ts";
+import InterlaceMethod from "../interlace/InterlaceMethod.ts";
 import ColorType from "../image/ColorType.ts";
 
 @Record()
@@ -11,12 +12,12 @@ export default class IHDRData {
 	private readonly width: number;
 	private readonly height: number;
 	private readonly depth: number;
-	private readonly colorType: number;
+	private readonly colorType: ColorType;
 	private readonly compressionMethod: number;
 	private readonly filterMethod: number;
-	private readonly interlaceMethod: number;
+	private readonly interlaceMethod: InterlaceMethod;
 
-	public constructor(width: number, height: number, depth: number, colorType: ColorType, compressionMethod: number, filterMethod: number, interlaceMethod: number) {
+	public constructor(width: number, height: number, depth: number, colorType: ColorType, compressionMethod: number, filterMethod: number, interlaceMethod: InterlaceMethod) {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
@@ -50,7 +51,7 @@ export default class IHDRData {
 		return this.filterMethod;
 	}
 
-	public getInterlaceMethod(): number {
+	public getInterlaceMethod(): InterlaceMethod {
 		return this.interlaceMethod;
 	}
 

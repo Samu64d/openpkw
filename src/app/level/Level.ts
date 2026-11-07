@@ -46,7 +46,7 @@ namespace Level {
 			const fileHandler: FileHandler = File.open(filePath, OpenMode.READ);
 			const byteBuffer: ByteBuffer = fileHandler.read(fileHandler.getSize());
 			const text: string = new StringByteDecoder().decode(byteBuffer);
-			const object: object = JSON.parse(text);
+			const object: object = JSON.parse(text) as object;
 
 			fileHandler.dispose();
 			byteBuffer.dispose();

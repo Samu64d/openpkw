@@ -87,17 +87,17 @@ export default class ElectronWebContentsView implements Disposable.Target, Event
 	}
 
 	public loadUrl(url: string): void {
-		this.getWebContents().loadURL(url);
+		void this.getWebContents().loadURL(url);
 	}
 
 	public loadDataUrl(dataUrl: string, baseUrl: string): void {
-		this.getWebContents().loadURL(dataUrl, {
+		void this.getWebContents().loadURL(dataUrl, {
 			baseURLForDataURL: baseUrl
 		});
 	}
 
 	public loadFile(filePath: string): void {
-		this.getWebContents().loadFile(filePath);
+		void this.getWebContents().loadFile(filePath);
 	}
 
 	public unload(): void {
