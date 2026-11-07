@@ -162,7 +162,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 
 	private writeChunk(): void {
 		if (this.chunkPosition == -1) {
-			throw new IOException("Cannot write chunk buffer data at invalid file position");
+			throw new IOException("Cannot write chunk buffer at invalid file position");
 		}
 
 		const writeLength: number = Math.min(this.chunkLength, this.capacity - this.chunkPosition);

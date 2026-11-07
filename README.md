@@ -4,3 +4,4 @@
 
 - Implements full OBJDecoder
 - Matrix classes
+- Completing MappedByteBuffer

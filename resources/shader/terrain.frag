@@ -12,10 +12,10 @@ centroid in vec2 outUv;
 
 out vec4 outColor;
 
-float ambientLightStrength = 0.15;
-vec4 ambientLightColor = vec4(0.9, 0.9, 0.95, 1.0);
-float fogStart = 1.0;
-float fogEnd = 5.0;
+float ambientLightStrength = 0.02;
+vec4 ambientLightColor = vec4(0.5, 0.5, 0.55, 1.0);
+float fogStart = 2.0;
+float fogEnd = 7.0;
 vec4 fogColor = vec4(0.9, 0.85, 0.9, 1.0);
 
 void main() {

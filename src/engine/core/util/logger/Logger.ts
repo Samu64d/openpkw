@@ -34,15 +34,31 @@ export default class Logger implements Disposable.Target {
 		return this.filePath;
 	}
 
-	public log(logLevel: LogLevel, text: string): void {
+	public log(logLevel: LogLevel, message: string): void {
 		if (this.handler.isValid() == false) {
 			return;
 		}
 
-		const logLine: string = this.buildLogLine(logLevel, text);
+		const logLine: string = this.buildLogLine(logLevel, message);
 		const byteBuffer: ByteBuffer = this.encoder.encode(logLine);
 
 		this.handler.write(byteBuffer.getCapacity(), byteBuffer, this.handler.getSize());
+	}
+
+	public info(message: string): void {
+		this.log(LogLevel.INFO, message);
+	}
+
+	public warn(message: string): void {
+		this.log(LogLevel.WARN, message);
+	}
+
+	public error(message: string): void {
+		this.log(LogLevel.ERROR, message);
+	}
+
+	public critical(message: string): void {
+		this.log(LogLevel.CRITICAL, message);
 	}
 
 	public dispose(): void {
@@ -50,12 +66,12 @@ export default class Logger implements Disposable.Target {
 		this.handler.dispose();
 	}
 
-	private buildLogLine(logLevel: LogLevel, text: string): string {
+	private buildLogLine(logLevel: LogLevel, message: string): string {
 		const id: string = this.getId();
 		const level: string = logLevel.toString();
 		const time: string = new Date().toISOString();
 
-		return "[" + id + "] [" + level + "] " + time + ": " + text + "\n";
+		return "[" + id + "] [" + level + "] " + time + ": " + message + "\n";
 	}
 
 }

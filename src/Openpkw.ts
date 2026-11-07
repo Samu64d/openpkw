@@ -7,7 +7,6 @@ import MemoryDriver from "./engine/core/interop/MemoryDriver.ts";
 import FileSystemDriver from "./engine/core/interop/FileSystemDriver.ts";
 import KeyboardDriver from "./engine/core/interop/KeyboardDriver.ts";
 import DriverRegistry from "./engine/core/interop/DriverRegistry.ts";
-import LogLevel from "./engine/core/util/logger/LogLevel.ts";
 import Logger from "./engine/core/util/logger/Logger.ts";
 import Exception from "./engine/core/exception/Exception.ts";
 import BrowserMemoryDriver from "./engine/drivers/memory/browser/BrowserMemoryDriver.ts";
@@ -15,7 +14,11 @@ import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSyste
 import BrowserKeyboardDriver from "./engine/drivers/keyboard/browser/BrowserKeyboardDriver.ts";
 import NodeProcess from "./engine/platform/node/NodeProcess.ts";
 import CanvasApplication from "./engine/application/CanvasApplication.ts";
-import Renderer from "./app/Renderer.ts";
+import Tiles from "./app/level/Tiles.ts";
+import Props from "./app/level/Props.ts";
+import Programs from "./app/renderer/Programs.ts";
+import Levels from "./app/level/Levels.ts";
+import LevelRenderer from "./app/renderer/LevelRenderer.ts";
 
 export default class Openpkw extends CanvasApplication {
 
@@ -35,32 +38,31 @@ export default class Openpkw extends CanvasApplication {
 
 	private readonly logger: Logger;
 	private readonly keyboard: KeyboardDriver;
+	private renderer: Nullable<LevelRenderer>;
 	private time: number;
 	private lastUpdateTime: number;
-	private renderer: Nullable<Renderer>;
+	private lastKeyPressTime: number;
 
 	private constructor() {
-		super(CanvasApplication.ADAPTIVE_RESOLUTION(0.5), false);
+		super(CanvasApplication.ADAPTIVE_RESOLUTION(0.6), true);
 
 		this.logger = new Logger(Openpkw.LOG_ID, Openpkw.LOG_FILE_NAME);
 		this.keyboard = DriverRegistry.get(KeyboardDriver);
+		this.renderer = null;
 		this.time = 0;
 		this.lastUpdateTime = -1;
-		this.renderer = null;
+		this.lastKeyPressTime = -1;
 	}
 
 	public override onReady(): void {
-		this.logger.log(LogLevel.INFO, "Start initializing application");
+		this.logger.info("Start initializing application");
 
-		// Test
-		const audio: HTMLAudioElement = document.createElement("audio");
-		document.body.appendChild(audio);
-		audio.src = "./resources/music/track_1.mp3";
-		audio.loop = true;
-		audio.style.display = "none";
-		audio.play();
-
+		Tiles.registryAll();
+		Props.registryAll();
+		Programs.registryAll();
+		Levels.registryAll();
 		this.initRenderer();
+		this.initAudio();
 	}
 
 	public override onClientResize(width: number, height: number): void {
@@ -84,6 +86,20 @@ export default class Openpkw extends CanvasApplication {
 	public override onError(e: unknown): void {
 	}
 
+	public override dispose(): void {
+		super.dispose();
+
+		this.logger.dispose();
+	}
+
+	public getRenderer(): Nullable<LevelRenderer> {
+		return this.renderer;
+	}
+
+	public getTime(): number {
+		return this.time;
+	}
+
 	private updateRenderer(): void {
 		if (this.renderer == null) {
 			return;
@@ -96,46 +112,60 @@ export default class Openpkw extends CanvasApplication {
 			this.lastUpdateTime = now - (elapsed % 10);
 
 			if (this.keyboard.isKeyPressed("ArrowRight")) {
-				this.renderer.moveCamera(0.025, 0, 0);
+				this.renderer.offsetCamera(0.025, 0, 0);
 			}
 			if (this.keyboard.isKeyPressed("ArrowLeft")) {
-				this.renderer.moveCamera(-0.025, 0, 0);
+				this.renderer.offsetCamera(-0.025, 0, 0);
 			}
 			if (this.keyboard.isKeyPressed("ArrowUp")) {
-				this.renderer.moveCamera(0, 0, -0.025);
+				this.renderer.offsetCamera(0, 0, -0.025);
 			}
 			if (this.keyboard.isKeyPressed("ArrowDown")) {
-				this.renderer.moveCamera(0.0, 0, 0.025);
+				this.renderer.offsetCamera(0.0, 0, 0.025);
 			}
 			if (this.keyboard.isKeyPressed("BracketRight")) {
-				this.renderer.moveCamera(0, 0.025, 0);
+				this.renderer.offsetCamera(0, 0.025, 0);
 			}
 			if (this.keyboard.isKeyPressed("Slash")) {
-				this.renderer.moveCamera(0, -0.025, 0);
+				this.renderer.offsetCamera(0, -0.025, 0);
+			}
+			if (this.keyboard.isKeyPressed("KeyP")) {
+				if (now - this.lastKeyPressTime > 100) {
+					this.lastKeyPressTime = now;
+					this.renderer.setDebugLines(!this.renderer.getDebugLines());
+				}
 			}
 
 			this.time += 1;
 		}
 
 		this.renderer.draw(this.time);
-
-		window.requestAnimationFrame(this.updateRenderer.bind(this));
+		this.browserWindow.requestAnimationFrame(this.updateRenderer.bind(this));
 	}
 
 	private initRenderer(): void {
-
 		const renderingContext: Nullable<WebGL2RenderingContext> = this.getRenderingContext();
 
 		if (renderingContext == null) {
 			throw new Error("Cannot access rendering context");
 		}
 
-		this.renderer = new Renderer(renderingContext);
+		this.renderer = new LevelRenderer(Levels.get("level_0"), renderingContext);
 		this.renderer.init();
 		this.lastUpdateTime = performance.now();
-		window.requestAnimationFrame(this.updateRenderer.bind(this));
+		this.browserWindow.requestAnimationFrame(this.updateRenderer.bind(this));
 
-		this.logger.log(LogLevel.INFO, "Requesting update frame completed");
+		this.logger.info("Requesting update frame completed");
+	}
+
+	private initAudio(): void {
+		// Test
+		const audio: HTMLAudioElement = document.createElement("audio");
+		document.body.appendChild(audio);
+		audio.src = "./resources/music/track/track_1.mp3";
+		audio.loop = true;
+		audio.style.display = "none";
+		audio.play();
 	}
 
 	static {

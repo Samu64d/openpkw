@@ -24,10 +24,10 @@ export default class Bootstrap extends ApplicationBootstrapper {
 
 
 	private static readonly MAIN_WINDOW_BUILD_CONFIG: Partial<ElectronWindow.BuildConfig> = {
-		width: 800,
-		height: 600,
-		minWidth: 800,
-		minHeight: 600,
+		width: 700,
+		height: 500,
+		minWidth: 700,
+		minHeight: 500,
 		title: "Openpkw",
 		icon: "../resources/icon/app_icon.ico"
 	};

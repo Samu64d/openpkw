@@ -1,6 +1,6 @@
 {
 	"name": "openpkw",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Open Pokemon World",
 	"scripts": {
 		"src-build": "cd ./properties && npx webpack --config ./webpack.config.js",

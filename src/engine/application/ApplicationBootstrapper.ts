@@ -128,7 +128,6 @@ export default abstract class ApplicationBootstrapper implements Disposable.Targ
 		const errorDescription: string = packet.errorName + ": " + packet.errorMessage;
 
 		if (this.mainWindow != null) {
-
 			if (this.mainWebContentsView != null) {
 				this.mainWebContentsView.unload();
 			}

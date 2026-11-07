@@ -11,7 +11,7 @@ import BrowserWindow from "../../../platform/browser/BrowserWindow.ts";
 @Disposable()
 class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target {
 
-	private static readonly KEY_LIST: string[] = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "BracketRight", "Slash"];
+	private static readonly KEY_LIST: string[] = ["KeyP", "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "BracketRight", "Slash"];
 
 	private readonly browserWindow: BrowserWindow;
 	private readonly eventTracker: EventRegistrationTracker<keyof WindowEventMap, WindowEventMap[keyof WindowEventMap]>;

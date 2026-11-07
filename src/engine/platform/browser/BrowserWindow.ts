@@ -30,6 +30,14 @@ export default class BrowserWindow implements EventEmitter<keyof WindowEventMap,
 		return this.windowObject.innerHeight;
 	}
 
+	public requestAnimationFrame(callback: FrameRequestCallback): number {
+		return this.windowObject.requestAnimationFrame(callback);
+	}
+
+	public cancelAnimationFrame(handle: number): void {
+		this.windowObject.cancelAnimationFrame(handle);
+	}
+
 	public registerEventListener<T extends keyof WindowEventMap>(eventName: T, listener: EventListener<WindowEventMap[T]>): void {
 		this.windowObject.addEventListener(eventName, listener);
 	}

@@ -2,9 +2,9 @@
 // EventRegistrationTracker.ts
 //
 
+import Record from "../reflection/decorators/Record.ts";
 import EventListener from "./EventListener.ts"
 import EventEmitter from "./EventEmitter.ts";
-import Record from "../reflection/decorators/Record.ts";
 
 class EventRegistrationTracker<T, K> {
 
@@ -21,7 +21,7 @@ class EventRegistrationTracker<T, K> {
 		this.registrationList.push(new EventRegistrationTracker.Registration(eventName, listener));
 	}
 
-	public remove(eventName: T, listener: EventListener<K>): void {
+	public remove<T, K>(eventName: T, listener: EventListener<K>): void {
 		this.emitter.unregisterEventListener(eventName, listener);
 
 		for (let i: number = 0; i < this.registrationList.length; i++) {
@@ -52,19 +52,19 @@ namespace EventRegistrationTracker {
 	@Record()
 	export class Registration {
 
-		private readonly eventName: unknown;
-		private readonly listener: EventListener<unknown>;
+		private readonly eventName: any;
+		private readonly listener: EventListener<any>;
 
-		public constructor(eventName: unknown, listener: EventListener<unknown>) {
+		public constructor(eventName: any, listener: EventListener<any>) {
 			this.eventName = eventName;
 			this.listener = listener;
 		}
 
-		public getEventName(): unknown {
+		public getEventName(): any {
 			return this.eventName;
 		}
 
-		public getListener(): EventListener<unknown> {
+		public getListener(): EventListener<any> {
 			return this.listener;
 		}
 
