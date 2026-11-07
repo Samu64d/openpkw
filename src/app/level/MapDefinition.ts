@@ -4,6 +4,8 @@
 
 interface MapDefinition {
 
+	palette: MapDefinition.Palette;
+
 	terrain: MapDefinition.Terrain;
 
 	props: MapDefinition.Prop[];
@@ -11,6 +13,8 @@ interface MapDefinition {
 };
 
 namespace MapDefinition {
+
+	export type Palette = Record<string, string>;
 
 	export type Terrain = string[][][];
 

@@ -9,6 +9,7 @@ export default class Tiles {
 
 	public static registryAll(): void {
 		Tiles.registry(Tiles.GRASS);
+		Tiles.registry(Tiles.WHITE_FLOWERS);
 		Tiles.registry(Tiles.CLIFF_STRAIGHT);
 		Tiles.registry(Tiles.CLIFF_CORNER_INNER);
 		Tiles.registry(Tiles.CLIFF_CORNER_OUTER);
@@ -18,6 +19,10 @@ export default class Tiles {
 		Tiles.registry(Tiles.WALL_CLIFF_TOP_STRAIGHT);
 		Tiles.registry(Tiles.WALL_CLIFF_TOP_CORNER_INNER);
 		Tiles.registry(Tiles.WALL_CLIFF_TOP_CORNER_OUTER);
+		Tiles.registry(Tiles.ROAD);
+		Tiles.registry(Tiles.ROAD_BORDER_STRAIGHT);
+		Tiles.registry(Tiles.ROAD_BORDER_CORNER_INNER);
+		Tiles.registry(Tiles.ROAD_BORDER_CORNER_OUTER);
 	}
 
 	public static get(tileName: string): Tile {
@@ -37,6 +42,12 @@ export default class Tiles {
 		.withModel("plain")
 		.withTexture("grass")
 		.withTextureAtlasing(16);
+
+	private static readonly WHITE_FLOWERS: Tile.Builder = Tile.BUILDER()
+		.withName("white_flowers")
+		.withModel("plain_overlay")
+		.withTexture("white_flowers")
+		.withProgram("tree");
 
 	private static readonly CLIFF_STRAIGHT: Tile.Builder = Tile.BUILDER()
 		.withName("cliff_straight")
@@ -82,6 +93,27 @@ export default class Tiles {
 		.withName("wall_cliff_top_corner_outer")
 		.withModel("wall_cliff_top_corner_outer")
 		.withTexture("wall_cliff_top");
+
+	private static readonly ROAD: Tile.Builder = Tile.BUILDER()
+		.withName("road")
+		.withModel("plain")
+		.withTexture("road");
+
+	private static readonly ROAD_BORDER_STRAIGHT: Tile.Builder = Tile.BUILDER()
+		.withName("road_border_straight")
+		.withModel("plain")
+		.withTexture("road_border_straight")
+		.withTextureAtlasing(16);
+
+	private static readonly ROAD_BORDER_CORNER_INNER: Tile.Builder = Tile.BUILDER()
+		.withName("road_border_corner_inner")
+		.withModel("plain")
+		.withTexture("road_border_corner_inner");
+
+	private static readonly ROAD_BORDER_CORNER_OUTER: Tile.Builder = Tile.BUILDER()
+		.withName("road_border_corner_outer")
+		.withModel("plain")
+		.withTexture("road_border_corner_outer");
 
 	private static readonly TILE_MAP: Map<string, Tile> = new Map<string, Tile>();
 

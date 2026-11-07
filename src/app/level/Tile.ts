@@ -18,10 +18,8 @@ class Tile extends Renderable {
 		return new Tile.Builder();
 	};
 
-	private static readonly PROGRAM_NAME: string = "terrain";
-
-	public constructor(name: string, model: Mesh, textureList: Image[]) {
-		super(name, model, textureList, Tile.PROGRAM_NAME);
+	public constructor(name: string, model: Mesh, textureList: Image[], programName: string) {
+		super(name, model, textureList, programName);
 	}
 
 }
@@ -29,6 +27,8 @@ class Tile extends Renderable {
 namespace Tile {
 
 	export class Builder extends Renderable.Builder {
+
+		private static readonly DEFAULT_PROGRAM_NAME: string = "terrain";
 
 		private static createAtlas(image: Image, atlasElementSize: number): Image[] {
 			if (image.getWidth() % atlasElementSize != 0) {
@@ -76,7 +76,9 @@ namespace Tile {
 				textureList = [texture];
 			}
 
-			return new Tile(this.name, model, textureList);
+			const programName: string = this.programName ?? Builder.DEFAULT_PROGRAM_NAME;
+
+			return new Tile(this.name, model, textureList, programName);
 		}
 
 		public withTextureAtlasing(atlasElementSize: number): this {

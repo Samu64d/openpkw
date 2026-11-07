@@ -277,6 +277,7 @@ export default class LevelRenderer {
 
 	private drawLevel(): void {
 		const map: MapDefinition = this.level.getMap();
+		const palette: MapDefinition.Palette = map.palette;
 		const terrain: MapDefinition.Terrain = map.terrain;
 		const propList: MapDefinition.Prop[] = map.props;
 
@@ -287,7 +288,8 @@ export default class LevelRenderer {
 				const row: string[] = layer[z];
 
 				for (let x: number = 0; x < row.length; x++) {
-					const tileConfig: string = row[x];
+					const paletteIndex: string = row[x];
+					const tileConfig: string = palette[paletteIndex];
 					const elementConfigList: string[] = tileConfig.split(";");
 
 					for (const elementConfig of elementConfigList) {
