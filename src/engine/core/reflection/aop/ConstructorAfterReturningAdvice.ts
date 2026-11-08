@@ -3,27 +3,27 @@
 //
 
 import ClassType from "../class/ClassType.ts";
-import Aspect from "./Aspect.ts";
+import Action from "./Action.ts";
 import ConstructorAdvice from "./ConstructorAdvice.ts";
 
-class ConstructorAfterReturningAdvice<T extends Aspect, C extends ClassType<object>> extends ConstructorAdvice<T, C> {
+class ConstructorAfterReturningAdvice<T extends ClassType<object>> extends ConstructorAdvice<T> {
 
-	public constructor(aspect: T) {
-		super(aspect);
+	public constructor(action: Action<InstanceType<T>>) {
+		super(action);
 	}
 
-	public override wrap(classType: C): C {
-		const aspect: T = this.aspect;
+	public override wrap(classType: T): T {
+		const action: Action<InstanceType<T>> = this.action;
 
-		return class extends (classType as any) {
+		return class extends classType {
 
 			public constructor(...args: any[]) {
 				super(...args);
 
-				aspect(this);
+				action(this);
 			}
 
-		} as unknown as C;
+		} as T;
 	}
 
 }

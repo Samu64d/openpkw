@@ -2,32 +2,36 @@
 // AroundAdvice.ts
 //
 
-import Aspect from "./Aspect.ts";
+import AroundAction from "./AroundAction.ts";
 import Advice from "./Advice.ts";
 
-class AroundAdvice<T extends Aspect, M extends AroundAdvice.Accept<T>> extends Advice<T, M> {
+class AroundAdvice<T extends object, M extends AroundAdvice.Accept<T> = AroundAdvice.Accept<T>> extends Advice<T, M> {
 
-	public constructor(aspect: T) {
-		super(aspect);
+	public constructor(action: AroundAction<T>) {
+		super(action);
 	}
 
 	public override wrap(method: M): M {
-		const aspect: T = this.aspect;
+		const action: AroundAction<T> = this.action;
 
-		return function (this: ThisParameterType<M>, ...args: Parameters<T>): ReturnType<M> {
-			const proceed: (...proceedArgs: Parameters<T>) => ReturnType<M> = (...proceedArgs: Parameters<T>): ReturnType<M> => {
-				return method.apply(this, proceedArgs.length > 0 ? proceedArgs : args as any);
+		return function (this: ThisParameterType<M>, ...args: Parameters<M>): ReturnType<M> {
+			const proceed: (...proceedArgs: Parameters<M>) => ReturnType<M> = (...proceedArgs: Parameters<M>): ReturnType<M> => {
+				return method.apply(this, proceedArgs.length > 0 ? proceedArgs : args);
 			};
 
-			return aspect.call(this, proceed, ...args);
-		} as unknown as M;
+			return action.call(this, proceed, ...args);
+		} as M;
 	}
 
 }
 
 namespace AroundAdvice {
 
-	export type Accept<T extends Aspect> = (proceed: (...args: Parameters<T>) => unknown, ...args: Parameters<T>) => any;
+	export interface Accept<T> {
+
+		(this: T, proceed: (...args: any[]) => any, ...args: any[]): any;
+
+	}
 
 }
 

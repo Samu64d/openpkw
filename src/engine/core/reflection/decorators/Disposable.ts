@@ -5,18 +5,18 @@
 import Consumer from "../../common/Consumer.ts";
 import InvalidOperationException from "../../exception/InvalidOperationException.ts";
 import ClassType from "../class/ClassType.ts";
-import Aspect from "../aop/Aspect.ts";
+import Action from "../aop/Action.ts";
 import BeforeAdvice from "../aop/BeforeAdvice.ts";
-import ClassAdviceApplier from "../aop/ClassAdviceApplier.ts";
+import ClassAspects from "../aop/ClassAspects.ts";
 
 function Disposable<T extends Disposable.Target, C extends ClassType<T>>(): Consumer<C> {
-	return <C extends ClassType<T>>(target: C): void => {
-		const applier: ClassAdviceApplier<Disposable.Target> = new ClassAdviceApplier(target);
-		const disposeGuardAdvice: BeforeAdvice<Aspect, BeforeAdvice.Accept<Aspect>> = new BeforeAdvice(Disposable.DISPOSE_GUARD_ASPECT());
-		const disposeAdvice: BeforeAdvice<Aspect, BeforeAdvice.Accept<Aspect>> = new BeforeAdvice(Disposable.DISPOSE_ASPECT());
+	return function (target: C): void {
+		const aspects: ClassAspects<Disposable.Target> = new ClassAspects(target);
+		const disposeAdvice: BeforeAdvice<Disposable.Target> = new BeforeAdvice(Disposable.DISPOSE_ACTION());
+		const disposeGuardAdvice: BeforeAdvice<Disposable.Target> = new BeforeAdvice(Disposable.DISPOSE_GUARD_ACTION());
 
-		applier.applyToMethod("dispose", disposeAdvice);
-		applier.applyToAllMethods(disposeGuardAdvice);
+		aspects.applyToMethod("dispose", disposeAdvice);
+		aspects.applyToAllMethods(disposeGuardAdvice);
 	};
 }
 
@@ -32,14 +32,14 @@ namespace Disposable {
 
 	const DISPOSED: unique symbol = Symbol("DISPOSED");
 
-	export const DISPOSE_ASPECT = (): Aspect => {
-		return function <T extends Target>(this: T): void {
+	export const DISPOSE_ACTION = <T extends Target>(): Action<T> => {
+		return function (this: T): void {
 			this[DISPOSED] = true;
 		};
 	};
 
-	export const DISPOSE_GUARD_ASPECT = (): Aspect => {
-		return function <T extends Target>(this: T, ...args: unknown[]): void {
+	export const DISPOSE_GUARD_ACTION = <T extends Target>(): Action<T> => {
+		return function (this: T, ...args: any[]): void {
 			if (this[DISPOSED] == true) {
 				throw new InvalidOperationException("Trying to access a disposed object");
 			}

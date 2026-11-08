@@ -3,16 +3,20 @@
 //
 
 import Callable from "../../common/Callable.ts";
-import Aspect from "./Aspect.ts";
+import Action from "./Action.ts";
 
-export default abstract class Advice<T extends Aspect, M extends Callable> {
+export default abstract class Advice<T extends object, M extends Callable> {
 
-	protected readonly aspect: T;
+	protected readonly action: Action<T>;
 
-	public constructor(aspect: T) {
-		this.aspect = aspect;
+	public constructor(action: Action<T>) {
+		this.action = action;
 	}
 
-	public abstract wrap(target: M): M;
+	public getAction(): Action<T> {
+		return this.action;
+	}
+
+	public abstract wrap(method: M): M;
 
 }

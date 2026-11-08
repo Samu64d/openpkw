@@ -2,36 +2,40 @@
 // AfterFinallyAdvice.ts
 //
 
-import Aspect from "./Aspect.ts";
+import Action from "./Action.ts";
 import Advice from "./Advice.ts";
 
-class AfterFinallyAdvice<T extends Aspect, M extends AfterFinallyAdvice.Accept<T>> extends Advice<T, M> {
+class AfterFinallyAdvice<T extends object, M extends AfterFinallyAdvice.Accept = AfterFinallyAdvice.Accept> extends Advice<T, M> {
 
-	public constructor(aspect: T) {
-		super(aspect);
+	public constructor(action: Action<T>) {
+		super(action);
 	}
 
 	public override wrap(method: M): M {
-		const aspect: T = this.aspect;
+		const action: Action<T> = this.action;
 
-		return function (this: ThisParameterType<M>, ...args: Parameters<T>): ReturnType<M> {
+		return function (this: T, ...args: Parameters<M>): ReturnType<M> {
 			let returnValue: ReturnType<M>;
 
 			try {
 				returnValue = method.apply(this, args);
 			} finally {
-				aspect.apply(this, args);
+				action.apply(this, args);
 			}
 
 			return returnValue;
-		} as unknown as M;
+		} as M;
 	}
 
 }
 
 namespace AfterFinallyAdvice {
 
-	export type Accept<T extends Aspect> = (...args: Parameters<T>) => any;
+	export interface Accept {
+
+		(...args: any[]): any;
+
+	}
 
 }
 

@@ -2,29 +2,34 @@
 // BeforeAdvice.ts
 //
 
-import Aspect from "./Aspect.ts";
+import Action from "./Action.ts";
 import Advice from "./Advice.ts";
 
-class BeforeAdvice<T extends Aspect, M extends BeforeAdvice.Accept<T>> extends Advice<T, M> {
+class BeforeAdvice<T extends object, M extends BeforeAdvice.Accept = BeforeAdvice.Accept> extends Advice<T, M> {
 
-	public constructor(aspect: T) {
-		super(aspect);
+	public constructor(action: Action<T>) {
+		super(action);
 	}
 
 	public override wrap(method: M): M {
-		const aspect: T = this.aspect;
+		const action: Action<T> = this.action;
 
-		return function (this: ThisParameterType<M>, ...args: Parameters<T>): ReturnType<M> {
-			aspect.apply(this, args);
+		return function (this: T, ...args: Parameters<M>): ReturnType<M> {
+			action.apply(this, args);
+
 			return method.apply(this, args);
-		} as unknown as M;
+		} as M;
 	}
 
 }
 
 namespace BeforeAdvice {
 
-	export type Accept<T extends Aspect> = (...args: Parameters<T>) => any;
+	export interface Accept {
+
+		(...args: any[]): any;
+
+	}
 
 }
 

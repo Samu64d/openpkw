@@ -3,16 +3,16 @@
 //
 
 import ClassType from "../class/ClassType.ts";
-import Aspect from "./Aspect.ts";
+import Action from "./Action.ts";
 
-export default abstract class ConstructorAdvice<T extends Aspect, C extends ClassType<object>> {
+export default abstract class ConstructorAdvice<T extends ClassType<object>> {
 
-	protected readonly aspect: T;
+	protected readonly action: Action<InstanceType<T>>;
 
-	public constructor(aspect: T) {
-		this.aspect = aspect;
+	public constructor(action: Action<InstanceType<T>>) {
+		this.action = action;
 	}
 
-	public abstract wrap(classType: C): C;
+	public abstract wrap(classType: T): T;
 
 }

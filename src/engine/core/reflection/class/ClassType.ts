@@ -18,7 +18,7 @@ namespace ClassType {
 		[K in keyof T]: T[K] extends Callable ? K : never;
 	}[keyof T];
 
-	export type Method<T extends object, K extends MethodName<T>> = T[K];
+	export type Method<T extends object, K extends MethodName<T>> = T[K] & Callable;
 
 	export function hasMethod<T extends object>(classType: ClassType<T>, methodName: MethodName<T>): boolean {
 		return typeof classType.prototype[methodName] == "function";

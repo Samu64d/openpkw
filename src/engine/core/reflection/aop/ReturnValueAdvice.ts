@@ -2,32 +2,36 @@
 // ReturnValueAdvice.ts
 //
 
-import Aspect from "./Aspect.ts";
+import ReturnValueAction from "./ReturnValueAction.ts";
 import Advice from "./Advice.ts";
 
-class ReturnValueAdvice<T extends ReturnValueAdvice.Signature<T>, M extends ReturnValueAdvice.Accept<T>> extends Advice<T, M> {
+class ReturnValueAdvice<T extends object, R, M extends ReturnValueAdvice.Accept<R> = ReturnValueAdvice.Accept<R>> extends Advice<T, M> {
 
-	public constructor(aspect: T) {
-		super(aspect);
+	declare protected readonly action: ReturnValueAction<T, R>;
+
+	public constructor(action: ReturnValueAction<T, R>) {
+		super(action);
 	}
 
 	public override wrap(method: M): M {
-		const aspect: T = this.aspect;
+		const action: ReturnValueAction<T, R> = this.action;
 
-		return function (this: ThisParameterType<M>, ...args: Parameters<M>): ReturnType<T> {
-			const returnValue: ReturnType<T> = method.apply(this, args);
+		return function (this: T, ...args: Parameters<M>): ReturnType<M> {
+			const returnValue: R = method.apply(this, args);
 
-			return aspect.call(this, returnValue);
-		} as unknown as M;
+			return action.call(this, returnValue);
+		} as M;
 	}
 
 }
 
 namespace ReturnValueAdvice {
 
-	export type Signature<T extends Aspect> = (value: ReturnType<T>) => ReturnType<T>;
+	export interface Accept<R> {
 
-	export type Accept<T extends Aspect> = (...args: unknown[]) => Parameters<T>[0];
+		(...args: any[]): R;
+
+	}
 
 }
 
