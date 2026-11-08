@@ -2,6 +2,8 @@
 // Function.ts
 //
 
-type Function<T, R> = (value: T) => R;
+export default interface Function<T, R> {
 
-export default Function;
+	(value: T): R;
+
+}

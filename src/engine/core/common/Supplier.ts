@@ -2,6 +2,8 @@
 // Supplier.ts
 //
 
-type Supplier<T> = () => T;
+export default interface Supplier<T> {
 
-export default Supplier;
+	(): T;
+
+}

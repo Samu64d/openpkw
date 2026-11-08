@@ -60,9 +60,17 @@ namespace ElectronIPC {
 
 	export type Channel = string;
 
-	export type Register = (channel: Channel, listener: EventListener<Electron.IpcMainInvokeEvent>) => void;
+	export interface Register {
 
-	export type Invoker = (channel: Channel, ...args: any[]) => any;
+		(channel: Channel, listener: EventListener<Electron.IpcMainInvokeEvent>): void;
+
+	}
+
+	export interface Invoker {
+
+		(channel: Channel, ...args: any[]): any;
+
+	}
 
 }
 

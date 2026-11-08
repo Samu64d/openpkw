@@ -5,7 +5,7 @@
 import Nullable from "../common/Nullable.ts";
 import ArgumentException from "./ArgumentException.ts";
 
-export default class ArgumentNullException extends ArgumentException<unknown> {
+export default class ArgumentNullException extends ArgumentException<null> {
 
 	public static throwIfNull<T>(argumentValue: Nullable<T>, parameterName: string): void {
 		if (argumentValue == null) {

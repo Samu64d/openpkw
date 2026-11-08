@@ -2,6 +2,8 @@
 // Consumer.ts
 //
 
-type Consumer<T> = (value: T) => void;
+export default interface Consumer<T> {
 
-export default Consumer;
+	(value: T): void;
+
+}

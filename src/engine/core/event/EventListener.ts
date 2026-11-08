@@ -2,6 +2,8 @@
 // EventListener.ts
 //
 
-type EventListener<T> = (event: T, ...args: any[]) => any;
+export default interface EventListener<T> {
 
-export default EventListener;
+	(event: T, ...args: any[]): void;
+
+}
