@@ -5,7 +5,7 @@
 import Action from "./Action.ts";
 import Advice from "./Advice.ts";
 
-class AfterReturningAdvice<T extends object, M extends AfterReturningAdvice.Accept> extends Advice<T, AfterReturningAdvice.Accept> {
+class AfterReturningAdvice<T extends object, M extends AfterReturningAdvice.Accept = AfterReturningAdvice.Accept> extends Advice<T, M> {
 
 	public constructor(action: Action<T>) {
 		super(action);

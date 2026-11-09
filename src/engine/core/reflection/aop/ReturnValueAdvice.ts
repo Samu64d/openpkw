@@ -19,7 +19,7 @@ class ReturnValueAdvice<T extends object, R, M extends ReturnValueAdvice.Accept<
 		return function (this: T, ...args: Parameters<M>): ReturnType<M> {
 			const returnValue: R = method.apply(this, args);
 
-			return action.call(this, returnValue);
+			return action.call(this, returnValue) as ReturnType<M>;
 		} as M;
 	}
 

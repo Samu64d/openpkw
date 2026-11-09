@@ -7,6 +7,8 @@ import Advice from "./Advice.ts";
 
 class AroundAdvice<T extends object, M extends AroundAdvice.Accept<T> = AroundAdvice.Accept<T>> extends Advice<T, M> {
 
+	declare protected readonly action: AroundAction<T>;
+
 	public constructor(action: AroundAction<T>) {
 		super(action);
 	}
@@ -29,7 +31,7 @@ namespace AroundAdvice {
 
 	export interface Accept<T> {
 
-		(this: T, proceed: (...args: any[]) => any, ...args: any[]): any;
+		(this: T, ...args: any[]): any;
 
 	}
 

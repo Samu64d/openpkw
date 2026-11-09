@@ -3,24 +3,24 @@
 //
 
 import ClassType from "../class/ClassType.ts";
-import Action from "./Action.ts";
+import ConstructorAction from "./ConstructorAction.ts";
 import ConstructorAdvice from "./ConstructorAdvice.ts";
 
 class ConstructorAfterReturningAdvice<T extends ClassType<object>> extends ConstructorAdvice<T> {
 
-	public constructor(action: Action<InstanceType<T>>) {
+	public constructor(action: ConstructorAction<InstanceType<T>>) {
 		super(action);
 	}
 
 	public override wrap(classType: T): T {
-		const action: Action<InstanceType<T>> = this.action;
+		const action: ConstructorAction<InstanceType<T>> = this.action;
 
 		return class extends classType {
 
 			public constructor(...args: any[]) {
 				super(...args);
 
-				action(this);
+				action.call(this as InstanceType<T>);
 			}
 
 		} as T;

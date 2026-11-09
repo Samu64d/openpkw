@@ -4,7 +4,7 @@
 
 import Function from "../../common/Function.ts";
 import ClassType from "../class/ClassType.ts";
-import Action from "../aop/Action.ts";
+import ConstructorAction from "../aop/ConstructorAction.ts";
 import ConstructorAfterReturningAdvice from "../aop/ConstructorAfterReturningAdvice.ts";
 
 function Record<T extends object, C extends ClassType<T>>(): Function<C, C> {
@@ -17,9 +17,9 @@ function Record<T extends object, C extends ClassType<T>>(): Function<C, C> {
 
 namespace Record {
 
-	export const RECORD_ACTION = <T extends object>(): Action<T> => {
-		return (instance: T): void => {
-			Object.freeze(instance);
+	export const RECORD_ACTION = <T extends object>(): ConstructorAction<T> => {
+		return function (this: T): void {
+			Object.freeze(this);
 		};
 	};
 

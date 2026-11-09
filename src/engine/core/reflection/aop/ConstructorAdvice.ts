@@ -3,13 +3,13 @@
 //
 
 import ClassType from "../class/ClassType.ts";
-import Action from "./Action.ts";
+import ConstructorAction from "./ConstructorAction.ts";
 
 export default abstract class ConstructorAdvice<T extends ClassType<object>> {
 
-	protected readonly action: Action<InstanceType<T>>;
+	protected readonly action: ConstructorAction<InstanceType<T>>;
 
-	public constructor(action: Action<InstanceType<T>>) {
+	public constructor(action: ConstructorAction<InstanceType<T>>) {
 		this.action = action;
 	}
 

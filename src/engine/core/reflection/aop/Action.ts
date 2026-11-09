@@ -4,6 +4,6 @@
 
 export default interface Action<T extends object> {
 
-	(this: T, ...args: any[]): any;
+	(this: T, ...args: any[]): void;
 
 }
