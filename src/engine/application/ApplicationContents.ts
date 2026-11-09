@@ -15,6 +15,7 @@ export default class ApplicationContents {
 		//@ts-expect-error
 		const template: string = applicationType.getContentsTemplate();
 		const templateInstance: string = template.replace("{{entryPointPath}}", entryPointPath);
+
 		const dataUrl: string = "data:text/html;base64," + Buffer.from(templateInstance).toString("base64");
 		const baseUrl: string = NodePath.join([__dirname, "../"]);
 

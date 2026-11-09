@@ -4,10 +4,10 @@
 
 import EventListener from "./EventListener.ts";
 
-export default interface EventEmitter<T, K> {
+export default interface EventEmitter<T extends object> {
 
-	registerEventListener(eventName: T, listener: EventListener<K>): void;
+	registerEventListener<K extends keyof T>(eventName: K, listener: EventListener<T[K]>): void;
 
-	unregisterEventListener(eventName: T, listener: EventListener<K>): void;
+	unregisterEventListener<K extends keyof T>(eventName: K, listener: EventListener<T[K]>): void;
 
 }

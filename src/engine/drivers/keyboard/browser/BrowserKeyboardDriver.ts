@@ -14,14 +14,14 @@ class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target 
 	private static readonly KEY_LIST: string[] = ["KeyP", "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "BracketRight", "Slash"];
 
 	private readonly browserWindow: BrowserWindow;
-	private readonly eventTracker: EventRegistrationTracker<keyof WindowEventMap, WindowEventMap[keyof WindowEventMap]>;
+	private readonly browserWindowEvents: EventRegistrationTracker<WindowEventMap>;
 	private readonly keyStatsMap: Map<string, BrowserKeyboardDriver.KeyStats>;
 
 	public constructor() {
 		super();
 
 		this.browserWindow = BrowserWindow.FROM_GLOBAL_REFERENCE();
-		this.eventTracker = new EventRegistrationTracker(this.browserWindow);
+		this.browserWindowEvents = new EventRegistrationTracker<WindowEventMap>(this.browserWindow);
 		this.keyStatsMap = new Map<string, BrowserKeyboardDriver.KeyStats>();
 	}
 
@@ -65,7 +65,7 @@ class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target 
 	}
 
 	public override dispose(): void {
-		this.eventTracker.removeAll();
+		this.browserWindowEvents.removeAll();
 	}
 
 	private populateKeyStatsMap(): void {
@@ -108,9 +108,9 @@ class BrowserKeyboardDriver extends KeyboardDriver implements Disposable.Target 
 	}
 
 	private registerWindowEventListeners(): void {
-		this.eventTracker.add("keydown", this.onKeyDownListener.bind(this));
-		this.eventTracker.add("keyup", this.onKeyUpListener.bind(this));
-		this.eventTracker.add("blur", this.onBlurListener.bind(this));
+		this.browserWindowEvents.add("keydown", this.onKeyDownListener.bind(this));
+		this.browserWindowEvents.add("keyup", this.onKeyUpListener.bind(this));
+		this.browserWindowEvents.add("blur", this.onBlurListener.bind(this));
 	}
 
 	private hasKey(key: string): boolean {

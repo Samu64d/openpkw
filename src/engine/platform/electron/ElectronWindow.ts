@@ -10,7 +10,7 @@ import Disposable from "../../core/reflection/decorators/Disposable.ts";
 import ElectronWebContentsView from "./ElectronWebContentsView.ts";
 
 @Disposable()
-class ElectronWindow implements Disposable.Target, EventEmitter<any, Electron.Event> {
+class ElectronWindow implements Disposable.Target, EventEmitter<Record<any, Electron.Event>> {
 
 	private static readonly DEFAULT_WIDTH: number = 800;
 

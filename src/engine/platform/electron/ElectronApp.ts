@@ -10,7 +10,7 @@ import EventListener from "../../core/event/EventListener.ts";
 import EventEmitter from "../../core/event/EventEmitter.ts";
 import NodeProcess from "../node/NodeProcess.ts";
 
-export default class ElectronApp implements EventEmitter<any, Electron.Event> {
+export default class ElectronApp implements EventEmitter<Record<any, Electron.Event>> {
 
 	public static readonly FROM_GLOBAL_REFERENCE: Supplier<ElectronApp> = (): ElectronApp => {
 		return new ElectronApp(Electron.app);

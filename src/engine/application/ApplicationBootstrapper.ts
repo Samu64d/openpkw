@@ -23,9 +23,9 @@ export default abstract class ApplicationBootstrapper implements Disposable.Targ
 	private readonly applicationContents: ApplicationContents;
 	private readonly cachePath: string;
 	private readonly electronApp: ElectronApp;
+	private readonly electronAppEvents: EventRegistrationTracker<Record<any, Electron.Event>>;
 	private readonly electronDialog: ElectronDialog;
 	private readonly ipcErrorChannel: IPCErrorChannel;
-	private readonly electronAppEvents: EventRegistrationTracker<any, Electron.Event>;
 	private mainWindow: Nullable<ElectronWindow>;
 	private mainWebContentsView: Nullable<ElectronWebContentsView>;
 	private hasErrors: boolean;
@@ -35,9 +35,9 @@ export default abstract class ApplicationBootstrapper implements Disposable.Targ
 		this.applicationContents = applicationContents;
 		this.cachePath = cachePath;
 		this.electronApp = ElectronApp.FROM_GLOBAL_REFERENCE();
+		this.electronAppEvents = new EventRegistrationTracker<Record<any, Electron.Event>>(this.electronApp);
 		this.electronDialog = ElectronDialog.FROM_GLOBAL_REFERENCE();
 		this.ipcErrorChannel = new IPCErrorChannel(ElectronIPC.FROM_GLOBAL_REFERENCE());
-		this.electronAppEvents = new EventRegistrationTracker<any, Electron.Event>(this.electronApp);
 		this.mainWindow = null;
 		this.mainWebContentsView = null;
 		this.hasErrors = false;

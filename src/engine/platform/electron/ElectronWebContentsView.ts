@@ -11,7 +11,7 @@ import Disposable from "../../core/reflection/decorators/Disposable.ts";
 import ElectronWindow from "./ElectronWindow.ts";
 
 @Disposable()
-export default class ElectronWebContentsView implements Disposable.Target, EventEmitter<any, void> {
+export default class ElectronWebContentsView implements Disposable.Target, EventEmitter<Record<any, void>> {
 
 	private static readonly DEFAULT_WEB_PREFERENCES: Electron.WebPreferences = {
 		nodeIntegration: true,

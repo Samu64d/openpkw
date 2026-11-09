@@ -29,8 +29,8 @@ export default abstract class BrowserApplication extends Application implements 
 
 	protected readonly ipcErrorChannel: IPCErrorChannel;
 	protected readonly browserWindow: BrowserWindow;
+	protected readonly browserWindowEvents: EventRegistrationTracker<WindowEventMap>;
 	protected readonly browserDocument: BrowserDocument;
-	private readonly browserWindowEvents: EventRegistrationTracker<keyof WindowEventMap, WindowEventMap[keyof WindowEventMap]>;
 	private windowIsReady: boolean;
 	private windowHasErrors: boolean;
 
@@ -39,8 +39,8 @@ export default abstract class BrowserApplication extends Application implements 
 
 		this.ipcErrorChannel = new IPCErrorChannel(ElectronIPC.FROM_GLOBAL_REFERENCE());
 		this.browserWindow = BrowserWindow.FROM_GLOBAL_REFERENCE();
+		this.browserWindowEvents = new EventRegistrationTracker<WindowEventMap>(this.browserWindow);
 		this.browserDocument = BrowserDocument.FROM_GLOBAL_REFERENCE();
-		this.browserWindowEvents = new EventRegistrationTracker(this.browserWindow);
 		this.windowIsReady = false;
 		this.windowHasErrors = false;
 		this.registerWindowEventListeners();
