@@ -9,6 +9,7 @@ export default class Tiles {
 
 	public static registryAll(): void {
 		Tiles.registry(Tiles.GRASS);
+		Tiles.registry(Tiles.GRASS_SPIKE);
 		Tiles.registry(Tiles.WHITE_FLOWERS);
 		Tiles.registry(Tiles.CLIFF_STRAIGHT);
 		Tiles.registry(Tiles.CLIFF_CORNER_INNER);
@@ -42,6 +43,12 @@ export default class Tiles {
 		.withModel("plain")
 		.withTexture("grass")
 		.withTextureAtlasing(16);
+
+	private static readonly GRASS_SPIKE: Tile.Builder = Tile.BUILDER()
+		.withName("grass_spike")
+		.withModel("plain_overlay")
+		.withTexture("grass_spike")
+		.withProgram("tree");
 
 	private static readonly WHITE_FLOWERS: Tile.Builder = Tile.BUILDER()
 		.withName("white_flowers")
