@@ -22,6 +22,14 @@ export default class BrowserDocument implements EventEmitter<DocumentEventMap> {
 		return this.documentObject;
 	}
 
+	public getTitle(): string {
+		return this.documentObject.title;
+	}
+
+	public setTitle(title: string): void {
+		this.documentObject.title = title;
+	}
+
 	public getBody(): HTMLElement {
 		return this.documentObject.body;
 	}

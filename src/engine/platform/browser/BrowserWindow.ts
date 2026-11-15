@@ -30,6 +30,10 @@ export default class BrowserWindow implements EventEmitter<WindowEventMap> {
 		return this.windowObject.innerHeight;
 	}
 
+	public getPerformance(): Performance {
+		return this.windowObject.performance;
+	}
+
 	public requestAnimationFrame(callback: FrameRequestCallback): number {
 		return this.windowObject.requestAnimationFrame(callback);
 	}

@@ -2,6 +2,7 @@
 // BrowserApplication.ts
 //
 
+import TimeProvider from "../core/time/TimeProvider.ts";
 import EventRegistrationTracker from "../core/event/EventRegistrationTracker.ts";
 import Disposable from "../core/reflection/decorators/Disposable.ts";
 import BrowserWindow from "../platform/browser/BrowserWindow.ts";
@@ -21,7 +22,7 @@ export default abstract class BrowserApplication extends Application implements 
 					<meta charset="UTF-8"></meta>
 					<script src="{{entryPointPath}}"></script>
 				</head>
-				<body style="box-sizing: content-box; display: flex; width: 100%; height: 100%; margin: 0px; justify-content: center; align-items: center;">
+				<body style="box-sizing: content-box; display: flex; width: 100%; height: 100%; margin: 0px; justify-content: center; align-items: center; flex-flow: column;">
 				</body>
 			</html>
 		`;
@@ -68,6 +69,10 @@ export default abstract class BrowserApplication extends Application implements 
 
 	public getDocumentBody(): HTMLElement {
 		return this.browserDocument.getBody();
+	}
+
+	public getTimeProvider(): TimeProvider {
+		return this.browserWindow.getPerformance();
 	}
 
 	public dispose(): void {

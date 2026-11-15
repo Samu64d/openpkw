@@ -13,6 +13,7 @@ import BrowserMemoryDriver from "./engine/drivers/memory/browser/BrowserMemoryDr
 import NodeFileSystemDriver from "./engine/drivers/filesystem/node/NodeFileSystemDriver.ts";
 import BrowserKeyboardDriver from "./engine/drivers/keyboard/browser/BrowserKeyboardDriver.ts";
 import NodeProcess from "./engine/platform/node/NodeProcess.ts";
+import BrowserFPSCounter from "./engine/application/BrowserFPSCounter.ts";
 import CanvasApplication from "./engine/application/CanvasApplication.ts";
 import Tiles from "./app/level/Tiles.ts";
 import Props from "./app/level/Props.ts";
@@ -42,6 +43,7 @@ export default class Openpkw extends CanvasApplication {
 	private time: number;
 	private lastUpdateTime: number;
 	private lastKeyPressTime: number;
+	private fpsCounter: BrowserFPSCounter;
 
 	private constructor() {
 		super(CanvasApplication.ADAPTIVE_RESOLUTION(0.6), true);
@@ -52,6 +54,7 @@ export default class Openpkw extends CanvasApplication {
 		this.time = 0;
 		this.lastUpdateTime = -1;
 		this.lastKeyPressTime = -1;
+		this.fpsCounter = new BrowserFPSCounter(this, BrowserFPSCounter.MeasurementMode.AVERAGE);
 	}
 
 	public override onReady(): void {
@@ -63,6 +66,7 @@ export default class Openpkw extends CanvasApplication {
 		Levels.registryAll();
 		this.initRenderer();
 		this.initAudio();
+		this.fpsCounter.appendToBody();
 	}
 
 	public override onClientResize(width: number, height: number): void {
@@ -141,6 +145,7 @@ export default class Openpkw extends CanvasApplication {
 
 		this.renderer.draw(this.time);
 		this.browserWindow.requestAnimationFrame(this.updateRenderer.bind(this));
+		this.fpsCounter.update();
 	}
 
 	private initRenderer(): void {
