@@ -60,6 +60,7 @@ export function multiply(a: readonly number[], b: readonly number[]): number[] {
 }
 
 /**
+ * @deprecated
  * @todo Remove
  **/
 export function multiplyAll(...matrixList: (readonly number[])[]): number[] {
