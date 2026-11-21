@@ -17,7 +17,7 @@ function Record<T extends object, C extends ClassType<T>>(): Function<C, C> {
 
 namespace Record {
 
-	export const RECORD_ACTION = <T extends object>(): ConstructorAction<T> => {
+	export const RECORD_ACTION: <T extends object>() => ConstructorAction<T> = <T extends object>(): ConstructorAction<T> => {
 		return function (this: T): void {
 			Object.freeze(this);
 		};

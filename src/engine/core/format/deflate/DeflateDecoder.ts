@@ -8,6 +8,9 @@ import ByteBuffer from "../../io/buffer/ByteBuffer.ts";
 import SingleValueDecoder from "../../codec/SingleValueDecoder.ts";
 import CodecException from "../../exception/CodecException.ts";
 
+/**
+ * @todo Built-in implementation
+ **/
 export default class DeflateDecoder extends SingleValueDecoder<ByteBuffer, ByteBuffer> {
 
 	public constructor(source: ByteBuffer) {

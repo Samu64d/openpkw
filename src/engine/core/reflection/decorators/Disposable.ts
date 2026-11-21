@@ -32,13 +32,13 @@ namespace Disposable {
 
 	const DISPOSED: unique symbol = Symbol("DISPOSED");
 
-	export const DISPOSE_ACTION = <T extends Target>(): Action<T> => {
+	export const DISPOSE_ACTION: <T extends Target>() => Action<T> = <T extends Target>(): Action<T> => {
 		return function (this: T): void {
 			this[DISPOSED] = true;
 		};
 	};
 
-	export const DISPOSE_GUARD_ACTION = <T extends Target>(): Action<T> => {
+	export const DISPOSE_GUARD_ACTION: <T extends Target>() => Action<T> = <T extends Target>(): Action<T> => {
 		return function (this: T, ...args: any[]): void {
 			if (this[DISPOSED] == true) {
 				throw new InvalidOperationException("Trying to access a disposed object");

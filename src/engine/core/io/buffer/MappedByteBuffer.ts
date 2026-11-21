@@ -6,11 +6,15 @@ import MathHelper from "../../math/MathHelper.ts";
 import Spannable from "../../memory/Spannable.ts";
 import Disposable from "../../reflection/decorators/Disposable.ts";
 import InvalidOperationException from "../../exception/InvalidOperationException.ts";
+import NotImplementedException from "../../exception/NotImplementedException.ts";
 import IOException from "../../exception/IOException.ts";
 import FileHandler from "../file/FileHandler.ts";
 import BaseByteBuffer from "./BaseByteBuffer.ts";
 import ByteBuffer from "./ByteBuffer.ts";
 
+/**
+ * @todo Completing
+ **/
 @Disposable()
 export default class MappedByteBuffer extends BaseByteBuffer implements Disposable.Target {
 
@@ -67,7 +71,7 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	}
 
 	public override setArray(position: number, array: ArrayLike<number>): void {
-		//TODO:
+		throw new NotImplementedException("Not implemented");
 	}
 
 	public override fill(value: number, startPosition: number = 0, endPosition: number = this.capacity): void {
@@ -122,15 +126,15 @@ export default class MappedByteBuffer extends BaseByteBuffer implements Disposab
 	}
 
 	public override copyTo(byteBuffer: BaseByteBuffer, sourceStartPosition: number = 0, sourceEndPosition: number = this.capacity, destinationStartPosition: number = 0): void {
-		//TODO:
+		throw new NotImplementedException("Not implemented");
 	}
 
 	public override slice(startPosition: number, endPosition: number): MappedByteBuffer {
-		//TODO:
+		throw new NotImplementedException("Not implemented");
 	}
 
 	public override toArray(startPosition: number, endPosition: number): number[] {
-		//TODO:
+		throw new NotImplementedException("Not implemented");
 	}
 
 	public dispose(): void {

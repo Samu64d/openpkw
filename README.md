@@ -4,8 +4,10 @@
   <img src="./docs/app_showcase.png" width="600px" height="400px" alt="App showcase" />
 </p>
 
-## TODO:
+## Todo:
 
+- Implements built-in DeflateDecoder
 - Implements full OBJDecoder
-- Matrix classes
+- Fix interlacing in PNGDecoder
 - Completing MappedByteBuffer
+- Remove matrix array based functions

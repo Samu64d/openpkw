@@ -8,6 +8,9 @@ import Exception from "../../../exception/Exception.ts";
 import CodecException from "../../../exception/CodecException.ts";
 import FilterDecoder from "../filter/FilterDecoder.ts";
 
+/**
+ * @todo Fix crash when image area is not a square
+ **/
 export default class InterlaceDecoder extends SingleValueDecoder<ByteBuffer, ByteBuffer> {
 
 	private static readonly ROW_START_PER_PASS_LIST: number[] = [0, 0, 4, 0, 2, 0, 1];
