@@ -7,6 +7,8 @@ import Exception from "./Exception.ts";
 
 export default class ArgumentException<T> extends Exception {
 
+	public static override readonly NAME: string = "ArgumentException";
+
 	private static buildArgumentMessage<T>(parameterName: string, argumentValue: Nullable<T> = null): string {
 		let message: string = "Exception with argument value";
 
@@ -23,7 +25,7 @@ export default class ArgumentException<T> extends Exception {
 	public constructor(message: string, parameterName: string, argumentValue: Nullable<T> = null) {
 		super(ArgumentException.postponeMessage(ArgumentException.buildArgumentMessage(parameterName, argumentValue), message));
 
-		this.name = "ArgumentException";
+		this.name = ArgumentException.NAME;
 		this.parameterName = parameterName;
 		this.argumentValue = argumentValue;
 	}

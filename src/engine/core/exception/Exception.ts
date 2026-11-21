@@ -6,6 +6,8 @@ import Nullable from "../common/Nullable.ts";
 
 export default class Exception extends Error {
 
+	public static readonly NAME: string = "Exception";
+
 	protected static postponeMessage(message: string, postponeMessage: Nullable<string> = null): string {
 		if (postponeMessage != null) {
 			message += ": " + postponeMessage;
@@ -25,7 +27,7 @@ export default class Exception extends Error {
 	public constructor(message: string, maybeError: Nullable<unknown> = null) {
 		super(Exception.buildFullMessage(message, maybeError));
 
-		this.name = "Exception";
+		this.name = Exception.NAME;
 	}
 
 }

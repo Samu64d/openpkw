@@ -7,6 +7,8 @@ import Exception from "./Exception.ts";
 
 export default class InvalidRangeException<T extends number> extends Exception {
 
+	public static override readonly NAME: string = "InvalidRangeException";
+
 	public static throwIfBoundsInvalid<T extends number>(minValue: T, maxValue: T, minValueName: string, maxValueName: string): void {
 		if (minValue > maxValue) {
 			throw new InvalidRangeException<T>("Values are not valid bounds values", minValueName, maxValueName, minValue, maxValue);
@@ -40,10 +42,12 @@ export default class InvalidRangeException<T extends number> extends Exception {
 	public constructor(message: string, minValueName: string, maxValueName: string, minValue: Nullable<T> = null, maxValue: Nullable<T> = null) {
 		super(InvalidRangeException.postponeMessage(InvalidRangeException.buildRangeMessage(minValueName, maxValueName, minValue, maxValue), message));
 
+		this.name = InvalidRangeException.NAME;
 		this.minValueName = minValueName;
 		this.maxValueName = maxValueName;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
+
 	}
 
 	public getMinValueName(): string {

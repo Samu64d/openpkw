@@ -7,6 +7,8 @@ import ArgumentException from "./ArgumentException.ts";
 
 export default class ArgumentOutOfRangeException<T> extends ArgumentException<T> {
 
+	public static override readonly NAME: string = "ArgumentOutOfRangeException";
+
 	public static throwIfZero<T>(argumentValue: T, parameterName: string): void {
 		if (argumentValue == 0) {
 			throw new ArgumentOutOfRangeException<T>("Value cannot be 0", parameterName, argumentValue);
@@ -52,7 +54,7 @@ export default class ArgumentOutOfRangeException<T> extends ArgumentException<T>
 	public constructor(message: string, parameterName: string, argumentValue: Nullable<T> = null) {
 		super(message, parameterName, argumentValue);
 
-		this.name = "ArgumentOutOfRangeException";
+		this.name = ArgumentOutOfRangeException.NAME;
 	}
 
 }
