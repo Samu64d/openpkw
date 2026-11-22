@@ -5,11 +5,11 @@
 import ImmutableArray from "../common/ImmutableArray.ts";
 import MathHelper from "../math/MathHelper.ts";
 
-type Color = [number, number, number, number];
+type Color = [r: number, g: number, b: number, a: number];
 
 namespace Color {
 
-	export type Immutable = readonly [number, number, number, number];
+	export type Immutable = readonly [r: number, g: number, b: number, a: number];
 
 	export function of(r: number, g: number, b: number, a: number = 255): Color {
 		return [r, g, b, a];

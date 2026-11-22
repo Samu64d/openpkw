@@ -21,15 +21,15 @@ import GLVertexShader from "../../engine/drivers/graphic/gl/GLVertexShader.ts";
 import GLFragmentShader from "../../engine/drivers/graphic/gl/GLFragmentShader.ts";
 import GLProgram from "../../engine/drivers/graphic/gl/GLProgram.ts";
 import GLContextManager from "../../engine/drivers/graphic/gl/GLContextManager.ts";
-import Renderable from "../level/Renderable.ts";
 import Tile from "../level/Tile.ts";
 import Tiles from "../level/Tiles.ts";
-import Props from "../level/Props.ts";
 import Prop from "../level/Prop.ts";
-import Program from "./Program.ts";
-import Programs from "./Programs.ts";
+import Props from "../level/Props.ts";
 import MapDefinition from "../level/MapDefinition.ts";
 import Level from "../level/Level.ts";
+import Renderable from "./Renderable.ts";
+import Program from "./Program.ts";
+import Programs from "./Programs.ts";
 
 export default class LevelRenderer {
 

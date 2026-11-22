@@ -7,7 +7,7 @@ import Image from "../../engine/core/resource/Image.ts";
 import Mesh from "../../engine/core/resource/Mesh.ts";
 import Record from "../../engine/core/reflection/decorators/Record.ts";
 import InvalidOperationException from "../../engine/core/exception/InvalidOperationException.ts";
-import Renderable from "./Renderable.ts";
+import Renderable from "../renderer/Renderable.ts";
 
 @Record()
 class Prop extends Renderable {

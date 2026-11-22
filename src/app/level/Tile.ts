@@ -7,9 +7,9 @@ import Supplier from "../../engine/core/common/Supplier.ts";
 import Image from "../../engine/core/resource/Image.ts";
 import Mesh from "../../engine/core/resource/Mesh.ts";
 import Record from "../../engine/core/reflection/decorators/Record.ts";
-import ArgumentException from "../../engine/core/exception/ArgumentException.ts";
 import InvalidOperationException from "../../engine/core/exception/InvalidOperationException.ts";
-import Renderable from "./Renderable.ts";
+import Renderable from "../renderer/Renderable.ts";
+import SpritesheetSlicer from "../util/SpritesheetSlicer.ts";
 
 @Record()
 class Tile extends Renderable {
@@ -30,29 +30,6 @@ namespace Tile {
 
 		private static readonly DEFAULT_PROGRAM_NAME: string = "terrain";
 
-		private static createAtlas(image: Image, atlasElementSize: number): Image[] {
-			if (image.getWidth() % atlasElementSize != 0) {
-				throw new ArgumentException("atlasElementSize value must be divisible by image width value", "atlasElementSize");
-			}
-			if (image.getHeight() % atlasElementSize != 0) {
-				throw new ArgumentException("atlasElementSize value must be divisible by image height value", "atlasElementSize");
-			}
-
-			const atlasWidth: number = image.getWidth() / atlasElementSize;
-			const atlasHeight: number = image.getHeight() / atlasElementSize;
-			const atlasSize: number = atlasWidth * atlasHeight;
-			const atlas: Image[] = new Array<Image>(atlasSize);
-
-			for (let i: number = 0; i < atlasSize; i++) {
-				const x: number = (i % atlasWidth) * atlasElementSize;
-				const y: number = Math.floor(i / atlasWidth) * atlasElementSize;
-
-				atlas[i] = image.slice(x, y, atlasElementSize, atlasElementSize);
-			}
-
-			return atlas;
-		}
-
 		protected atlasElementSize: Nullable<number>;
 
 		public constructor() {
@@ -71,7 +48,9 @@ namespace Tile {
 			let textureList: Image[];
 
 			if (this.atlasElementSize != null) {
-				textureList = Builder.createAtlas(texture, this.atlasElementSize);
+				const spritesheetSlicer: SpritesheetSlicer = new SpritesheetSlicer(this.atlasElementSize, SpritesheetSlicer.LayoutOrder.ROW_MAJOR);
+
+				textureList = spritesheetSlicer.slice(texture);
 			} else {
 				textureList = [texture];
 			}

@@ -22,7 +22,7 @@ namespace MapDefinition {
 
 		name: string;
 
-		pos: [number, number, number];
+		pos: [x: number, y: number, z: number];
 
 		rot?: number;
 
