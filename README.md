@@ -11,3 +11,4 @@
 - Fix interlacing in PNGDecoder
 - Completing MappedByteBuffer
 - Remove matrix array based functions
+- Add basic sprite functions

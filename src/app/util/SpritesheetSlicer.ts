@@ -58,18 +58,18 @@ namespace SpritesheetSlicer {
 	export class SliceCoordResolver {
 
 		private readonly layoutOrder: LayoutOrder;
-		private readonly sideSize: number;
-		private readonly elementSize: number;
+		private readonly tileSize: number;
+		private readonly sideLength: number;
 
 		public constructor(layoutOrder: LayoutOrder, width: number, height: number, tileSize: number) {
 			this.layoutOrder = layoutOrder;
-			this.sideSize = layoutOrder == LayoutOrder.ROW_MAJOR ? width : height;
-			this.elementSize = tileSize;
+			this.tileSize = tileSize;
+			this.sideLength = layoutOrder == LayoutOrder.ROW_MAJOR ? width : height;
 		}
 
 		public resolve(index: number,): [x: number, y: number] {
-			const x: number = (index % this.sideSize) * this.elementSize;
-			const y: number = Math.floor(index / this.sideSize) * this.elementSize;
+			const x: number = (index % this.sideLength) * this.tileSize;
+			const y: number = Math.floor(index / this.sideLength) * this.tileSize;
 
 			return this.layoutOrder == LayoutOrder.ROW_MAJOR ? [x, y] : [y, x];
 		}

@@ -1,0 +1,24 @@
+{
+	"animations": {
+		"stand": {
+			"texture": "player_stand.png",
+			"frames": 1,
+			"rows": {
+				"north": 0,
+				"east": 1,
+				"south": 2,
+				"west": 3
+			}
+		},
+		"walk": {
+			"texture": "player_walk.png",
+			"frames": 3,
+			"rows": {
+				"north": 0,
+				"east": 1,
+				"south": 2,
+				"west": 3
+			}
+		}
+	}
+}
